@@ -68,7 +68,7 @@ tar -zxvf vmware-tools -----xxx.tar.gz
 
 ![image-20201120180833533](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201120180833.png)
 
-## Linux实操篇
+# Linux实操篇
 
 1. 远程登陆到Linux
 
@@ -78,7 +78,7 @@ tar -zxvf vmware-tools -----xxx.tar.gz
 
 **Xshell连接Linux**
 
-在终端使用命令ifconfig查看IP地址
+在终端使用命令==ifconfig==查看IP地址
 
 ![image-20201120181215275](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201120181215.png)
 
@@ -94,7 +94,7 @@ tar -zxvf vmware-tools -----xxx.tar.gz
 
    使用Xftp也是配置以下IP地址就可以了  左边是windows右边是linux
 
-## vi和vim的使用
+## vi和vim文本编辑器的使用
 
 ![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201120183702.png)
 
@@ -126,7 +126,7 @@ useradd milan
 
 在这个时候根目录的home目录下就会多一个名为milan的文件夹，代表一个用户。
 
-**删除一个用户同时删掉这个用户的家目录**，milan下面的所有东西都没有了
+**删除一个用户同时删掉这个用户的家目录**，删除的时候带上-r参数 milan下面的所有东西都没有了
 
 ```java
 userdel -r milan
@@ -158,7 +158,7 @@ id 用户名
 
 **切换用户**
 
-可以通过su - 指令，切换到高权限用户，比如root。
+**可以通过su - 指令，切换到高权限用户，比如root。**
 
 基本语法
 
@@ -166,3 +166,142 @@ id 用户名
 su - 切换用户名
 ```
 
+从权限高的用户切换到权限低的用户，不需要输入密码反之需要当需要返回到原来的用户时用命令
+
+```java
+exit或者是logout
+```
+
+查看当前用户/登录用户、
+
+基本语法
+
+```java
+who am i
+```
+
+**用户组**
+
+* 类似于角色，系统可以对有共性/权限的多个用户进行统一的管理
+
+1.新增组
+
+* groupid  组名
+
+2.删除组
+
+* groupdel 组名
+
+3.增加用户时直接加上组
+
+```java
+useradd -g  用户组  用户名
+```
+
+增加一个用户zwj，直接将他指定到 wudang
+
+先增加一个组
+
+```java
+groupadd wudang
+```
+
+创建用户时直接加入组
+
+```java
+useradd -g wudang zwj
+```
+
+4.修改用户所在的组
+
+```java
+usermod -g 组名  用户
+```
+
+**用户组和相关信息**
+
+![image-20201121092508101](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201121092515.png)
+
+## Linux实用指令
+
+### 运行级别
+
+![image-20201121093127947](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201121093128.png)
+
+![image-20201121094300497](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201121094300.png)
+
+如上图所示,使用命令
+
+```java
+systemctl get-default
+```
+
+获得默认的运行级别
+
+使用命令  
+
+```java
+systemctl set-default xxx.target
+```
+
+设置默认的运行级别
+
+### 如何找回root用户密码
+
+### 帮助指令
+
+![image-20201121095902779](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201121095902.png)
+
+## 文件目录类
+
+![image-20201124083356295](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124083403.png)
+
+![image-20201124084034092](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124084034.png)
+
+![image-20201124084359280](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124084359.png)
+
+![image-20201124085438734](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124085438.png)
+
+![image-20201124090623535](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124090623.png)
+
+![image-20201124091048349](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124091048.png)
+
+![image-20201124091923787](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124091923.png)
+
+![image-20201124092733677](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124092733.png)
+
+![image-20201124093204477](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124093204.png)
+
+![image-20201124141740621](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124141740.png)
+
+![image-20201124142430997](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124142431.png)
+
+![image-20201124145850883](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124145851.png)
+
+![image-20201124151445125](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124151445.png)
+
+![image-20201124153244287](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124153244.png)
+
+![image-20201124153630655](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124153630.png)
+
+## 时间日期类
+
+![image-20201124154439579](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124154439.png)
+
+![image-20201124154827917](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124154828.png)
+
+## 搜索查找类
+
+![image-20201124160427457](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124160427.png)
+
+![image-20201124161427776](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124161427.png)
+
+![image-20201124162607326](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124162607.png)
+
+![image-20201124162652547](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124162652.png)
+
+## 压缩和解压类
+
+![image-20201124163038598](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124163038.png)
+
+![image-20201124164101851](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201124164102.png)

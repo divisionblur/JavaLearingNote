@@ -1,48 +1,4 @@
-目录
 
-- [写在前面](https://blog.csdn.net/weixin_30493321/article/details/101392860#写在前面)
-- MySQL引入
-  - [数据库的好处](https://blog.csdn.net/weixin_30493321/article/details/101392860#数据库的好处)
-  - [数据库的相关概念](https://blog.csdn.net/weixin_30493321/article/details/101392860#数据库的相关概念)
-  - [数据库存储数据的特点](https://blog.csdn.net/weixin_30493321/article/details/101392860#数据库存储数据的特点)
-  - [MySQL服务的启动和停止](https://blog.csdn.net/weixin_30493321/article/details/101392860#mysql服务的启动和停止)
-  - [MySQL服务端的登录和退出](https://blog.csdn.net/weixin_30493321/article/details/101392860#mysql服务端的登录和退出)
-  - [MySQL的常用命令](https://blog.csdn.net/weixin_30493321/article/details/101392860#mysql的常用命令)
-  - [MySQL语法规范](https://blog.csdn.net/weixin_30493321/article/details/101392860#mysql语法规范)
-- DQL（Data Query Language）数据查询语言
-  - [1. 基础查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#基础查询)
-  - [2. 条件查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#条件查询)
-  - [3. 排序查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#排序查询)
-  - [4. 常见函数](https://blog.csdn.net/weixin_30493321/article/details/101392860#常见函数)
-  - [5. 分组查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#分组查询)
-  - [6. 连接查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#连接查询)
-  - [7. 子查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#子查询)
-  - [8. 分页查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#分页查询)
-  - [9. 联合查询](https://blog.csdn.net/weixin_30493321/article/details/101392860#联合查询)
-  - [10. 查询总结](https://blog.csdn.net/weixin_30493321/article/details/101392860#查询总结)
-- DML（Data Manipulation Language）数据操作语言
-  - [1. 插入语句](https://blog.csdn.net/weixin_30493321/article/details/101392860#插入语句)
-  - [2. 修改语句](https://blog.csdn.net/weixin_30493321/article/details/101392860#修改语句)
-  - [3. 删除语句](https://blog.csdn.net/weixin_30493321/article/details/101392860#删除语句)
-- DDL（Data Definition Language）数据定义语言
-  - [1. 库的管理](https://blog.csdn.net/weixin_30493321/article/details/101392860#库的管理)
-  - [2. 表的管理](https://blog.csdn.net/weixin_30493321/article/details/101392860#表的管理)
-  - [3. 常见的数据类型](https://blog.csdn.net/weixin_30493321/article/details/101392860#常见的数据类型)
-  - [4. 常见约束](https://blog.csdn.net/weixin_30493321/article/details/101392860#常见约束)
-  - [5. 标识列](https://blog.csdn.net/weixin_30493321/article/details/101392860#标识列)
-- [TCL（Transaction Control Language）事务控制语言](https://blog.csdn.net/weixin_30493321/article/details/101392860#tcltransaction-control-language事务控制语言)
-- [视图](https://blog.csdn.net/weixin_30493321/article/details/101392860#视图)
-- [变量](https://blog.csdn.net/weixin_30493321/article/details/101392860#变量)
-- 存储过程和函数
-  - [1. 存储过程](https://blog.csdn.net/weixin_30493321/article/details/101392860#存储过程)
-  - [2. 函数](https://blog.csdn.net/weixin_30493321/article/details/101392860#函数)
-- [流程控制结构](https://blog.csdn.net/weixin_30493321/article/details/101392860#流程控制结构)
-
-数据库MySQL学习笔记
-
-## 写在前面
-
-学习链接：[数据库 MySQL 视频教程全集](https://www.bilibili.com/video/av59623481)
 
 ## MySQL引入
 
@@ -8660,9 +8616,6 @@
     
     
     CASE 
-    
-    
-    
     WHEN score >= 90 AND score <= 100 THEN SELECT 'A';
     
     
@@ -8693,30 +8646,30 @@
     
     CALL test_case(95)$
     ```
-
-  - if结构
-
-    - 功能：实现多重分支
-
-    - 语法：
-
-      if 条件1 then 语句1；
-
-      elseif 条件2 then 语句2；
-
-      …
-
-      【else 语句n；】
-
-      end if；
-
-    - 应用场合：应用在begin end中
-
-  - 案例2：创建存储过程，根据传入的成绩，来返回等级，比如传入的成绩：90-100，返回A；80-90：返回B；60-80：返回C；否则返回D
-
-    ```
-    CREATE FUNCTION test_if(score INT) RETURNS CHAR
     
+  - if结构
+  
+  - 功能：实现多重分支
+  
+  - 语法：
+  
+    if 条件1 then 语句1；
+  
+    elseif 条件2 then 语句2；
+  
+    …
+  
+    【else 语句n；】
+  
+    end if；
+  
+  - 应用场合：应用在begin end中
+  
+- 案例2：创建存储过程，根据传入的成绩，来返回等级，比如传入的成绩：90-100，返回A；80-90：返回B；60-80：返回C；否则返回D
+  
+  ```
+    CREATE FUNCTION test_if(score INT) RETURNS CHAR
+  
     
     
     BEGIN
@@ -8753,7 +8706,7 @@
     
     SELECT test_if(86)$
     ```
-
+  
 - 循环结构
 
   - 分类：while、loop、repeat
@@ -8946,21 +8899,9 @@
   
   
   END WHILE a;
-  
-  
-  
   END $
   
-  
-  
-   
-  
-  
-  
   CALL test_while2(100)$
-  
-  
-  
   SELECT * FROM admin;
   ```
 
@@ -8972,30 +8913,16 @@
   USE test;
   
   
-  
   DROP TABLE IF EXISTS stringcontent;
-  
-  
   
   CREATE TABLE stringcontent(
   
   
-  
   id INT PRIMARY KEY AUTO_INCREMENT,
-  
-  
   
   content VARCHAR(20)
   
-  
-  
   );
-  
-  
-  
-   
-  
-  
   
   DELIMITER $
   CREATE PROCEDURE test_randstr_insert(IN insertcount INT)
