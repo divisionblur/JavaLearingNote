@@ -39,12 +39,12 @@
 
 ## 3.HelloWorld
 
-- 在MySQL数据库创建一数据库实例`learnmybatis`，在其创建一张表
+- 在MySQL数据库创建一数据库实例mybatis，在其创建一张表
 
 ```sql
 CREATE TABLE employee(
 	id INT(11) PRIMARY KEY AUTO_INCREMENT,
-	last_name VARCHAR(255),
+	lastName VARCHAR(255),
 	gender CHAR(1),
 	email VARCHAR(255)
 );
@@ -52,11 +52,7 @@ CREATE TABLE employee(
 
 再插进一条随意数据，用于测试
 
-![image-20201126210808825](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201126210815.png)
-
 - 创建Maven工程，添加依赖
-
-[pom.xml](https://my.oschina.net/jallenkwong/blog/pom.xml)
 
 ```xml
 <dependency>
@@ -73,8 +69,6 @@ CREATE TABLE employee(
 ```
 
 - 创建对应的JavaBean
-
-[Employee.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c01/helloworld/bean/Employee.java)
 
 ```java
 public class Employee {
@@ -94,8 +88,6 @@ public class Employee {
 
 mybatis全局配置文件
 
-[mybatis-config.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c01/mybatis-config.xml)
-
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration
@@ -107,22 +99,22 @@ mybatis全局配置文件
 			<transactionManager type="JDBC" />
 			<dataSource type="POOLED">
 				<property name="driver" value="com.mysql.cj.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://localhost:3306/learnmybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=CTT" />
+				<property name="url" value="jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=CTT" />
 				<property name="username" value="root" />
-				<property name="password" value="123" />
+				<property name="password" value="lihai520" />
 			</dataSource>
 		</environment>
 	</environments>
-	<!-- 将我们写好的sql映射文件（EmployeeMapper.xml）一定要注册到全局配置文件（mybatis-config.xml）中 -->
+	<!-- 将我们写好的sql映射文件（EmployeeDao.xml）一定要注册到全局配置文件（mybatis-config.xml）中 -->
+    
 	<mappers>
-		<mapper resource="c01/EmployeeMapper.xml" />
+		<mapper resource="EmployeeDao.xml" />
 	</mappers>
+    
 </configuration>
 ```
 
 **sql映射文件**
-
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c01/EmployeeMapper.xml)
 
 ```xml
 <mapper namespace="abc">
@@ -134,21 +126,19 @@ resultType：返回值类型
 
 public Employee getEmpById(Integer id);
  -->
-	<select id="getEmpById" resultType="com.lun.c01.helloworld.bean.Employee">
-		select id,last_name lastName,email,gender from employee where id = #{id}
+	<select id="getEmployeeById" resultType="com.lihai.bean.Employee">
+		select id, lastName,email,gender from tlb_employee where id = #{id}
 	</select>
 </mapper>
 ```
 
 - 测试
 
-[HelloWorldTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c01/helloworld/HelloWorldTest.java)
-
 ```java
 public class HelloWorldTest {
 
 	public SqlSessionFactory getSqlSessionFactory() throws IOException {
-		String resource = "c01/mybatis-config.xml";
+		String resource = "mybatis-config.xml";
 		InputStream inputStream = Resources.getResourceAsStream(resource);
 		return new SqlSessionFactoryBuilder().build(inputStream);
 	}
@@ -176,7 +166,7 @@ public class HelloWorldTest {
 		SqlSession openSession = sqlSessionFactory.openSession();
 		try {
 			Employee employee = openSession.selectOne(
-					"abc.getEmpById", 1);
+					"abc.getEmployeeById", 1);
 			System.out.println(employee);
 		} finally {
 			openSession.close();
@@ -195,61 +185,55 @@ HelloWorld-接口式编程
 
 - 创建一个Dao接口
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c01/helloworld/dao/EmployeeMapper.java)
-
 ```java
-import com.lun.c01.helloworld.bean.Employee;
 
-public interface EmployeeMapper {
+public interface EmployeeDao {
 	
-	public Employee getEmpById(Integer id);
+	public Employee getEmployeeById(Integer id);
 
 }
 ```
 
 - 修改Mapper文件（命名空间，id，returnType）
 
-[EmployeeMapper2.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c01/helloworld/dao/EmployeeMapper.java)
-
 ```xml
-<mapper namespace="com.lun.c01.helloworld.dao.EmployeeMapper">
+<mapper namespace="com.lihai.dao.EmployeeDao">
 <!-- 
 namespace:名称空间;指定为接口的全类名
 id：唯一标识
 resultType：返回值类型
 #{id}：从传递过来的参数中取出id值
 
-public Employee getEmpById(Integer id);
+public Employee getEmployeeById(Integer id);
  -->
-	<select id="getEmpById" resultType="com.lun.c01.helloworld.bean.Employee">
-		select id,last_name lastName,email,gender from employee where id = #{id}
+	<select id="getEmpployeeById" resultType="com.lihai.bean.Employee">
+		select id, lastName,email,gender from tlb_employee where id = #{id}
 	</select>
 </mapper>
 ```
 
 - 测试
 
-[HelloWorldTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c01/helloworld/HelloWorldTest.java)
-
 ```java
 @Test
-public void test01() throws IOException {
-	// 1、获取sqlSessionFactory对象
-	SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
-	// 2、获取sqlSession对象
-	SqlSession openSession = sqlSessionFactory.openSession();
-	try {
-		// 3、获取接口的实现类对象
-		//会为接口自动的创建一个代理对象，代理对象去执行增删改查方法
-		EmployeeMapper mapper = openSession.getMapper(EmployeeMapper.class);
-		Employee employee = mapper.getEmpById(1);
-		System.out.println(mapper.getClass());
-		System.out.println(employee);
-	} finally {
-		openSession.close();
-	}
-
-}
+    public static void main(String[] args) throws IOException {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSession = sqlSessionFactory.openSession();
+            EmployeeDao employeeDao = sqlSession.getMapper(EmployeeDao.class);
+            Employee employee = employeeDao.getEmployeeById(1);
+            System.out.println(employee);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
 ```
 
@@ -288,19 +272,11 @@ MyBatis 的配置文件包含了影响 MyBatis 行为甚深的设置（ settings
   - databaseIdProvider 数据库厂商标识
   - mappers 映射器
 
-### 引入dtd约束
-
-有时Eclipse在编辑全局xml或映射xml时没有编辑提示，这时可手动导入dtd，导入后才有编辑提示
-
-dtd文件在Mybatis的Jar包的org/apache/ibatis/builder/xml，导入前需Mybatis的Jar包中的dtd存放到本地目录
-
-设置路径：Window -> Preferences -> XML -> XML Catalog -> Add Catalog Entry ->Set URL key and DTD local location
+### 引入dtd约束(IDEA不用操作自动设置好了)
 
 ## 7.全局配置文件-properties-引入外部配置文件
 
 [官方文档](https://mybatis.org/mybatis-3/zh/configuration.html)
-
-[mybatis-config.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c02/mybatis-config.xml)
 
 ```xml
 <configuration>
@@ -313,13 +289,13 @@ dtd文件在Mybatis的Jar包的org/apache/ibatis/builder/xml，导入前需Mybat
 
 ```
 
-[dbconfig.properties](https://my.oschina.net/LearnMybatis/src/main/resources/c02/dbconfig.properties)
+
 
 ```properties
 jdbc.driver=com.mysql.jdbc.Driver
-jdbc.url=jdbc:mysql://localhost:3306/learnmybatis?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=CTT
+jdbc.url=jdbc:mysql://localhost:3306/mybatis
 jdbc.username=root
-jdbc.password=123
+jdbc.password=lihai520
 
 ```
 
@@ -331,9 +307,7 @@ jdbc.password=123
 
 ## 8.全局配置文件-settings-运行时行为设置 (重要)
 
-这是 MyBatis 中极为重要的调整设置，它们会改变MyBatis 的运行时行为。
-
-[mybatis-config2.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c02/mybatis-config2.xml)
+==这是 MyBatis 中极为重要的调整设置，它们会改变MyBatis 的运行时行为。==
 
 ```xml
 <configuration>
@@ -341,7 +315,7 @@ jdbc.password=123
 	
 	<!-- 
 		2、settings包含很多重要的设置项
-		setting:用来设置每一个设置项
+			setting:用来设置每一个设置项
 			name：设置项名
 			value：设置项取值
 	 -->
@@ -416,8 +390,6 @@ public class Author {
 | _boolean | boolean    | float   | Float      | arraylist  | ArrayList  |
 | -        | -          | boolean | Boolean    | collection | Collection |
 | -        | -          | -       | -          | iterator   | Iterator   |
-
-[mybatis-config3.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c02/mybatis-config3.xml)
 
 ## 10.全局配置文件-typeHandlers-类型处理器简介
 
@@ -518,7 +490,7 @@ public class Author {
 #### transactionManager(有两种事务管理器包含在Mybatis中)
 
 - type： JDBC | MANAGED | 自定义
-  - JDBC：使用了 JDBC 的提交和回滚设置，依赖于从数据源得到的连接来管理事务范围。JdbcTransactionFactory
+  - JDBC：使用了 JDBC 的提交和回滚设置，**依赖于从数据源得到的连接来管理事务范围。**JdbcTransactionFactory
   - MANAGED：不提交或回滚一个连接、让容器来管理事务的整个生命周期（比如 JEE 应用服务器的上下文）。 ManagedTransactionFactory
   - 自定义：实现TransactionFactory接口， type=全类名/别名
 
@@ -526,11 +498,11 @@ public class Author {
 
 - type： UNPOOLED | POOLED | JNDI | 自定义
   - UNPOOLED：不使用连接池， UnpooledDataSourceFactory
-  - POOLED：使用连接池， PooledDataSourceFactory
-  - JNDI： 在EJB 或应用服务器这类容器中查找指定的数据源
+  - POOLED：**使用连接池， PooledDataSourceFactory**
+  - JNDI： **在EJB 或应用服务器这类容器中查找指定的数据源**
   - 自定义：实现DataSourceFactory接口，定义数据源的获取方式。
 
-**实际开发中我们使用Spring管理数据源，并进行事务控制的配置来覆盖上述配置**。!!!
+**实际开发中我们使用Spring管理数据源，并进行事务控制的配置来覆盖上述配置**。
 
 ## 13.全局配置文件-databaseIdProvider-多数据库支持
 
@@ -557,18 +529,19 @@ DB_VENDOR - 会通过 DatabaseMetaData#getDatabaseProductName() 返回的字符�
 - databaseId属性在映射xml使用 
 
 ```xml
-<select id="getEmpById" resultType="com.lun.c01.helloworld.bean.Employee"
+<select id="getEmployeeById" resultType="com.lihai.bean.Employee"
 	databaseId="mysql">
-	select * from employee where id = #{id}
+	select * from tlb_employee where id = #{id}
 </select>
-<select id="getEmpById" resultType="com.lun.c01.helloworld.bean.Employee"
+
+<select id="getEmployeeById" resultType="com.lihai.bean.Employee"
 	databaseId="oracle">
-	select e.* from employee e where id = #{id}
+	select * from tlb_employee  where id = #{id}
 </select>
 
 ```
 
-- 通过`databaseId`切换数据库，便能切换SQL
+- ==通过`databaseId`切换数据库，便能切换SQL==
 
 MyBatis匹配规则如下：
 
@@ -646,11 +619,11 @@ class：引用（注册）接口，
 
 映射文件指导着MyBatis如何进行数据库增删改查，有着非常重要的意义；
 
-- cache –命名空间的二级缓存配置
-- cache-ref – 其他命名空间缓存配置的引用。
-- resultMap – 自定义结果集映射
+- cache –**命名空间的二级缓存配置**
+- cache-ref – **其他命名空间缓存配置的引用。**
+- resultMap – **自定义结果集映射**
 - parameterMap – **已废弃**！老式风格的参数映射
-- sql –抽取可重用语句块。
+- sql –**抽取可重用语句块。**
 - insert – 映射插入语句
 - update – 映射更新语句
 - delete – 映射删除语句
@@ -658,12 +631,10 @@ class：引用（注册）接口，
 
 ### CRUD初体验
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
-
 ```java
-public interface EmployeeMapper {
+public interface EmployeeDao {
 		
-	public Employee getEmpById(Integer id);
+	public Employee getEmployeeById(Integer id);
 
 	public Long addEmp(Employee employee);
 
@@ -675,81 +646,141 @@ public interface EmployeeMapper {
 
 ```
 
-------
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
 
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
+<!--sql映射文件-->
+<mapper namespace="com.lihai.dao.EmployeeDao">
 
- 	<select id="getEmpById" resultType="com.lun.c01.helloworld.bean.Employee">
-		select * from employee where id = #{id}
-	</select>
 
-	<!-- public void addEmp(Employee employee); -->
-	<insert id="addEmp" parameterType="com.lun.c01.helloworld.bean.Employee"
-		useGeneratedKeys="true" keyProperty="id" >
-		insert into employee(last_name,email,gender) 
-		values(#{lastName},#{email},#{gender})
-	</insert>
-	
-	<!-- public void updateEmp(Employee employee);  -->
-	<update id="updateEmp">
-		update employee 
-		set last_name=#{lastName},email=#{email},gender=#{gender}
-		where id=#{id}
-	</update>
-	
-	<!-- public void deleteEmpById(Integer id); -->
-	<delete id="deleteEmpById">
-		delete from employee where id=#{id}
-	</delete>
-	
+    <!--databaseId可以指定sql在什么数据库环境下的 -->
+    <!--resultType将返回的数据封装成什么类型 -->
+    <select id="getEmployeeById" resultType="employee" databaseId="mysql">
+    select * from tlb_employee where id = #{id}
+    </select>
+
+    <select id="getEmployeeById" resultType="employee" databaseId="oracle">
+    select * from tlb_employee where id = #{id}
+    </select>
+
+    <insert id="addEmp" parameterType="com.lihai.bean.Employee" useGeneratedKeys="true" keyProperty="id">
+        insert into tlb_employee(lastName,email,gender) values (#{lastName},#{email},#{gender})
+    </insert>
+
+    <update id="updateEmp">
+        update tlb_employee set lastName=#{lastName},email=#{email},gender=#{gender} where id =#{id}
+    </update>
+
+    <delete id="deleteEmpById">
+        delete from tlb_employee where id = #{id}
+    </delete>
+
 </mapper>
 
 ```
 
-------
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
 
 ```java
-public class MapperTest {
+public class MybatisTest {
+	......
+    ......
+	
+    /**
+     * 测试查询基于注解
+     */
+    @Test
+    public void testSelect() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSession = sqlSessionFactory.openSession();
+            EmployeeDaoAnnotation mapper = sqlSession.getMapper(EmployeeDaoAnnotation.class);
+            System.out.println(mapper.getEmployeeById(1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
-	@Test
-	public void testCrud() throws IOException {
-		SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-		
-		SqlSession session = ssf.openSession();
-		
-		try {
-			EmployeeMapper mapper = session.getMapper(EmployeeMapper.class);
-			
-			Employee newEmployee = new Employee(null,"kuang","kuang@163.com","1");
-			
-			//增
-			Long count = mapper.addEmp(newEmployee);
-			
-			//查
-			System.out.println("After creating : " + 			    			mapper.getEmpById(newEmployee.getId()));
-			
-			//改
-			newEmployee.setGender("0");
-			mapper.updateEmp(newEmployee);
-			
-			//查
-			System.out.println("After updating : " + mapper.getEmpById(newEmployee.getId()));
-			
-			//删
-			mapper.deleteEmpById(newEmployee.getId());
-			System.out.println("After deleting : " + mapper.getEmpById(newEmployee.getId()));
-			
-			session.commit();
-		} finally {
-			session.close();
-		}
-	}
 
+
+    /**
+     * 测试添加
+     */
+    @Test
+    public void testAdd() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSession = sqlSessionFactory.openSession();
+            EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+            Employee employee = new Employee(null, "haili", "lihai@qq.com", "1");
+            mapper.addEmp(employee);
+            sqlSession.commit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+
+
+
+    /**
+     * 测试更新
+     */
+    @Test
+    public void testUpdate() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSession = sqlSessionFactory.openSession();
+            EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+            Employee employee = new Employee(21, "lihai", "lihai@qq.com", "1");
+            mapper.updateEmp(employee);
+            sqlSession.commit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+
+
+    @Test
+    public void testDelete() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSession = sqlSessionFactory.openSession();
+            EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+            mapper.deleteEmpById(21);
+            sqlSession.commit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+  }
 }
 
 ```
@@ -770,13 +801,12 @@ public class MapperTest {
   - useGeneratedKeys="true"；使用自增主键获取主键值策略
   - keyProperty；指定对应的主键属性，也就是mybatis获取到主键值以后，将这个值封装给javaBean的哪个属性
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
-
 ```xml
 	<!-- public void addEmp(Employee employee); -->
-	<insert id="addEmp" parameterType="com.lun.c01.helloworld.bean.Employee"
+
+	<insert id="addEmp" parameterType="com.lihai.bean.Employee"
 		useGeneratedKeys="true" keyProperty="id" >
-		insert into employee(last_name,email,gender) 
+		insert into tlb_employee(lastName,email,gender) 
 		values(#{lastName},#{email},#{gender})
 	</insert>
 
