@@ -4,7 +4,7 @@
 
 #### 第十章、对象的生命周期
 
-![image-20200418155427918](/百知教育 — Spring系列课程 — 工厂高级特性.assets/image-20200418155427918.png)
+![image-20200418155427918](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223939.png)
 
 ##### 1. 什么是对象的生命周期
 
@@ -193,7 +193,7 @@
   ~~~
 
 - 在Spring配置文件中通过  ${key}  获取小配置文件中对应的值
-  ![image-20200418171133796](/百知教育 — Spring系列课程 — 工厂高级特性.assets/image-20200418171133796.png)
+  ![image-20200418171133796](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207224000.png)
 
 
 
@@ -205,7 +205,7 @@
 作用：Spring通过类型转换器把配置文件中字符串类型的数据，转换成了对象中成员变量对应类型的数据，进而完成了注入
 ~~~
 
-![image-20200418201732220](/百知教育 — Spring系列课程 — 工厂高级特性.assets/image-20200418201732220.png)
+![image-20200418201732220](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207224006.png)
 
 ##### 2. 自定义类型转换器
 
@@ -345,7 +345,7 @@ AOP底层实现：
 ~~~
 
 - 后置处理Bean的运行原理分析
-  ![image-20200420155053027](/百知教育 — Spring系列课程 — 工厂高级特性.assets/image-20200420155053027.png)
+  ![image-20200420155053027](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207224025.png)
 
 ~~~markdown
 程序员实现BeanPostProcessor规定接口中的方法：
@@ -416,46 +416,5 @@ Object postProcessAfterInitiallization(Object bean String beanName)
      
   
      ![image-20201205151114122](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201205151114.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

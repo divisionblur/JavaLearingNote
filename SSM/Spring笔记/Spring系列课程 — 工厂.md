@@ -6,7 +6,7 @@
 
 ##### 1. EJB存在的问题
 
-![image-20200411104428457](/百知教育 — Spring系列课程 — 工厂.assets/image-20200411104428457.png)
+![image-20200411104428457](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223655.png)
 
 ##### 2. 什么是Spring
 
@@ -26,7 +26,7 @@ Spring是一个轻量级的JavaEE解决方案，整合众多优秀的设计模�
 
 - JavaEE的解决方案
 
-![image-20200411111041836](/百知教育 — Spring系列课程 — 工厂.assets/image-20200411111041836.png)
+![image-20200411111041836](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223659.png)
 
 - 整合了设计模式
 
@@ -141,7 +141,7 @@ public class BeanFactory {
   简单工厂会存在大量的代码冗余
   ~~~
 
-  ![image-20200411181701143](/百知教育 — Spring系列课程 — 工厂.assets/image-20200411181701143.png)
+  ![image-20200411181701143](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223708.png)
 
 - 通用工厂的代码
 
@@ -227,7 +227,7 @@ Spring本质：工厂 ApplicationContext (applicationContext.xml)
   思考：日后应用Spring框架时，需要进行配置文件路径的设置。
   ~~~
 
-  ![image-20200413114751707](/百知教育 — Spring系列课程 — 工厂.assets/image-20200413114751707.png)
+  ![image-20200413114751707](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223714.png)
 
 ##### 3. Spring的核心API
 
@@ -246,7 +246,7 @@ Spring本质：工厂 ApplicationContext (applicationContext.xml)
     web环境  ：  XmlWebApplicationContext
     ~~~
 
-    ![image-20200413142452724](/百知教育 — Spring系列课程 — 工厂.assets/image-20200413142452724.png)
+    ![image-20200413142452724](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223925.png)
 
     WEB环境需要导入以下依赖
 
@@ -381,7 +381,7 @@ Spring本质：工厂 ApplicationContext (applicationContext.xml)
 
 **Spring工厂是可以调用对象私有的构造方法创建对象**
 
-![image-20200415113032782](/百知教育 — Spring系列课程 — 工厂.assets/image-20200415113032782.png)
+![image-20200415113032782](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223723.png)
 
 
 
@@ -461,7 +461,7 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
 
 **通过编码的方式，为成员变量进行赋值，存在耦合**
 
-![image-20200415185212664](/百知教育 — Spring系列课程 — 工厂.assets/image-20200415185212664.png)
+![image-20200415185212664](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223730.png)
 
 ###### 1.2 如何进行注入[开发步骤]
 
@@ -492,7 +492,7 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
 
 **Spring通过底层调用对象属性对应的==set方法==，完成成员变量的赋值，这种方式我们也称之为set注入**
 
-![image-20200415191157364](/百知教育 — Spring系列课程 — 工厂.assets/image-20200415191157364.png)
+![image-20200415191157364](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223734.png)
 
 
 
@@ -506,7 +506,7 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
 </property>
 ~~~
 
-![image-20200416090518713](/百知教育 — Spring系列课程 — 工厂.assets/image-20200416090518713.png)
+![image-20200416090518713](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223738.png)
 
 
 
@@ -770,7 +770,7 @@ private String name;
        2. Spring框架底层 大量应用了 set注入
 ~~~
 
-![image-20200416155620897](/百知教育 — Spring系列课程 — 工厂.assets/image-20200416155620897.png)
+![image-20200416155620897](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223748.png)
 
 
 
@@ -785,7 +785,7 @@ private String name;
 底层实现：工厂设计模式
 ~~~
 
-![image-20200416161127972](/百知教育 — Spring系列课程 — 工厂.assets/image-20200416161127972.png)
+![image-20200416161127972](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223752.png)
 
 
 
@@ -798,11 +798,11 @@ private String name;
    好处：解耦合
 ~~~
 
-![image-20200416162615816](/百知教育 — Spring系列课程 — 工厂.assets/image-20200416162615816.png)
+![image-20200416162615816](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223757.png)
 
 #### 第八章、Spring工厂创建复杂对象
 
-![image-20200416164044047](/百知教育 — Spring系列课程 — 工厂.assets/image-20200416164044047.png)
+![image-20200416164044047](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223800.png)
 
 ##### 1. 什么是复杂对象
 
@@ -818,7 +818,7 @@ private String name;
 
 - 开发步骤
   - 实现FactoryBean接口
-    ![image-20200416204458451](/百知教育 — Spring系列课程 — 工厂.assets/image-20200416204458451.png)
+    ![image-20200416204458451](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223804.png)
     
   - Spring配置文件的配置
     
@@ -832,7 +832,7 @@ private String name;
   - 如果就想获得**FactoryBean**类型的对象   **ctx.getBean("&conn")**
     获得就是ConnectionFactoryBean对象
 
-  ![image-20201204214730589](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201204214737.png)
+  ![image-20201204214730589](https://gitee.com/studylihai/pic-repository/raw/master/\img/20201204214737.png)
 
   - isSingleton方法
     **1. 返回  true 只会创建一个复杂对象**
@@ -878,7 +878,7 @@ private String name;
   3. 返回Connection 
   ~~~
 
-  ![image-20200417114723005](/百知教育 — Spring系列课程 — 工厂.assets/image-20200417114723005.png)
+  ![image-20200417114723005](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223824.png)
 
   
 
@@ -919,7 +919,7 @@ private String name;
 
 在创建对象的过程中会给成员变量赋值，用set或者构造方法来注入
 
-![image-20200417152030222](/百知教育 — Spring系列课程 — 工厂.assets/image-20200417152030222.png)
+![image-20200417152030222](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223829.png)
 
 
 
