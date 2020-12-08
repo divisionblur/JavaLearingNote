@@ -1,4 +1,4 @@
-### 百知教育 — Spring系列课程 — 持久层整合
+###  百知教育 — Spring系列课程 — 持久层整合
 
 ----
 
@@ -53,7 +53,7 @@
 
 ##### 3. Spring与Mybatis整合思路分析
 
-![image-20200504141407141](/百知教育 — Spring系列课程 — 持久层整合.assets/image-20200504141407141.png)
+![image-20200504141407141](https://gitee.com/studylihai/pic-repository/raw/master/\img/20201208144104.png)
 
 ##### 4. Spring与Mybatis整合的开发步骤
 
@@ -61,29 +61,33 @@
 
   ~~~xml
   #配置 是需要配置一次 
+  
+  <!--先把连接池对象创建好-->
   <bean id="dataSource" class=""/> 
   
-  <!--创建SqlSessionFactory-->
+  <!--1. 创建SqlSessionFactory-->
   <bean id="ssfb" class="SqlSessionFactoryBean">
       <property name="dataSource" ref=""/>
       <property name="typeAliasesPackage">
-           指定 实体类所在的包  com.baizhiedu.entity  User
+           指定 实体类所在的包  com.lihai.entity  User
                                                    Product
       </property>
       <property name="mapperLocations">
-            指定 配置文件(映射文件)的路径 还有通用配置 
+            指定 配置文件(sql映射文件)的路径 还有通用配置 
             com.baizhiedu.mapper/*Mapper.xml 
       </property>
   </bean>
   
-  <!--DAO接口的实现类
+  <!--2. DAO接口的实现类
       session ---> session.getMapper() --- xxxDAO实现类对象 
       XXXDAO  ---> xXXDAO
   -->
+  
+  
   <bean id="scanner" class="MapperScannerConfigure">
       <property name="sqlSessionFactoryBeanName" value="ssfb"/>
       <property name="basePacakge">
-          指定 DAO接口放置的包  com.baizhiedu.dao 
+          指定 DAO接口放置的包  com.lihai.dao id值为首单词首字母小写
       </property>
   </bean>
   ~~~
@@ -100,7 +104,7 @@
 
 ##### 5. Spring与Mybatis整合编码
 
-- 搭建开发环境(jar)
+- 搭建开发环境(jar) 
 
   ~~~xml
   <dependency>
@@ -131,7 +135,7 @@
     <groupId>org.mybatis</groupId>
     <artifactId>mybatis</artifactId>
     <version>3.4.6</version>
-  </dependency>
+  </dependency> 
   ~~~
 
 - Spring配置文件的配置
@@ -173,8 +177,9 @@
   4. Mapper文件配置
   ~~~
 
-
 ##### 6. Spring与Mybatis整合细节
+
+​	**连接对象Connection控制了事务，那么谁控制了连接对象他就控制了事务。**
 
 - 问题：Spring与Mybatis整合后，为什么DAO不提交事务，但是数据能够插入数据库中？
 
@@ -184,10 +189,10 @@
   
   本质上控制连接对象(Connection) ---> 连接池(DataSource)
   1. Mybatis提供的连接池对象 ---> 创建Connection
-       Connection.setAutoCommit(false) 手工的控制了事务 ， 操作完成后，手工提交
+       Connection.setAutoCommit(false)开启了事务 手工的控制了事务，操作完成后，需要我们手动提交
   2. Druid（C3P0 DBCP）作为连接池        ---> 创建Connection
-       Connection.setAutoCommit(true) true默认值 保持自动控制事务，一条sql 自动提交 
-  答案：因为Spring与Mybatis整合时，引入了外部连接池对象，保持自动的事务提交这个机制(Connection.setAutoCommit(true)),不需要手工进行事务的操作，也能进行事务的提交 
+       Connection.setAutoCommit(true)未开启事务  true默认值 保持自动控制事务，一条sql 自动提交 
+  答案：因为Spring与Mybatis整合时，引入了外部连接池对象，保持自动的事务提交这个机制(Connection.setAutoCommit(true)), 不需要手工进行事务的操作，也能进行事务的提交 
   
   注意：未来实战中，还会手工控制事务(多条sql一起成功，一起失败)，后续Spring通过事务控制解决这个问题。
   ~~~
@@ -212,16 +217,18 @@
 
 ~~~markdown
 JDBC:
+	开启事务
     Connection.setAutoCommit(false);
     Connection.commit();
     Connection.rollback();
 Mybatis：
-    Mybatis自动开启事务
+    Mybatis自动开启事务 (用户你憋管，只管提交和回滚)
     
+    sqlSession底层封装了Connection
     sqlSession(Connection).commit();
     sqlSession(Connection).rollback();
 
-结论：控制事务的底层 都是Connection对象完成的。
+结论：控制事务的底层 都是Connection对象完成的。都是由连接来控制事务
 ~~~
 
 ##### 3.Spring控制事务的开发
@@ -238,7 +245,7 @@ public class XXXUserServiceImpl{
    set get
 
    1. 原始对象 ---》 原始方法 ---》核心功能 (业务处理+DAO调用)
-   2. DAO作为Service的成员变量，依赖注入的方式进行赋值
+   2. DAO作为Service的成员变量，依赖注入的方式进行赋值 (牛逼	)
 }
 ~~~
 
@@ -248,25 +255,30 @@ public class XXXUserServiceImpl{
 1. org.springframework.jdbc.datasource.DataSourceTransactionManager
 2. 注入DataSource 
 1. MethodInterceptor
-   public Object invoke(MethodInvocation invocation){
+   public Object invoke(MethodInvocation invocation) {
       try{
+      	//开启事务
         Connection.setAutoCommit(false);
         Object ret = invocation.proceed();
+        //提交事务
         Connection.commit();
       }catch(Exception e){
+      	//回滚事务
         Connection.rollback();
       }
         return ret;
    }
+   上面这段代码Spring已经为我们封装好了，然而涉及到事务肯定需要连接，而连接又是数据库连接池创建的所有的话
+   我们就把连接池注入到DataSourceTransactionManager中
 2. @Aspect
    @Around 
 ~~~
 
 ###### 3. 切入点
 
-~~~mariadb
+~~~markdown
 @Transactional 
-事务的额外功能加入给那些业务方法。
+事务的额外功能到底加入给哪些业务方法。
 
 1. 类上：类中所有的方法都会加入事务
 2. 方法上：这个方法会加入事务
@@ -277,7 +289,7 @@ public class XXXUserServiceImpl{
 ~~~markdown
 1. 切入点
 2. 额外功能
-
+//transaction-manager获取额外功能 ，切入点的确定的话直接去扫描@Transactional 注解来获取切入点的相关信息
 <tx:annotation-driven transaction-manager=""/>
 ~~~
 
@@ -296,21 +308,39 @@ public class XXXUserServiceImpl{
 - 编码
 
   ~~~xml
-  <bean id="userService" class="com.baizhiedu.service.UserServiceImpl">
+  <!--1.原始对象-->
+  <bean id="userService" class="com.lihai.service.UserServiceImpl">
     <property name="userDAO" ref="userDAO"/>
   </bean>
   
+  
+  <!--2.额外功能-->
   <!--DataSourceTransactionManager-->
   <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="dataSource"/>
   </bean>
   
+  
+  <!--3.切入点设置-->
   @Transactional
   public class UserServiceImpl implements UserService {
-      private UserDAO userDAO;
+      private UserDAO userDAO; 
   
+  <!--4.整合  切入点的话Spring就会自动扫描有@Transactional的方法-->
   <tx:annotation-driven transaction-manager="dataSourceTransactionManager"/>
   ~~~
+
+  ![image-20201208225732998](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208225733.png)
+
+  引入之后会有如下：
+
+  ![image-20201208225915785](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208225915.png)
+
+
+
+
+
+![image-20201208232104261](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208232104.png)
 
 - 细节
 
@@ -329,17 +359,17 @@ public class XXXUserServiceImpl{
 属性：描述物体特征的一系列值
      性别 身高 体重 ...
 事务属性：描述事务特征的一系列值 
-1. 隔离属性
-2. 传播属性
-3. 只读属性
-4. 超时属性
-5. 异常属性 
+1. 隔离属性 isloation
+2. 传播属性 propagation
+3. 只读属性 readOnly
+4. 超时属性 timeout
+5. 异常属性 1.rollbackFor 2.noRollbackFor
 ~~~
 
 ##### 2. 如何添加事务属性
 
 ~~~markdown
-@Transactional(isloation=,propagation=,readOnly=,timeout=,rollbackFor=,noRollbackFor=,)
+@Transactional (isloation=,propagation=,readOnly=,timeout=,rollbackFor=,noRollbackFor=,)
 ~~~
 
 ##### 3. 事务属性详解

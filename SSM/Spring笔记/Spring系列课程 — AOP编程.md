@@ -578,6 +578,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      案例：register方法 和 login方法作为切入点 
      execution(* login(..)) or  execution(* register(..))
      
+     ~~~
   ~~~
    
 - **or或操作**
@@ -586,7 +587,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      案例：register方法 和 login方法作为切入点 
      
      execution(* login(..)) or  execution(* register(..))
-     ~~~
+  ~~~
 
 
 
@@ -688,7 +689,7 @@ AOP的概念：
   
           UserService userServiceProxy = (UserService)Proxy.newProxyInstance(UserServiceImpl.class.getClassLoader(),userService.getClass().getInterfaces(),handler);
   
-          userServiceProxy.login("suns", "123456");
+          userServiceProxy.login("lihai", "123456");
           userServiceProxy.register(new User());
       }
   }
@@ -939,6 +940,7 @@ AOP底层实现  2种代理创建方式
   2.  Cglib通过继承父类 做新的子类      创建代理对象
   
   默认情况 AOP编程(基于注解的和传统的都是) 底层应用JDK动态代理创建方式 
+  
   如果切换Cglib
        1. 基于注解AOP开发
           <aop:aspectj-autoproxy proxy-target-class="true" />
@@ -980,7 +982,7 @@ public class UserServiceImpl implements UserService, ApplicationContextAware {
          */
 
         UserService userService = (UserService) ctx.getBean("userService");
-        userService.login("suns", "123456");
+        userService.login("lihai", "123456");
     }
 
     @Override

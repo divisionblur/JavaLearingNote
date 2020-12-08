@@ -629,6 +629,7 @@ Properties类型 特殊的Map     key=String value=String
 
   ~~~xml
   <bean id="userDAO" class="xxx.UserDAOImpl"/>
+  
   <bean id="userService" class="xxx.UserServiceImpl">
      <property name="userDAO">
          <!--ref引用一个已经创建好的对象-->
@@ -637,19 +638,19 @@ Properties类型 特殊的Map     key=String value=String
   </bean>  
   
   #Spring4.x 废除了 <ref local=""/> 基本等效 <ref bean=""/>
-  ~~~
-
-  ##### 3. Set注入的简化写法
-
-  ###### 3.1 基于属性简化
-
+~~~
+  
+##### 3. Set注入的简化写法
+  
+###### 3.1 基于属性简化
+  
   ~~~xml
   JDK类型注入 
   <property name="name">
      <value>suns</value>
   </property>
   
-  <property name="name" value="suns"/>
+  <property name="name" value="suns"/> 
   注意：value属性 只能简化 8种基本类型+String 注入标签
   
   用户自定义类型
@@ -658,10 +659,10 @@ Properties类型 特殊的Map     key=String value=String
   </property>
   
   <property name="userDAO" ref="userDAO"/>
-  ~~~
-
-  ###### 3.2 基于p命名空间简化
-
+~~~
+  
+###### 3.2 基于p命名空间简化
+  
   ~~~xml
   JDK类型注入 
   <bean id="person" class="xxxx.Person">
@@ -715,7 +716,7 @@ Set注入：Spring调用Set方法 通过配置文件 为成员变量赋值
       <value>lihai</value>
     </constructor-arg>
     <constructor-arg>
-      <value>23</value>
+      <value>22</value>
     </constructor-arg>
   </bean>
   

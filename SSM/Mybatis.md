@@ -1,4 +1,4 @@
-# 简介
+简介
 
 ## 1.简介
 
@@ -42,7 +42,7 @@
 - 在MySQL数据库创建一数据库实例mybatis，在其创建一张表
 
 ```sql
-CREATE TABLE employee(
+CREATE TABLE tlb_employee(
 	id INT(11) PRIMARY KEY AUTO_INCREMENT,
 	lastName VARCHAR(255),
 	gender CHAR(1),
@@ -118,14 +118,8 @@ mybatis全局配置文件
 
 ```xml
 <mapper namespace="abc">
-<!-- 
-namespace:名称空间;通常指定为接口的全类名
-id：唯一标识 
-resultType：返回值类型
-#{id}：从传递过来的参数中取出id值
-
-public Employee getEmpById(Integer id);
- -->
+    
+<!--public Employee getEmpById(Integer id)-->
 	<select id="getEmployeeById" resultType="com.lihai.bean.Employee">
 		select id, lastName,email,gender from tlb_employee where id = #{id}
 	</select>
@@ -197,7 +191,6 @@ public interface EmployeeDao {
 - 修改Mapper文件（命名空间，id，returnType）
 
 ```xml
-<mapper namespace="com.lihai.dao.EmployeeDao">
 <!-- 
 namespace:名称空间;指定为接口的全类名
 id：唯一标识
@@ -206,6 +199,7 @@ resultType：返回值类型
 
 public Employee getEmployeeById(Integer id);
  -->
+<mapper namespace="com.lihai.dao.EmployeeDao">
 	<select id="getEmpployeeById" resultType="com.lihai.bean.Employee">
 		select id, lastName,email,gender from tlb_employee where id = #{id}
 	</select>
@@ -301,7 +295,7 @@ jdbc.password=lihai520
 
 如果属性在不只一个地方进行了配置，那么 MyBatis 将按照下面的顺序来加载：
 
-- 在 properties 元素体内指定的属性首先被读取。
+- **在 properties 元素体内指定的属性首先被读取**。
 - 然后根据 properties 元素中的 resource 属性读取类路径下属性文件或根 据 url 属性指定的路径读取属性文件，并覆盖已读取的同名属性。
 - 最后读取作为方法参数传递的属性，并覆盖已读取的同名属性。
 
@@ -320,6 +314,7 @@ jdbc.password=lihai520
 			value：设置项取值
 	 -->
 	<settings>
+        <!--开启驼峰命名规则-->
 		<setting name="mapUnderscoreToCamelCase" value="true"/>
 	</settings>
 
@@ -361,12 +356,12 @@ jdbc.password=lihai520
 <configuration>
 	...
 	<typeAliases>
-		<package name="domain.blog"/>
+		<package name="com.lihai"/>
 	</typeAliases>
 
 ```
 
-每一个在包 domain.blog 中的 Java Bean，在没有注解的情况下，会使用 Bean 的首字母小写的非限定类名来作为它的别名。 比如 domain.blog.Author 的别名为 author；若有注解，则别名为其注解值。见下面的例子：
+每一个在包 com.lihai 中的 Java Bean，在没有注解的情况下，会使用 Bean 的首字母小写的非限定类名来作为它的别名。 比如 com.lihai.Author 的别名为 author；若有注解，则别名为其注解值。见下面的例子：  
 
 ```java
 @Alias("author")
@@ -611,6 +606,99 @@ class：引用（注册）接口，
   - databaseIdProvider 数据库厂商标识
   - mappers 映射器
 
+
+
+```xml
+<!--mybatis的全局配置文件-->
+<configuration>
+    <!--
+		1、mybatis可以使用properties来引入外部properties配置文件的内容；
+		resource：引入类路径下的资源
+		url：引入网络路径或者磁盘路径下的资源
+	  -->
+    <properties resource="dbconfig.properties"></properties>
+
+
+    <!--
+		2、settings包含很多重要的设置项
+		setting:用来设置每一个设置项
+			name：设置项名
+			value：设置项取值
+	 -->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    
+    
+    <!--类型别名可为Java类型设置一个缩写名字它仅用于 XML 配置，
+    意在降低冗余的全限定类名书写-->
+
+    <!--<typeAliases>
+        <typeAlias  type="com.lihai.bean.Employee"/>
+    </typeAliases>-->
+
+    <!--typeAliases alias="xxxxx"  type="xxx"-->
+    <!--不指定alias的话默认的别名是首字母小写的非限定类名-->
+
+
+    <!--批量起别名 -->
+    <!--默认的别名是首字母小写的非限定类名 -->
+    <typeAliases>
+        <package name="com.lihai.bean"/>
+    </typeAliases>
+
+
+    <!-- 3、批量起别名的情况下，使用@Alias注解为某个类型指定新的别名 -->
+
+
+
+
+    <environments default="development">
+        
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            
+            <dataSource type="POOLED">
+                <!--前面已经将db.properties引入进来了就可以使用这种写法-->
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+            
+        </environment>
+    </environments>
+
+
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle"/>
+    </databaseIdProvider>
+
+    <!--将我们写好的sql映射文件(EmployeeDao.xml)一定要注册到全局配置文件中 -->
+    <mappers>
+        
+        
+        <mapper resource="com/lihai/dao/EmployeeDao.xml"/>
+
+        <!--使用class引用注册接口的这种方式没有SQL映射文件 利用注解-->
+        <!--比如在这里EmployeeDao.xml和EmployeeDao.java都是在
+         com.lihai.dao包下-->
+        <mapper class="com.lihai.dao.EmployeeDaoAnnotation"/>
+
+
+<!--        批量注册 有了批量注册 就不能单独注册了-->
+<!--        <package name="com.lihai.dao"/>-->
+
+    </mappers>
+
+</configuration>
+```
+
+
+
 # 映射文件
 
 ## 16.映射文件-增删改查
@@ -621,7 +709,7 @@ class：引用（注册）接口，
 
 - cache –**命名空间的二级缓存配置**
 - cache-ref – **其他命名空间缓存配置的引用。**
-- resultMap – **自定义结果集映射**
+- resultMap – **自定义结果集映射**(重要)
 - parameterMap – **已废弃**！老式风格的参数映射
 - sql –**抽取可重用语句块。**
 - insert – 映射插入语句
@@ -791,7 +879,7 @@ public class MybatisTest {
    - Integer、Long、Boolean、void
 2. 我们需要手动提交数据
    - sqlSessionFactory.openSession();===》手动提交
-   - sqlSessionFactory.openSession(true);===》自动提交
+   - **sqlSessionFactory.openSession(true);**===》自动提交
 
 ## 17.映射文件-insert-获取自增主键的值
 
@@ -872,119 +960,169 @@ select employee_seq.nextval from dual;
 
 ## 20.映射文件-参数处理-单个参数&多个参数&命名参数
 
-- 单个参数：mybatis不会做特殊处理，
+- 单个参数：**mybatis不会做特殊处理**，
+  
   - `#{参数名/任意名}`：取出参数值。
+  
+    ![image-20201208154936673](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208154936.png)
+  
+    进行测试，查询结果如下：
+  
+    ![image-20201208155045210](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208155045.png)
+
 - 多个参数：mybatis会做特殊处理。
   - 通常操作：
     - 方法：public Employee getEmpByIdAndLastName(Integer id,String lastName);
     - 取值：`#{id}`,`#{lastName}`
+    
+    ![image-20201208155242379](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208155242.png)
+    
   - 上述操作会抛出异常：`org.apache.ibatis.binding.BindingException: Parameter 'id' not found. Available parameters are [1, 0, param1, param2]`
+  
+    ![image-20201208155326130](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208155326.png)
+  
   - ==多个参数会被封装成 一个map，==
+  
     - key：**param1...paramN,或者参数的索引也可以**
     - value：用户传入的参数值
+  
+    当使用#{param1} #{param2}时
+  
+    ![image-20201208155659220](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208155659.png)
+  
+  
+  
+  ​		接下来测试查询：
+  
+  ​		![image-20201208155741175](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208155741.png)
+  
   - `#{}`就是从map中获取指定的key的值；
+  
 - 【命名参数】：明确指定封装参数时map的key；@Param("id")
+  
+  ​	![image-20201208155914120](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208155914.png)
+  
+  然后将sql映射文件改一下
+  
+  ​	![image-20201208160025657](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208160025.png)
+  
+  测试查询：
+  
+  ![image-20201208160102131](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208160102.png)
+  
   - 多个参数会被封装成 一个map，
     - key：使用@Param注解指定的值
     - value：参数值
   - `#{指定的key}`取出对应的参数值
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
-
 ```java
 @Test
-public void testParameters() throws IOException {
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper mapper = session.getMapper(EmployeeMapper.class);
-		
-		//1. 
-		//单个参数：mybatis不会做特殊处理
-		System.out.println(mapper.getEmpById2(1));
-		
-		//2.
-		//多个参数，未作处理 ，mapper直用#{id},#{lastName}会抛异常 
-		try {				
-			System.out.println(mapper.getEmpByIdAndLastName(1, "jallen"));
-			//org.apache.ibatis.exceptions.PersistenceException: 
-			//### Error querying database.  Cause: org.apache.ibatis.binding.BindingException: Parameter 'id' not found. Available parameters are [0, 1, param1, param2]
-			//### Cause: org.apache.ibatis.binding.BindingException: Parameter 'id' not found. Available parameters are [0, 1, param1, param2]
-		}catch(PersistenceException ex) {
-			System.err.println(ex);
-		}
-		
-		//多个参数会被封装成 一个map
-		//key：param1...paramN,或者参数的索引0, 1..也可以(这种方法的可读性较差)
-		//value：传入的参数值
-		System.out.println(mapper.getEmpByIdAndLastName2(1, "jallen"));
-		System.out.println(mapper.getEmpByIdAndLastName3(1, "jallen"));
-		
-		
-		//3. 
-		//【命名参数】：明确指定封装参数时map的key；@Param("id")
-		System.out.println(mapper.getEmpByIdAndLastName4(1, "jallen"));
-		
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
-}
+    public void testParams() throws IOException {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+            Employee employee = mapper.getEmpByIdAndLastName(1, "贾宝玉");
+            System.out.println(employee);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
 ```
 
-------
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
-
-```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
-	<!-- 多个参数，不能直写id或lastName，否则抛出 org.apache.ibatis.binding.BindingException: Parameter 'id' not found. Available parameters are [1, 0, param1, param2]-->
- 	<select id="getEmpByIdAndLastName" resultType="com.lun.c01.helloworld.bean.Employee">
- 		select * from tbl_employee where id = #{id} and last_name=#{name}
- 	</select>
-    
- 	<select id="getEmpByIdAndLastName2" resultType="com.lun.c01.helloworld.bean.Employee">
- 		select * from employee where id = #{0} and last_name=#{1}
- 	</select>
-    
- 	<select id="getEmpByIdAndLastName3" resultType="com.lun.c01.helloworld.bean.Employee">
- 		select * from employee where id = #{param1} and last_name=#{param2}
- 	</select>
-    
- 	<select id="getEmpByIdAndLastName4" resultType="com.lun.c01.helloworld.bean.Employee">
- 		select * from employee where id = #{id} and last_name=#{lastName}
- 	</select>
-	...
-
-```
-
-------
-
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
-
-```java
-public interface EmployeeMapper {
-		
-	public Employee getEmpByIdAndLastName(Integer id, String name);
-	public Employee getEmpByIdAndLastName2(Integer id, String name);
-	public Employee getEmpByIdAndLastName3(Integer id, String name);
-	public Employee getEmpByIdAndLastName4(@Param("id")Integer id,// 
-										@Param("lastName")String name);
-	使用Param注解来明确指定map封装时key的值
-
-```
 
 ## 21.映射文件-参数处理-POJO&Map&TO
 
+
+
+	POJO类的作用是方便程序员使用数据库中的数据表，对于程序员来说，可以很方便的将POJO类当作对象来进行使用，也可以方便的调用其get，set方法。
+	一般在web应用程序中建立一个数据库的映射对象时，我们只能称它为POJO。但不允许有业务方法,也不能携带有connection之类的方法，即不包含业务逻辑或持久逻辑等。
+
 - POJO：如果多个参数正好是我们业务逻辑的数据模型，我们就可以直接传入pojo；
+  
   - `#{属性名}`：取出传入的pojo的属性值
+  
+  这里举一个栗子：
+  
+  向tlb_employee添加一个Employee时就是这种情况,代码中的employee就是POJO对象
+  
+  ```java
+  /**
+       * 测试添加
+       */
+      @Test
+      public void testAdd() {
+          SqlSession sqlSession = null;
+          try {
+              String resource = "mybatis-config.xml";
+              InputStream inputStream = Resources.getResourceAsStream(resource);
+              SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+              sqlSession = sqlSessionFactory.openSession();
+              EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+              Employee employee = new Employee(null, "haili", "lihai@qq.com", "1");
+              mapper.addEmp(employee);
+              sqlSession.commit();
+          } catch (IOException e) {
+              e.printStackTrace();
+          } finally {
+              if (sqlSession != null) {
+                  sqlSession.close();
+              }
+          }
+      }
+  ```
+  
+  
+  
 - Map：如果多个参数不是业务模型中的数据，没有对应的pojo，不经常使用，为了方便，我们也可以传入map
+
   - `#{key}`：取出map中对应的值
+
+  ```java
+  @Test
+      public void testGetEmpByMap() {
+          SqlSession sqlSession = null;
+          try {
+              String resource = "mybatis-config.xml";
+              InputStream in = Resources.getResourceAsStream(resource);
+              SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+              SqlSessionFactory factory = builder.build(in);
+              sqlSession = factory.openSession();
+              EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+              HashMap<String, Object> map = new HashMap<>();
+  
+              map.put("id",2);
+              map.put("lastName","joy");
+  
+              //把表名也动态传入但是在sql映射文件当中写的是${tableName},因为那个地方不支持占位符
+              //用${}可以将取出的值直接拼装在sql语句中。
+              map.put("tableName","tlb_employee");
+              Employee employee = mapper.getEmpByMap(map);
+              System.out.println(employee);
+          } catch (IOException e) {
+              e.printStackTrace();
+          } finally {
+              if (sqlSession != null) {
+                  sqlSession.close();
+              }
+          }
+      }
+  ```
+
+  ![image-20201208161639351](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208161639.png)
+
+  ![image-20201208161824320](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208161824.png)
+
 - TO：如果多个参数不是业务模型中的数据，但是经常要使用，推荐来编写一个TO（Transfer Object）数据传输对象，如：
 
 ```java
@@ -995,61 +1133,11 @@ Page{
 
 ```
 
-------
+![image-20201208162050085](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208162050.png)
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
 
-```java
-@Test
-public void testParameters() throws IOException {
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper mapper = session.getMapper(EmployeeMapper.class);
-		
-		...
-		//4.
-		//传入map
-		Map<String, Object> map = new HashMap<>();
-		map.put("id", 1);
-		map.put("lastName", "jallen");
-		System.out.println("4. " + mapper.getEmpByMap(map));
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
-}
 
-```
 
-------
-
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
-
-```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
-	<!-- map 作参输入 -->
- 	<select id="getEmpByMap" resultType="com.lun.c01.helloworld.bean.Employee">
- 		select * from employee where id = #{id} and last_name=#{lastName}
- 	</select>
-	...
-
-```
-
-------
-
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
-
-```java
-public interface EmployeeMapper {
-	public Employee getEmpByMap(Map<String, Object> map);
-	...
-
-```
 
 ## 22.映射文件-参数处理-参数封装扩展思考
 
@@ -1109,7 +1197,7 @@ public Object getNamedParams(Object[] args) {
     if (args == null || paramCount == 0) {
       return null;
      
-    //2、如果只有一个元素，并且没有Param注解；args[0]：单个参数直接返回
+    //2、如果只有一个元素，并且没有Param注解；args[0]：单个参数直接返回(相当于不做任何处理)
     } else if (!hasParamAnnotation && paramCount == 1) {
       return args[names.firstKey()];
       
@@ -1143,22 +1231,22 @@ public Object getNamedParams(Object[] args) {
 
 ```
 
-**总结**：参数多时会封装map，为了不混乱，我们可以使用@Param来指定封装时使用的key；#{key}就可以取出map中的值；
+**总结**：==参数多时会封装map，为了不混乱，我们可以使用@Param来指定封装时使用的key；#{key}就可以取出map中的值；==
 
 ## 24.映射文件-参数处理-  #与$取值区别
 
 `#{}`和`${}`都可以获取map中的值或者pojo对象属性的值；
 
 ```sql
-select * from tbl_employee where id=${id} and last_name=#{lastName}
-#Preparing:
-select * from tbl_employee where id=2 and last_name=?
+select * from tlb_employee where id=${id} and last_name=#{lastName}
+
+select * from tlb_employee where id=2 and last_name=?
 
 ```
 
 **区别**：
 
-- `#{}` : 是以预编译的形式(只能取出参数位置的值进行预编译)，将参数设置到sql语句中；PreparedStatement；==防止sql注入==
+- `#{}` : 是以**预编译**的形式(只能取出参数位置的值进行预编译)，将参数设置到sql语句中；PreparedStatement；==防止sql注入==
 - `${}` : 取出的值**直接拼装**在sql语句中；会有安全问题；
 
 ==大多情况下，我们取参数的值都应该去使用`#{}`。==
@@ -1168,7 +1256,7 @@ select * from tbl_employee where id=2 and last_name=?
 ```sql
 select * from ${year}_salary where xxx;
 
-select * from tbl_employee order by ${f_name} ${order}
+select * from tlb_employee order by ${f_name} ${order}
 
 直接取出来拼在sql上，因为这两个位置即使是原生的jdbc也不支持占位符
 
@@ -1203,196 +1291,239 @@ jdbcType通常需要在某种特定的条件下被设置：
 
 ## 26.映射文件-select-返回List
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
-
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
-	<!-- public List<Employee> getEmpsByLastNameLike(String lastName); -->
-	<!--resultType：如果返回的是一个集合，要写集合中元素的类型  -->
-	<select id="getEmpsByLastNameLike" resultType="com.lun.c01.helloworld.bean.Employee">
-		select * from employee where last_name like #{lastName}
-	</select>
-	...
-
+<mapper namespace="com.lihai.dao.EmployeeDao">
+    ...
+    
+    <select id="getEmpByLastNameLike" resultType="employee">
+        select * from tlb_employee where lastName like #{lastName}
+    </select>
+    ...
+</mapper>
 ```
 
-------
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
 
 ```java
-public interface EmployeeMapper {
-	
+public interface EmployeeDao {
+	...
 //// return Collection
-	public List<Employee> getEmpsByLastNameLike(String str);
+	 List<Employee> getEmpsByLastNameLike(String str);
 	...
-
-```
-
-------
-
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
-
-```java
-@Test
-public void testList() throws IOException {
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		List<Employee> result = em.getEmpsByLastNameLike("%a%");
-		System.out.println(result);
-
-		session.commit();
-	} finally {
-		session.close();
-	}
 }
 
 ```
+
+![image-20201208163458762](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208163458.png)
+
+```java
+/**
+     * select返回list
+     */
+    @Test
+    public void testBlurSelect() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+            List<Employee> employees = mapper.getEmpByLastNameLike("%j%");
+            for (Employee employee : employees) {
+                System.out.println(employee);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+
+```
+
+查询结果：
+
+![image-20201208163610041](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208163610.png)
+
+
 
 ## 27.映射文件-select-记录封装map
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
-
 ```java
-public interface EmployeeMapper {
-
-	//多条记录封装一个map：Map<Integer,Employee>:键是这条记录的主键，值是记录封装后的javaBean
-	//@MapKey:告诉mybatis封装这个map的时候使用哪个属性作为map的key
-	@MapKey("lastName")
-	public Map<String, Employee> getEmpByLastNameLikeReturnMap(String lastName);
-	
-	//返回一条记录的map；key就是列名，值就是对应的值
-	public Map<String, Object> getEmpByIdReturnMap(Integer id);
+public interface EmployeeDao {
 	...
-        
-
+    //返回一条记录的map；key就是列名，值就是对应的值
+	public Map<String, Object> getEmpByReturnMap(Integer id);
+    
+    
+    
+     /**
+     * 用注解MapKey指定主键id作为返回map的key,而value还是Employee所以sql映射文件中的
+     * resultMap还是employee
+     * @param lastName
+     * @return
+     */
+    @MapKey("id")
+    Map<Integer,Employee> getEmpByLastNameLikeReturnMap(String lastName);
+    ...
+}
 ```
 
-------
 
-![1605017058375](Mybatis.assets//1605017058375.png)
-
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
 
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
- 	<!--public Map<Integer, Employee> getEmpByLastNameLikeReturnMap(String lastName);  -->
- 	<select id="getEmpByLastNameLikeReturnMap" resultType="com.lun.c01.helloworld.bean.Employee">
- 		select * from employee where last_name like #{lastName}
- 	</select>
- 
- 	<!--public Map<String, Object> getEmpByIdReturnMap(Integer id);  -->
- 	<select id="getEmpByIdReturnMap" resultType="map">
- 		select * from employee where id=#{id}
- 	</select>
+<mapper namespace="com.lihai.dao.EmployeeDao">
 	...
-
-```
-
-------
-
-[MapperTest](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
-
-```java
-@Test
-public void testMap() throws IOException {
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		Map<String, Object> result = em.getEmpByIdReturnMap(1);
-		System.out.println(result);
-		
-		System.out.println("---");
-		Map<String, Employee> result2 = em.getEmpByLastNameLikeReturnMap("%a%");
-		System.out.println(result2);
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
+ 	<!--public Map<String, Object> getEmpByIdReturnMap(Integer id);  -->
+ 	 <!--返回类型是一个map为什么可以直接写map是因为mybatis已经为这些集合取好了别名-->
+    <select id="getEmpByReturnMap" resultType="map">
+        select * from tlb_employee where id = #{id}
+    </select>
+	...
 }
 
 ```
 
-## 28.映射文件-select-resultMap-自定义结果映射规则
+```java
+/**
+     * select-记录封装map
+     * 就是将查询到的结果封装在一个Map集合当中
+     * key表对应的列名，value是查询到的数据。
+     */
+    @Test
+    public void testReturnMap() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+            Map<String, Object> returnMap = mapper.getEmpByReturnMap(1);
+            System.out.println(returnMap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
+```
+
+查询结果如下:
+
+![image-20201208164627022](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208164627.png)
+
+一种特殊的情况 当想指定特定的值为返回的Map的key可以在方法上使用@MapKey("xxx")来指定
+
+![image-20201208165412513](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208165412.png)
+
+![image-20201208165436243](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208165436.png)
+
+
+
+![image-20201208165506717](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208165506.png)
+
+查询结果如下:
+
+![image-20201208165624145](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208165624.png)
+
+
+
+当我们想将id作为返回Map的key时只需进行如下配置
+
+![image-20201208165734494](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208165734.png)
+
+测试查询结果如下:
+
+![image-20201208170014920](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208170015.png)
+
+## 28.映射文件-select-resultMap-自定义结果映射规则(重要)
+
+**测试用例已经很多了为了方便阅读新建EmployeeDaoPlus和对应的sql映射文件EmployeeDaoPlus.xml来进行测试学习。**
 
 ```java
-public interface EmployeeMapper {
+public interface EmployeeDaoPlus {
 
 	//自定义结果映射规则
 	public Employee getEmpByIdWithResultMap(Integer id);
 	...
+}
 
 ```
 
-------
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
 
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
+<mapper namespace="com.lihai.dao.EmployeeDaoPlus">
 
 	<!--自定义某个javaBean的封装规则
 	type：自定义规则的Java类型
 	id:唯一id方便引用
 	  -->
-	<resultMap type="com.lun.c01.helloworld.bean.Employee" id="MySimpleEmp">
-		<!--指定主键列的封装规则
-		id 定义主键会底层有优化；
-		column：指定哪一列
-		property：指定对应的javaBean属性
-		  -->
-		<id column="id" property="id"/>
-		<!-- 定义普通列封装规则 -->
-		<result column="last_name" property="lastName"/>
-		<!-- 其他不指定的列会自动封装：我们只要写resultMap就把全部的映射规则都写上。 -->
-		<result column="email" property="email"/>
-		<result column="gender" property="gender"/>
-	</resultMap>
-	
-	<!-- resultMap:自定义结果集映射规则；  -->
-	<!-- public Employee getEmpById(Integer id); -->
-	<select id="getEmpByIdWithResultMap"  resultMap="MySimpleEmp">
-		select * from employee where id=#{id}
-	</select>
+    <!--为什么可以写employee因为在全局配置文件中我已经设置了com.lihai.bean所有包中的类取了别名-->
+	 <resultMap  type="employee" id="myEmp">
+         
+        <!--自定义某个javaBean的封装规则type：自定义规则的Java类型id:唯一id方便引用-->
+        <!--主键列 -->
+        <id column="id" property="id"/>
+        <!--定义普通列的封装规则 (建议全部写上)-->
+        <result column="lastName" property="lastName"/>
+        <result column="email" property="email"/>
+        <result column="gender" property="gender"/>
+    </resultMap>
+
+    <!--还可以在这个Employee实体类的上方加一个@Alias("xxx")注解就算在全局配置文件中批量指定了某一个包下的实体类
+        的别名为默认小写类名  但是加了这个注解的话我们就可以用这个注解指定的别名xxx-->
+    <select id="getEmpByIdWithResultMap" resultMap="myEmp">
+        select * from tlb_employee where id = #{id}
+    </select>
 
 ```
 
-------
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
 
 ```java
-@Test
-public void testResultMap() throws IOException {
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		
-		System.out.println(em.getEmpByIdWithResultMap(1));
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
-}
+/**
+     * 测试自定义结果集映射
+     */
+    @Test
+    public void testSelfDefineMappingResult() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDaoPlus mapper = sqlSession.getMapper(EmployeeDaoPlus.class);
+            Employee employee = mapper.getEmpByIdWithResultMap(1);
+            System.out.println(employee);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
 ```
+
+![image-20201208171559577](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208171559.png)
+
+
 
 ## 29.映射文件-select-resultMap-关联查询-环境搭建
 
-新建类[Department.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c01/helloworld/bean/Department.java)
+新建类Department
 
 ```java
 public class Department {
@@ -1402,12 +1533,13 @@ public class Department {
 	private List<Employee> emps;
 	
 	//getter and setter and toString()
-
+    ......
+}
 ```
 
 ------
 
-修改类[Employee.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c01/helloworld/bean/Employee.java)
+修改类Employee
 
 ```java
 public class Employee {
@@ -1419,6 +1551,7 @@ public class Employee {
 	public Employee() {}
 
 	//add department's getter and setter
+}
 
 ```
 
@@ -1429,191 +1562,269 @@ public class Employee {
 ```sql
 CREATE TABLE department(
 	id int(11) primary key auto_increment,
-	department_name varchar(255)
+	dept_name varchar(255)
 );
 
-ALTER TABLE employee ADD COLUMN department_id int(11);
+# 为tlb_employee表新添加一列代表部门的编号
+ALTER TABLE tlb_employee ADD COLUMN d_id int(11);
 
 ALTER TABLE employee ADD CONSTRAINT fk_employee_department 
-FOREIGN KEY(department_id) REFERENCES department(id);
+FOREIGN KEY(d_id) REFERENCES tlb_dept(id);
 
-INSERT INTO department(department_name) values ('开发部');
-INSERT INTO department(department_name) values ('测试部');
+INSERT INTO tlb_dept(dept_name) values ('开发部');
+INSERT INTO tlb_dept(dept_name) values ('测试部');
 
 ```
 
 ## 30.映射文件-select-resultMap-关联查询-级联属性封装结果
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
-
 ```java
-public interface EmployeeMapper {
-
+public interface EmployeeDaoPlus {
+	......
 	//联合查询：级联属性封装结果集
 	public Employee getEmpAndDept(Integer id);
-	...
-
-```
-
-------
-
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
-
-```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
-<!-- 联合查询：级联属性封装结果集
-	  -->
-	<resultMap type="com.lun.c01.helloworld.bean.Employee" id="MyDifEmp">
-		<id column="id" property="id"/>
-		<result column="last_name" property="lastName"/>
-		<result column="gender" property="gender"/>
-		<result column="department_id" property="department.id"/>
-		<result column="department_name" property="department.departmentName"/>
-	</resultMap>
-
-	<!--  public Employee getEmpAndDept(Integer id);-->
-	<select id="getEmpAndDept" resultMap="MyDifEmp">
-		SELECT
-			e.id id,e.last_name last_name,e.gender gender,
-			e.department_id department_id, d.department_name department_name 
-		FROM employee e, department d
-		WHERE e.department_id=d.id AND e.id=#{id}
-	</select>
-	...
-
-```
-
-------
-
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
-
-```java
-@Test
-public void testResultMapAssociation() throws IOException {
-	
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		
-		System.out.println(em.getEmpAndDept(1));
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
+	......
 }
 
 ```
+
+
+
+```xml
+<mapper namespace="com.lihai.dao.EmployeeDaoPlus">
+	......
+	<!-- 联合查询：级联属性封装结果集-->
+    <resultMap type="employee" id="myDifEmp">
+        <!--指定主键列的封装规则
+		id 定义主键会底层有优化；
+		column：指定哪一列
+		property：指定对应的javaBean属性
+		  -->
+        <id column="id" property="id"/>
+
+        <result column="lastname" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        						<!--属性的属性 -->
+        <result column="did" property="dept.id"/>
+        <result column="dept_name" property="dept.departmentName"/>
+    </resultMap>
+
+    <select id="getEmpAndDept" resultMap="myDifEmp">
+         select e.id  id,e.lastName lastName,e.email email,e.gender gender,e.d_id d_id,d.id did, d.dept_name dept_name
+        from tlb_employee e,tlb_dept d where e.d_id = d.id and e.id = #{id}
+        <!--92语法e.d_id = e.id 是连接条件 -->
+    </select>
+	......
+  }
+
+```
+
+测试:
+
+```java
+ /**
+     * <!-- 联合查询：级联属性封装结果集-->
+     */
+    @Test
+    public void testAssociationSelectAndSelfDefineMapping() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDaoPlus mapper = sqlSession.getMapper(EmployeeDaoPlus.class);
+            Employee employee = mapper.getEmpAndDept(1);
+            System.out.println(employee);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+```
+
+原始toString方法为:
+
+```java
+@Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", lastName='" + lastName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+```
+
+输出结果为:
+
+![image-20201208174124653](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208174124.png)
+
+
+
+如果这个时候将Employee的toString方法改为
+
+```java
+   @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", lastName='" + lastName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", email='" + email + '\'' +",dept='"+ dept.toString()+'\''+
+                '}';
+    }
+```
+
+此时输出的结果为：
+
+![image-20201208173953915](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208173954.png)
 
 ## 31.映射文件-select-resultMap-关联查询-association定义关联对象封装规则
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
-
 ```java
-public interface EmployeeMapper {
-
+public interface EmployeeDaoPlus {
+	......
+        
 	//联合查询：级联属性封装结果集
 	public Employee getEmpAndDept2(Integer id);
+    ......
+}
 
 ```
 
 ------
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
+
 
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
-<!--  association可以指定联合的javaBean对象 -->
-	<resultMap type="com.lun.c01.helloworld.bean.Employee" id="MyDifEmp2">
-		<id column="id" property="id"/>
-		<result column="last_name" property="lastName"/>
-		<result column="gender" property="gender"/>
-		<!--  association可以指定联合的javaBean对象
-		property="dept"：指定哪个属性是联合的对象
-		javaType:指定这个属性对象的类型[不能省略]
+<mapper namespace="com.lihai.dao.EmployeeDaoPlus">
+	......
+    
+ 	<!--联合查询单独定义封装规则 -->
+    <resultMap type="employee" id="myDifEmp1">
+        <!--指定主键列的封装规则
+		id 定义主键会底层有优化；
+		column：指定哪一列
+		property：指定对应的javaBean属性
+		  -->
+        <id column="id" property="id"/>
+        <result column="lastname" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <!--association可以指定联合的javaBean对象
+        property="dept"：指定哪个属性是联合的对象
+		javaType:指定这个属性对象的类型 不能省略要不然mybatis就不知道如何进行封装了
 		-->
-		<association property="department" javaType="com.lun.c01.helloworld.bean.Department">
-			<id column="department_id" property="id"/>
-			<result column="department_name" property="departmentName"/>
-		</association>
-	</resultMap>
+        <!--在association里面定义Department的封装规则-->
+        <association property="dept" javaType="department">
+            <!--指定主键列的封装规则-->
+            <id column="did" property="id"/>
+            <result column="dept_name" property="departmentName"/>
+        </association>
+    </resultMap>
 
-	<!--  public Employee getEmpAndDept2(Integer id);-->
-	<select id="getEmpAndDept2" resultMap="MyDifEmp2">
-		SELECT
-			e.id id,e.last_name last_name,e.gender gender,
-			e.department_id department_id, d.department_name department_name 
-		FROM employee e, department d
-		WHERE e.department_id=d.id AND e.id=#{id}
-	</select>
+
+    <select id="getEmpAndDept1" resultMap="myDifEmp1">
+        select e.id  id,e.lastName lastName,e.email email,e.gender gender,e.d_id d_id,d.id did, d.dept_name dept_name
+        from tlb_employee e,tlb_dept d where e.d_id = d.id and e.id = #{id}
+    </select>
+    ......
+    
+    
+</mapper>
+
+```
+
+
+
+```java
+/**
+     * 关联查询-association定义关联对象封装规则
+     * 单独定义封装规则
+     */
+    @Test
+    public void testAssociationSelectAndSelfDefineMappingWithAssociation() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDaoPlus mapper = sqlSession.getMapper(EmployeeDaoPlus.class);
+            Employee employee = mapper.getEmpAndDept1(1);
+            System.out.println(employee);
+            System.out.println(employee.getDept());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+
+```
+
+测试结果如下图:
+
+![image-20201208175335271](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208175335.png)
+
+
+
+## 32.映射文件-select-resultMap-关联查询-association分步查询
+
+==相当于先根据employee的id查询到部门id，再根据部门id查到部门的信息。==
+
+![image-20201208180306125](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208180306.png)
+
+那么第二步查询操作势必需要一个根据部门id查询部门信息的方法故：
+
+```java
+public interface DepartmentDao {
+    ......
+	Department getDeptById(Integer id);
+    ......
+}
 
 ```
 
 ------
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
-
-```java
-@Test
-public void testResultMapAssociation2() throws IOException {
-	
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		
-		System.out.println(em.getEmpAndDept2(1));
-		System.out.println(em.getEmpAndDept2(1).getDepartment());
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
-}
-
-```
-
-## 32.映射文件-select-resultMap-关联查询-==association==分步查询
-
-![image-20201128132209409](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201128132216.png)
-
-[DepartmentMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/DepartmentMapper.java)
-
-```java
-public interface DepartmentMapper {
-	public Department getDeptById(Integer id);
-}
-
-```
-
-------
-
-[DepartmentMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/DepartmentMapper.xml)
+在DepartmentDao.xml中设置
 
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.DepartmentMapper">
-	<!--public Department getDeptById(Integer id);  -->
-	<select id="getDeptById" resultType="com.lun.c01.helloworld.bean.Department">
-		select id,department_name departmentName from department where id=#{id}
-	</select>
+<mapper namespace="com.lihai.dao.DepartmentDao">
+    ......
+	<!-- Department getDeptById(Integer id);-->
+	<select id="getDepById" resultType="department">
+        select id,dept_name departmentName from tlb_dept where id = #{id}
+    </select>
+    ......
 </mapper>
 
 ```
 
 ------
 
-[mybatis-config.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/mybatis-config.xml)
+在全局配置文件中设置mapper
 
 ```xml
 	...
 	<mappers>
-		<mapper resource="c03/EmployeeMapper.xml" />
-		<mapper resource="c03/DepartmentMapper.xml" />
+		<!--mapper注册一个映射 -->
+        <mapper resource="com/lihai/dao/EmployeeDao.xml"/>
+
+        <mapper resource="com/lihai/dao/EmployeeDaoPlus.xml"/>
+
+        <mapper resource="com/lihai/dao/departmentDao.xml"/>
 	</mappers>
 	
 </configuration>
@@ -1622,87 +1833,109 @@ public interface DepartmentMapper {
 
 ------
 
-[EmployeeMapper.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c03/mapper/dao/EmployeeMapper.java)
+
 
 ```java
-public interface EmployeeMapper {
-
-	//association分步查询
+public interface EmployeeDao {
+	......
+	//关联查询-association分步查询
 	public Employee getEmpByIdStep(Integer id);
-	...
+	......
+}
 
 ```
 
-------
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/EmployeeMapper.xml)
 
 ```xml
-<mapper namespace="com.lun.c03.mapper.dao.EmployeeMapper">
-
+<mapper namespace="com.lihai.dao.EmployeeDaoPlus">
 
 <!-- association分步查询  -->
 	<!-- 使用association进行分步查询：
 		1、先按照员工id查询员工信息
-		2、根据查询员工信息中的department_id值去部门表查出部门信息
+		2、根据查询员工信息中的d_id值去部门表查出部门信息
 		3、部门设置到员工中；
 	 -->
-	 <!--  id  last_name  email   gender    d_id   -->
-	 <resultMap type="com.lun.c01.helloworld.bean.Employee" id="MyEmpByStep">
-	 	<id column="id" property="id"/>
-	 	<result column="last_name" property="lastName"/>
-	 	<result column="email" property="email"/>
-	 	<result column="gender" property="gender"/>
-	 	<!-- association定义关联对象的封装规则
+	<resultMap type="employee" id="MyEmpByStep">
+        <id column="id" property="id"/>
+        <result column="lastName" property="lastName"/>
+        <result column="email" property="email"/>
+        <result column="gender" property="gender"/>
+        <!-- association定义关联对象的封装规则
 	 		select:表明当前属性是调用select指定的方法查出的结果
 	 		column:指定将哪一列的值传给这个方法
-	 		
 	 		流程：使用select指定的方法（传入column指定的这列参数的值）查出对象，并封装给property指定的属性
-	 	 --> 
- 		<association property="department" 
-	 		select="com.lun.c03.mapper.dao.DepartmentMapper.getDeptById"
-	 		column="department_id">
- 		</association>
-	 </resultMap>
-	 <!--  public Employee getEmpByIdStep(Integer id);-->
-	 <select id="getEmpByIdStep" resultMap="MyEmpByStep">
-	 	select * from employee where id=#{id}
-	 </select>
+	 	 -->
+        <association property="dept" select="com.lihai.dao.DepartmentDao.getDepById"
+                     column="d_id" fetchType="lazy">
+        </association>
+    </resultMap>
+
+    <select id="getEmpByIdStep" resultMap="MyEmpByStep">
+        select * from tlb_employee where id = #{id}
+    </select>
+ 
+
+
+    <select id="getEmpsByDepId" resultType="employee">
+        select * from tlb_employee where d_id = #{d_id}
+    </select>
+    
+    
+    ......
+</mapper>
 
 ```
 
 ------
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
+测试如下：
 
 ```java
-@Test
-public void testResultMapAssociation3() throws IOException {
-	
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		
-		System.out.println(em.getEmpByIdStep(1));
-		System.out.println(em.getEmpByIdStep(1).getDepartment());
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
-}
+
+    /**
+     * 关联查询-association分步查询
+     * <settings>
+     * 		...
+     * 		<--显示的指定每个我们需要更改的配置的值，即使他是默认的。防止版本更新带来的问题-->
+     * 		<setting name="lazyLoadingEnabled" value="true"/>
+     * 		<setting name="aggressiveLazyLoading" value="false"/>
+     * 	    ...
+     * 	</settings>
+     */
+    @Test
+    public void testAssociation() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDaoPlus mapper = sqlSession.getMapper(EmployeeDaoPlus.class);
+            Employee employee = mapper.getEmpByIdStep(1);
+            System.out.println(employee.getLastName());
+//            System.out.println(employee.getDept());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
 ```
+
+
+
+
 
 ## 33.映射文件-select-resultMap-关联查询-分步查询&延迟加载
 
 我们每次查询Employee对象的时候，都将一起查询出来。部门信息在我们使用的时候再去查询；分段查询的基础之上加上两个配置：
 
 在全局配置文件中配置，实现**懒加载**
-
-[mybatis-config.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c03/mybatis-config.xml)
 
 ```xml
 <configuration>
@@ -1740,9 +1973,11 @@ PS. 个人认为aggressiveLazyLoading 可防止**懒加载对象链**情况出�
 
 ```java
 public interface DepartmentDao {
+    ......
 	//collection标签定义关联的集合类型的属性封装规则所用方法
     Department getDepByIdPlus(Integer id);
-	...
+	......
+}
 
 ```
 
@@ -1813,9 +2048,13 @@ public interface DepartmentDao {
 
 ```
 
-## 35.映射文件-select-resultMap-关联查询-==collection==分步查询&延迟加载
+![image-20201208183635922](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208183636.png)
 
 
+
+## 35.映射文件-select-resultMap-关联查询-collection分步查询&延迟加载
+
+![image-20201208184127446](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201208184127.png)
 
 ```java
 public interface EmployeeDaoPlus {
@@ -1823,6 +2062,7 @@ public interface EmployeeDaoPlus {
 	//按照部门Id查到该部门的所有的员工
     List<Employee> getEmpsByDepId(Integer id);
 	...
+}
 
 ```
 
@@ -1830,10 +2070,12 @@ public interface EmployeeDaoPlus {
 
 ```xml
 <mapper namespace="com.lihai.dao.EmployeeDaoPlus">
+    ......
 	 <!--public Employee getEmpsByDeptId(Integer departmentId)-->
 	 <select id="getEmpsByDeptId" resultType="employee">
-	 	select * from tlb_employee where department_id=#{department_id}
+	 	select * from tlb_employee where department_id = #{department_id}
 	 </select>
+    ......
 </mapper>
 
 ```
@@ -1843,9 +2085,10 @@ public interface EmployeeDaoPlus {
 ```java
 public interface DepartmentDao {
     ...
-	 //collection分步查询和延迟加载所用方法
+	//collection分步查询和延迟加载所用方法
     Department getDepByIdStep(Integer id);
 	...
+}
 
 ```
 
@@ -1859,9 +2102,9 @@ public interface DepartmentDao {
 	   <resultMap id="MyEmpStep" type="department">
         <id column="id" property="id"/>
         <result column="dept_name" property="departmentName"/>
-        <collection property="emps" ofType="employee"
-                    <!--用getEmpsByDepId这个方法通过column的值id查到该部门的所有员工-->
-                    select="com.lihai.dao.EmployeeDaoPlus.getEmpsByDepId"
+        <collection property="emps" 
+                    ofType="employee"
+                    select ="com.lihai.dao.EmployeeDaoPlus.getEmpsByDepId"
                     column="id">
         </collection>
     </resultMap>
@@ -1925,7 +2168,6 @@ public interface DepartmentDao {
         <id column="id" property="id"/>
         <result column="dept_name" property="departmentName"/>
         <collection property="emps" ofType="employee"
-                    <!--用getEmpsByDepId这个方法通过column的值id查到该部门的所有员工-->
                     select="com.lihai.dao.EmployeeDaoPlus.getEmpsByDepId"
                     column="{dept=id}" fetchType="lazy">
         </collection>
@@ -1945,10 +2187,11 @@ public interface DepartmentDao {
 
 ```java
 public interface EmployeeDaoPlus {
-
-	//带有鉴别器的
+	...
+	//带有鉴别器的查询
 	List<Employee> getEmpsWithDiscriminator();
 	...
+}
 
 ```
 
@@ -1990,26 +2233,32 @@ public interface EmployeeDaoPlus {
 </mapper>
 ```
 
-------
 
-[EmployeeMapperTest.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/test/java/com/lun/c03/mapper/EmployeeMapperTest.java)
 
 ```java
-@Test
-public void testGetEmpsWithDiscriminator() throws IOException {
-	SqlSessionFactory ssf = Tools.getSqlSessionFactory("c03/mybatis-config.xml");
-	SqlSession session = ssf.openSession();
-	
-	try {
-		EmployeeMapper em = session.getMapper(EmployeeMapper.class);
-		
-		System.out.println(em.getEmpsWithDiscriminator());
-		
-		session.commit();
-	} finally {
-		session.close();
-	}
-}
+ @Test
+    public void testGetEmpsWithDiscriminator() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeDaoPlus mapper = sqlSession.getMapper(EmployeeDaoPlus.class);
+            List<Employee> employees = mapper.getEmpsWithDiscriminator();
+            for (Employee employee : employees) {
+                System.out.println(employee);
+                System.out.println(employee.getDept());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 
 ```
 
