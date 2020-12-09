@@ -240,11 +240,11 @@
 
     - 查询员工编号在100到120之间的员工信息：
 
-      ```
+      ```sql
       SELECT * FROM employees WHERE employee_id >= 100 AND employee_id <= 120;
       ```
 
-      ```
+      ```sql
       SELECT * FROM employees WHERE employee_id BETWEEN 100 AND 120;
       ```
 
@@ -260,11 +260,11 @@
 
     - 查询员工的工种编号是 IT_PROG、AD_VP、AD_PRES中的一个员工名和工种编号：
 
-      ```
+      ```sql
       SELECT last_name, job_id FROM employees WHERE job_id = 'IT_PROG' OR job_id = 'AD_VP' OR job_id = 'AD_PRES';
       ```
 
-      ```
+      ```sql
       SELECT last_name, job_id FROM employees WHERE job_id IN ('IT_PROG', 'AD_VP', 'AD_PRES');
       ```
 
@@ -276,151 +276,73 @@
 
     - 查询没有奖金的员工名和奖金率：
 
-      ```
+      ```sql
       SELECT
-      
-      
-      
         last_name,
-      
-      
-      
         commission_pct
-      
-      
-      
       FROM
-      
-      
-      
         employees
-      
-      
-      
       WHERE
-      
-      
-      
         commission_pct IS NULL;
       ```
-
+      
     - 查询有奖金的：
-
-      ```
+    
+      ```sql
       SELECT
-      
-      
-      
         last_name,
-      
-      
-      
         commission_pct
-      
-      
-      
       FROM
-      
-      
-      
         employees
-      
-      
-      
       WHERE
-      
-      
-      
         commission_pct IS NOT NULL;
       ```
-
+    
   - 安全等于 <=>
-
+  
     - is null：仅仅可以判断null值，可读性较高
     - <=>：既可以判断null值，又可以判断普通的数值，可读性较低
-
+  
 - 测试题
 
   - 查询没有奖金，且工资小于18000的salary, last_name：
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       salary,
-    
-    
-    
       last_name 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE commission_pct IS NULL 
-    
-    
-    
       AND salary < 18000;
     ```
-
+    
   - 查询employees表中，job_id不为‘IT’或者工资为12000的员工信息：
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       * 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE job_id <> 'IT' 
-    
-    
-    
       OR salary = 12000 ;
     ```
-
+    
   - 查看部门表的结构：
-
-    ```
+  
+    ```sql
     DESC departments;
     ```
-
-  - 查询部门表中涉及到了哪些位置编号：
-
-    ```
+  
+- 查询部门表中涉及到了哪些位置编号：
+  
+  ```sql
     SELECT DISTINCT 
-    
-    
-    
       location_id 
-    
-    
-    
     FROM
-    
-    
-    
       departments ;
     ```
-
+    
   - 经典面试题：`select * from employees;` 和 `select * from employees where commission_pct like ‘%%’ and last_name like ‘%%’;` 结果是否一样？并说明原因：**不一样！如果判断的字段中有null值**，如果查询是`select * from employees where commission_pct like ‘%%’ or last_name like ‘%%’ or ...;`把所有字段都or写齐了就一样了。
 
 ### 3. 排序查询
@@ -443,234 +365,99 @@
 
 - 查询员工的信息，要求工资从高到低排序：
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   ORDER BY salary DESC ;
   ```
-
+  
   从低到高是ASC（默认是ASC）
-
+  
 - 查询部门编号>=90的员工信息，按入职时间的先后进行排序：
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE department_id >= 90 
-  
-  
-  
   ORDER BY hiredate ASC ;
   ```
-
+  
 - 按年薪的高低显示员工的信息和年薪【按表达式（别名）排序】
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     *,
-  
-  
-  
     salary * 12 * (1+ IFNULL(commission_pct, 0)) AS 年薪 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   ORDER BY 年薪 DESC ;
   ```
-
+  
 - 按姓名的长度显示员工的姓名和工资【按函数排序】
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     LENGTH(last_name) AS 字节长度,
-  
-  
-  
     last_name,
-  
-  
-  
     salary 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   ORDER BY 字节长度 DESC;
   ```
-
+  
 - 查询员工信息，要求先按工资排序，再按员工编号排序
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   ORDER BY salary ASC,
-  
-  
-  
     employee_id DESC ;
   ```
-
+  
 - 测试题
 
   - 查询员工的姓名和部门号和年薪，按年薪降序，按姓名升序
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       department_id,
-    
-    
-    
       salary * 12 * (1+ IFNULL(commission_pct, 0)) AS 年薪 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     ORDER BY 年薪 DESC,
-    
-    
-    
       last_name ASC ;
     ```
-
+    
   - 选择工资不在8000到17000的员工的姓名和工资，按工资降序
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       salary 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE salary NOT BETWEEN 8000 
-    
-    
-    
       AND 17000 
-    
-    
-    
     ORDER BY salary DESC ;
     ```
-
+    
   - 查询邮箱中包含e的员工信息，并先按邮箱的字节数降序，再按部门号升序
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       * 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
-    WHERE email LIKE '%e%' 
-    
-    
-    
+  WHERE email LIKE '%e%' 
     ORDER BY LENGTH(email) DESC,
-    
-    
-    
-      department_id ASC ;
+    department_id ASC ;
     ```
 
 ### 4. 常见函数
@@ -699,154 +486,81 @@
 
     - 将姓变成大写，名变成小写，然后拼接：
 
-      ```
+      ```mysql
       SELECT 
-      
-      
-      
         CONCAT(UPPER(last_name), LOWER(first_name)) AS 姓名 
-      
-      
-      
       FROM
-      
-      
-      
         employees ;
       ```
-
+    
   - substr/substring：截取字符串
-
-    - 注意：索引从1开始
-
+  
+    - 注意：**索引从1开始**
+  
     - 截取从指定索引处后面所有字符
-
-      ```
+  
+      ```mysql
       SELECT 
-      
-      
-      
-        SUBSTR(
-      
-      
-      
+      SUBSTR(
           '李莫愁爱上了陆展元',
+        6
+        ) AS output ;  #陆展元
+    ```
       
-      
-      
-          6
-      
-      
-      
-        ) AS output ;
-      ```
-
-    - 截取从指定索引处指定字符长度的字符
-
-      ```
+  - 截取从指定索引处指定字符长度的字符
+    
+      ```mysql
       SELECT 
-      
-      
-      
         SUBSTR(
-      
-      
-      
           '李莫愁爱上了陆展元',
-      
-      
-      
           1,
-      
-      
-      
           3
-      
-      
-      
         ) output ;
       ```
-
+    
   - 案例：姓名中首字母大写，其他字符小写，然后用_拼接，显示出来：
-
-    ```
+  
+    ```mysql
     SELECT 
-    
-    
-    
       CONCAT(
-    
-    
-    
         UPPER(SUBSTR(last_name, 1, 1)),
-    
-    
-    
         '_',
-    
-    
-    
         LOWER(SUBSTR(last_name, 2))
-    
-    
-    
       ) AS output 
-    
-    
-    
-    FROM
-    
-    
-    
+  FROM
       employees ;
-    ```
-
+  ```
+    
   - instr：返回子串第一次出现的索引，如果找不到返回0
-
-    ```
+  
+    ```mysql
     SELECT 
-    
-    
-    
       INSTR(
-    
-    
-    
         '杨不悔爱上了殷六侠',
-    
-    
-    
         '殷六侠'
-    
-    
-    
       ) AS output ;
     ```
-
+    
   - trim：去掉字符串前后的空格或子串
-
-    ```
+  
+    ```mysql
     SELECT 
-    
-    
-    
       LENGTH(TRIM('   张翠山   ')) AS output ;
     ```
-
-    ```
+    
+    ```mysql
     SELECT 
-    
-    
-    
-      TRIM('a' FROM 'aaa张a翠aa山aaaaa') AS output ;
+    TRIM('a' FROM 'aaa张a翠aa山aaaaa') AS output ;
     ```
-
-  - lpad：用指定的字符实现左填充指定长度
-
+    
+  ![image-20201209220401649](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209220401.png)
+    
+- lpad：用指定的字符实现左填充指定长度
+  
   - rpad：用指定的字符实现右填充指定长度
-
+  
   - replace：替换，替换所有的子串
-
+  
 - 数学函数
 
   - round：四舍五入
@@ -866,528 +580,214 @@
 
   - 可以获取指定的部分，年、月、日、小时、分钟、秒
 
-    ```
+    ```mysql
     SELECT 
-    
-    
-    
       YEAR(hiredate) 年 
-    
-    
-    
     FROM
-    
-    
-    
       employees ;
     ```
-
-  - str_to_date：将日期格式的字符转换成指定格式的日期
-
+    
+  - **str_to_date：将日期格式的字符转换成指定格式的日期**
+  
+    ```mysql
+    SELECT STR_TO_DATE('1998-3-2', '%Y-%c-%d') AS output ;
     ```
-    SELECT 
     
-    
-    
-      STR_TO_DATE('1998-3-2', '%Y-%c-%d') AS output ;
-    ```
-
     - 查询入职日期为1992-4-3的员工信息
-
-      ```
-      SELECT 
-      
-      
-      
-        * 
-      
-      
-      
-      FROM
-      
-      
-      
+    
+    ```mysql
+    SELECT 
+      * 
+    FROM
         employees 
-      
-      
-      
       WHERE hiredate = STR_TO_DATE('4-3 1992', '%c-%d %Y') ;
       ```
-
-  - date_format：将日期转换成字符串
-
-    ```
-    SELECT 
     
+  - **date_format：将日期转换成字符串**
+  
+  ```mysql
+    SELECT DATE_FORMAT(NOW(), '%y年%m月%d日)') AS output ;
+  ```
     
-    
-      DATE_FORMAT(NOW(), '%y年%m月%d日)') AS output ;
-    ```
-
     - 查询有奖金的员工名和入职日期（xx月/xx日 xx年）
-
-      ```
-      SELECT 
-      
-      
-      
+    
+      ```mysql
+    SELECT 
         last_name,
-      
-      
-      
-        DATE_FORMAT(hiredate, '%m月/%d日 %y年') AS 入职日期 
-      
-      
-      
+      DATE_FORMAT(hiredate, '%m月/%d日 %y年') AS 入职日期 
       FROM
-      
-      
-      
         employees 
-      
-      
-      
       WHERE commission_pct IS NOT NULL ;
       ```
-
-  - datediff：返回两个日期相差的天数
-
-  - monthname：以英文形式返回月
-
+    
+  - **datediff：返回两个日期相差的天数**
+  
+  - **monthname：以英文形式返回月**
+  
+    ![image-20201209220627012](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209220627.png)
+  
 - 其他函数
 
-  ```
+  ```mysql
   SELECT VERSION(); 当前数据库服务器的版本
-  
-  
-  
   SELECT DATABASE();    当前打开的数据库
-  
-  
-  
   SELECT USER();        当前用户
-  
-  
-  
   password('字符');       返回该字符的密码形式
-  
-  
-  
   md5('字符');            也是加密的一种形式（MD5）
   ```
-
+  
 - 流程控制函数
 
   - if函数：if else的效果
 
-    ```
+    ```mysql
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       commission_pct,
-    
-    
-    
-      IF(
-    
-    
-    
-        commission_pct IS NULL,
-    
-    
-    
-        '没奖金，呵呵',
-    
-    
-    
-        '有奖金，嘻嘻'
-    
-    
-    
-      ) 备注 
-    
-    
-    
+      IF(commission_pct IS NULL,'没奖金，呵呵','有奖金，嘻嘻') 备注 
     FROM
-    
-    
-    
-      employees ;
+      employees;
     ```
-
+    
+    ![image-20201209220741491](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209220741.png)
+    
   - case函数的使用1：switch case的效果
-
+  
     - 语法：
-
-      ```
+  
+      ```sql
       case 要判断的字段或表达式
-      
-      
-      
       when 常量1 then 要显示的值1或语句1;
-      
-      
-      
       when 常量2 then 要显示的值2或语句2;
-      
-      
-      
       ...
-      
-      
-      
       else 要显示的值n或语句n;
-      
-      
-      
-      end
+      end case
       ```
-
+      
     - 查询员工的工资，要求：
-
+    
       部门号=30，显示的工资为1.1倍
-
+    
       部门号=40，显示的工资为1.2倍
-
+    
       部门号=50，显示的工资为1.3倍
-
+    
       其他部门，显示的工资为原工资
-
-      ```
+    
+      ```sql
       SELECT 
-      
-      
-      
         salary AS 原始工资,
-      
-      
-      
         department_id,
-      
-      
-      
-        CASE
-      
-      
-      
-          department_id 
-      
-      
-      
-          WHEN 30 
-      
-      
-      
-          THEN salary * 1.1 
-      
-      
-      
-          WHEN 40 
-      
-      
-      
-          THEN salary * 1.2 
-      
-      
-      
-          WHEN 50 
-      
-      
-      
-          THEN salary * 1.3 
-      
-      
-      
-          ELSE salary 
-      
-      
-      
-        END AS 新工资 
-      
-      
-      
-      FROM
-      
-      
-      
+      CASE  department_id 
+        WHEN 30 THEN salary * 1.1 
+        WHEN 40 THEN salary * 1.2 
+    	WHEN 50 THEN salary * 1.3 
+    	ELSE salary 
+    	END  AS 新工资 
+    FROM
         employees ;
-      ```
-
-  - case函数的使用2：类似于多重if
-
     ```
+      
+    ![image-20201209220957861](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209220958.png)
+    
+  - case函数的使用2：类似于多重if
+  
+    ```sql
     case
-    
-    
-    
     when 条件1 then 要显示的值1或语句1
-    
-    
-    
     when 条件2 then 要显示的值2或语句2
-    
-    
-    
     ...
-    
-    
-    
     else 要显示的值n或语句n
-    
-    
-    
     end
     ```
-
+    
     - 查询员工的工资情况
-
+    
       如果工资>20000，显示A级别
-
+    
       如果工资>15000，显示B级别
-
-      如果工资>10000，显示C级别
-
-      否则，显示D级别
-
-      ```
+    
+    如果工资>10000，显示C级别
+    
+    否则，显示D级别
+    
+    ```sql
       SELECT 
-      
-      
-      
-        salary,
-      
-      
-      
+      salary,
         CASE
-      
-      
-      
-          WHEN salary > 20000 
-      
-      
-      
-          THEN 'A' 
-      
-      
-      
-          WHEN salary > 15000 
-      
-      
-      
-          THEN 'B' 
-      
-      
-      
-          WHEN salary > 10000 
-      
-      
-      
-          THEN 'C' 
-      
-      
-      
-          ELSE 'D' 
-      
-      
-      
-        END AS 工资级别 
-      
-      
-      
+      WHEN salary > 20000 THEN 'A' 
+          WHEN salary > 15000 THEN 'B' 
+      WHEN salary > 10000 THEN 'C' 
+      	ELSE 'D' 
+      END AS 工资级别 
       FROM
-      
-      
-      
-        employees ;
+    	employees ;
       ```
-
+  
 - 测试题
 
   - 显示系统时间（日期+时间）
 
-    ```
+    ```sql
     SELECT NOW();
     ```
 
   - 查询员工号，姓名，工资，以及工资提高20%后的结果（new salary）
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       employee_id,
-    
-    
-    
       last_name,
-    
-    
-    
       salary,
-    
-    
-    
       salary * 1.2 AS "new salary" 
-    
-    
-    
     FROM
-    
-    
-    
       employees ;
     ```
-
+    
   - 将员工的姓名按首字母排序，并写出姓名的长度（length）
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       LENGTH(last_name) 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     ORDER BY SUBSTR(last_name, 1, 1) ;
     ```
-
+    
   - 做一个查询
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       CONCAT(
-    
-    
-    
         last_name,
-    
-    
-    
-        ' earns ',
-    
-    
-    
+      ' earns ',
         salary,
-    
-    
-    
-        ' monthly but wants ',
-    
-    
-    
+      ' monthly but wants ',
         salary * 3
-    
-    
-    
-      ) AS "Dream Salary" 
-    
-    
-    
+      ) AS "理想世界" 
     FROM
-    
-    
-    
       employees ;
     ```
-
+    
+    ![image-20201209221252708](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209221252.png)
+    
   - case-when训练
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       job_id AS job,
-    
-    
-    
-      CASE
-    
-    
-    
-        job_id 
-    
-    
-    
-        WHEN 'AD_PRES' 
-    
-    
-    
-        THEN 'A' 
-    
-    
-    
-        WHEN 'ST_MAN' 
-    
-    
-    
-        THEN 'B' 
-    
-    
-    
-        WHEN 'IT_PROG' 
-    
-    
-    
-        THEN 'C' 
-    
-    
-    
-        WHEN 'SA_PRE' 
-    
-    
-    
-        THEN 'D' 
-    
-    
-    
-        WHEN 'ST_CLERK' 
-    
-    
-    
-        THEN 'E' 
-    
-    
-    
-      END AS Grade 
-    
-    
-    
+      CASE  job_id 
+        WHEN 'AD_PRES' THEN 'A' 
+        WHEN 'ST_MAN' THEN 'B' 
+    	WHEN 'IT_PROG' THEN 'C' 
+    	WHEN 'SA_PRE' THEN 'D' 
+    	WHEN 'ST_CLERK' THEN 'E' 
+    END AS Grade 
     FROM
-    
-    
-    
-      employees 
-    
-    
-    
-    WHERE job_id = 'AD_PRES' ;
+    	employees 
+  WHERE job_id = 'IT_PROG' ;
     ```
 
 #### 分组函数
@@ -1396,7 +796,7 @@
 
 - 分类：sum 求和、avg 平均值、max 最大值、min 最小值、count 计数（非空）
 
-  ```
+  ```sql
   SELECT SUM(salary) FROM employees;
   ```
 
@@ -1408,46 +808,22 @@
 
 - 可以和distinct搭配实现去重的运算
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     SUM(DISTINCT salary),
-  
-  
-  
     SUM(salary) 
-  
-  
-  
   FROM
-  
-  
-  
     employees ;
   ```
-
-  ```
+  
+  ```sql
   SELECT 
-  
-  
-  
     COUNT(DISTINCT salary),
-  
-  
-  
     COUNT(salary) 
-  
-  
-  
   FROM
-  
-  
-  
     employees ;
   ```
-
+  
 - count函数的单独介绍
 
   - 效率
@@ -1457,91 +833,46 @@
 
   - 使用count(*) 统计一共有多少行
 
-    ```
+    ```sql
     SELECT COUNT(salary) FROM employees;
-    
-    
-    
     SELECT COUNT(*) FROM employees;
-    
-    
-    
     SELECT COUNT(1) FROM employees;
     ```
-
+  
 - 和分组函数一同查询的字段有限制，要求是group by后的字段
 
 - 训练题
 
   - 查询公司员工工资的最大值，最小值，平均值，总和
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       MAX(salary),
-    
-    
-    
       MIN(salary),
-    
-    
-    
       AVG(salary),
-    
-    
-    
       SUM(salary) 
-    
-    
-    
     FROM
-    
-    
-    
       employees ;
     ```
-
+    
   - 查询员工表中的最大入职时间和最小入职时间的相差天数（difference）
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       DATEDIFF(MAX(hiredate), MIN(hiredate)) DIFFERENCE 
-    
-    
-    
     FROM
-    
-    
-    
       employees ;
     ```
-
+    
   - 查询部门编号为90的员工个数
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       COUNT(*) 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE department_id = 90 ;
-    ```
+  ```
 
 ### 5. 分组查询
 
@@ -1581,561 +912,233 @@
 
 - 查询每个工种的最高工资
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     MAX(salary),
-  
-  
-  
     job_id 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   GROUP BY job_id ;
   ```
-
+  
 - 查询每个位置上的部门个数
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     COUNT(*),
-  
-  
-  
     location_id 
-  
-  
-  
   FROM
-  
-  
-  
     departments
-  
-  
-  
   GROUP BY location_id ;
   ```
-
+  
 - 查询邮箱中包含a字符的，每个部门的平均工资
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     AVG(salary),
-  
-  
-  
     department_id 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE email LIKE '%a%' 
-  
-  
-  
   GROUP BY department_id ;
   ```
-
+  
 - 查询有奖金的每个领导手下员工的最高工资
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     MAX(salary),
-  
-  
-  
     manager_id 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE commission_pct IS NOT NULL 
-  
-  
-  
   GROUP BY manager_id ;
   ```
-
+  
 - 查询那个部门的员工个数>2
 
   - 查询每个部门的员工个数
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       COUNT(*) AS 员工个数,
-    
-    
-    
       department_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     GROUP BY department_id ;
     ```
-
+    
   - 根据上面的结果进行筛选，查询哪个部门的员工个数＞2
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       COUNT(*) AS 员工个数,
-    
-    
-    
       department_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     GROUP BY department_id 
-    
-    
-    
     HAVING 员工个数 > 2 ;
     ```
-
-- 添加分组后的筛选用having，分组前的用where
+  
+- **添加分组后的筛选用having，分组前的用where**
 
 - 查询每个工种有奖金的员工的最高工资>12000的工种编号和最高工资
 
   - 查询每个工种有奖金的员工的最高工资
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       MAX(salary),
-    
-    
-    
       job_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE commission_pct IS NOT NULL
-    
-    
-    
     GROUP BY job_id ;
     ```
-
+    
   - 根据上面的结果继续筛选，最高工资>12000
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       MAX(salary) AS 最高工资,
-    
-    
-    
       job_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE commission_pct IS NOT NULL 
-    
-    
-    
     GROUP BY job_id 
-    
-    
-    
     HAVING 最高工资 > 12000 ;
     ```
-
+    
   - 查询领导编号>102的每个领导手下的最低工资>5000的领导编号是哪个，以及其最低工资
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
-      MIN(salary) AS 最低工资,
-    
-    
-    
+    MIN(salary) AS 最低工资,
       manager_id 
-    
-    
-    
-    FROM
-    
-    
-    
+  FROM
       employees 
-    
-    
-    
     WHERE manager_id > 102 
-    
-    
-    
     GROUP BY manager_id 
-    
-    
-    
     HAVING 最低工资 > 5000 ;
     ```
-
-  - 按表达式或函数分组
-
+    
+  - **按表达式或函数分组**
+  
     - 按员工姓名的长度分组，查询每一组的员工个数，筛选员工个数>5的有哪些
-
+  
       - 查询每个长度的员工个数
-
-        ```
+  
+        ```sql
         SELECT 
-        
-        
-        
           COUNT(*) 员工个数,
-        
-        
-        
           LENGTH(last_name) 姓名长度 
-        
-        
-        
         FROM
-        
-        
-        
           employees 
-        
-        
-        
         GROUP BY 姓名长度 ;
         ```
-
+        
       - 添加筛选条件
-
-        ```
+      
+        ```sql
         SELECT 
-        
-        
-        
           COUNT(*) 员工个数,
-        
-        
-        
           LENGTH(last_name) 姓名长度 
-        
-        
-        
         FROM
-        
-        
-        
           employees 
-        
-        
-        
         GROUP BY 姓名长度 
-        
-        
-        
         HAVING 员工个数 > 5 ;
-        ```
-
-  - 按多个字段分组
-
+      ```
+    
+- 按多个字段分组
+  
     - 查询每个部门每个工种的员工的平均工资
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         AVG(salary),
-      
-      
-      
         department_id,
-      
-      
-      
         job_id 
-      
-      
-      
       FROM
-      
-      
-      
         employees 
-      
-      
-      
-      GROUP BY department_id,
-      
-      
-      
-        job_id ;
+      GROUP BY department_id,job_id ;
       ```
-
+    
   - 添加排序
-
+  
     - 查询每个部门每个工种的员工的平均工资，并按平均工资的高低显示
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         AVG(salary) AS 平均工资,
-      
-      
-      
         department_id,
-      
-      
-      
         job_id 
-      
-      
-      
       FROM
-      
-      
-      
         employees 
-      
-      
-      
       GROUP BY department_id,
-      
-      
-      
         job_id 
-      
-      
-      
       ORDER BY 平均工资 DESC ;
       ```
-
+  
 - 练习题
 
   - 查询各job_id的员工工资的最大值、最小值、平均值，总和，并按job_id升序
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       MAX(salary),
-    
-    
-    
       MIN(salary),
-    
-    
-    
       AVG(salary),
-    
-    
-    
       SUM(salary),
-    
-    
-    
       job_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     GROUP BY job_id 
-    
-    
-    
     ORDER BY job_id ;
     ```
-
+    
   - 查询员工最高工资和最低工资的差距（DIFFERENCE）
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       MAX(salary) - MIN(salary) AS DIFFERENCE 
-    
-    
-    
     FROM
-    
-    
-    
       employees ;
     ```
-
+    
   - 查询各个管理者手下员工的最低工资，其中最低工资不能低于6000，没有管理者的员工不计算在内
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       MIN(salary) AS 最低工资 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE manager_id IS NOT NULL 
-    
-    
-    
     GROUP BY manager_id 
-    
-    
-    
     HAVING 最低工资 >= 6000 ;
     ```
-
+    
   - 查询所有部门的编号，员工数量和工资平均值，并按平均工资降序
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       department_id,
-    
-    
-    
-      COUNT(*) AS 员工数量,
-    
-    
-    
+    COUNT(*) AS 员工数量,
       AVG(salary) AS 工资平均值 
-    
-    
-    
-    FROM
-    
-    
-    
+  FROM
       employees 
-    
-    
-    
     GROUP BY department_id 
-    
-    
-    
     ORDER BY 工资平均值 DESC ;
     ```
-
+    
   - 查询具有各个job_id的员工人数
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       COUNT(*),
-    
-    
-    
       job_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     GROUP BY job_id ;
     ```
 
@@ -2180,548 +1183,228 @@
 
     - 查询女神名和对应的男神名：
 
-      ```
+      ```sql
       SELECT 
-      
-      
-      
         NAME,
-      
-      
-      
         boyname 
-      
-      
-      
       FROM
-      
-      
-      
         boys,
-      
-      
-      
         beauty 
-      
-      
-      
       WHERE beauty.boyfriend_id = boys.id ;
       ```
-
+      
     - 查询员工名和对应的部门名
-
-      ```
+    
+      ```sql
       SELECT 
-      
-      
-      
         last_name,
-      
-      
-      
         department_name 
-      
-      
-      
       FROM
-      
-      
-      
         employees,
-      
-      
-      
         departments 
-      
-      
-      
       WHERE employees.`department_id` = departments.`department_id` ;
       ```
-
+    
   - 为表起别名
-
+  
     - 提高语句的简洁度
-
+  
     - 区分多个重名的字段
 
     - 注意：如果为表起了别名，则查询 的字段就不能使用原始的表明去限定
 
     - 查询员工名、工种号、工种名
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         last_name,
-      
-      
-      
         e.`job_id`,
-      
-      
-      
         job_title 
-      
-      
-      
       FROM
-      
-      
-      
         employees e,
-      
-      
-      
         jobs j 
-      
-      
-      
       WHERE e.`job_id` = j.`job_id` ;
       ```
-
+    
   - 两个表的顺序是否可以调换
-
+  
     - 查询员工名、工种号、工种名
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         last_name,
-      
-      
-      
         e.`job_id`,
-      
-      
-      
         job_title 
-      
-      
-      
       FROM
-      
-      
-      
         jobs j ,
-      
-      
-      
         employees e
-      
-      
-      
       WHERE e.`job_id` = j.`job_id` ;
       ```
-
+  
   - 可以加筛选
 
     - 查询有奖金的员工名、部门名
 
-      ```
-      SELECT 
-      
-      
-      
+      ```sql
+    SELECT 
         last_name,
-      
-      
-      
-        department_name 
-      
-      
-      
+      department_name 
       FROM
-      
-      
-      
-        employees AS e,
-      
-      
-      
+      employees AS e,
         departments AS d 
-      
-      
-      
       WHERE e.`department_id` = d.`department_id` 
-      
-      
-      
-        AND e.`commission_pct` IS NOT NULL ;
+      AND e.`commission_pct` IS NOT NULL ;
       ```
-
+      
     - 查询城市名中第二个字符为o的部门名和城市名
-
-      ```
+    
+      ```sql
       SELECT 
-      
-      
-      
         department_name,
-      
-      
-      
         city 
-      
-      
-      
       FROM
-      
-      
-      
         departments d,
-      
-      
-      
         locations l 
-      
-      
-      
       WHERE d.`location_id` = l.`location_id` 
-      
-      
-      
-        AND city LIKE '_o%' ;
+      AND city LIKE '_o%' ;
       ```
-
+    
   - 可以加分组
-
+  
     - 查询每个城市的部门个数
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         COUNT(*) 个数,
-      
-      
-      
         city 
-      
-      
-      
       FROM
-      
-      
-      
         departments d,
-      
-      
-      
         locations l 
-      
-      
-      
       WHERE d.`location_id` = l.`location_id` 
-      
-      
-      
       GROUP BY city ;
-      ```
-
-    - 查询有将近的每个部门的部门名和部门的领导编号和该部门的最低工资
-
-      ```
+    ```
+      
+  - 查询有将近的每个部门的部门名和部门的领导编号和该部门的最低工资
+    
+    ```sql
       SELECT 
-      
-      
-      
         department_name,
-      
-      
-      
         d.manager_id,
-      
-      
-      
         MIN(salary) 
-      
-      
-      
       FROM
-      
-      
-      
         departments d,
-      
-      
-      
         employees e 
-      
-      
-      
       WHERE d.`department_id` = e.`department_id` 
-      
-      
-      
-        AND commission_pct IS NOT NULL 
-      
-      
-      
-      GROUP BY department_name,
-      
-      
-      
-        d.manager_id ;
+      AND commission_pct IS NOT NULL 
+      GROUP BY department_name,d.manager_id ;
       ```
-
+    
   - 可以加排序
-
+  
     - 查询每个工种的工种名和员工的个数，并且按员工个数降序
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         job_title,
-      
-      
-      
         COUNT(*) AS 个数 
-      
-      
-      
       FROM
-      
-      
-      
         employees e,
-      
-      
-      
         jobs j 
-      
-      
-      
       WHERE e.`job_id` = j.`job_id` 
-      
-      
-      
       GROUP BY job_title 
-      
-      
-      
       ORDER BY 个数 DESC ;
       ```
-
+    
   - 可是实现三表连接：
-
+  
     - 查询员工名、部门名和所在的城市
 
-      ```
-      SELECT 
-      
-      
-      
+      ```sql
+    SELECT 
         last_name,
-      
-      
-      
-        department_name,
-      
-      
-      
+      department_name,
         city 
-      
-      
-      
       FROM
-      
-      
-      
-        employees e,
-      
-      
-      
+        employees e
         departments d,
-      
-      
-      
         locations l 
-      
-      
-      
       WHERE e.`department_id` = d.`department_id` 
-      
-      
-      
-        AND d.`location_id` = l.`location_id` ;
+      AND d.`location_id` = l.`location_id` ;
       ```
-
+    
   - 非等值连接
-
+  
     - 查询员工的工资和工资级别
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         salary,
-      
-      
-      
         grade_level 
-      
-      
-      
       FROM
-      
-      
-      
         employees e,
-      
-      
-      
         job_grades g 
-      
-      
-      
-      WHERE salary BETWEEN g.lowest_sal 
-      
-      
-      
-        AND g.highest_sal ;
+      WHERE salary BETWEEN g.lowest_sal AND g.highest_sal ;
       ```
-
+    
   - 自连接
-
+  
     - 查询 员工名和上级的名称
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         e.employee_id,
-      
-      
-      
         e.last_name,
-      
-      
-      
-        m.employee_id,
-      
-      
-      
+      m.employee_id,
         m.last_name 
-      
-      
-      
-      FROM
-      
-      
-      
+    FROM
         employees e,
-      
-      
-      
         employees m 
-      
-      
-      
       WHERE e.`manager_id` = m.`employee_id` ;
       ```
-
+    
   - 测试题：
-
+  
     - 显示员工表的最大工资，工资平均值
-
-      ```
+  
+      ```sql
       SELECT 
-      
-      
-      
         MAX(salary),
-      
-      
-      
         AVG(salary) 
-      
-      
-      
       FROM
-      
-      
-      
         employees ;
       ```
-
+      
     - 查询员工表的employee_id，job_id，last_name，按department_id降序，salary升序
-
-      ```
+    
+      ```sql
       SELECT 
-      
-      
-      
         employee_id,
-      
-      
-      
         job_id,
-      
-      
-      
         last_name 
-      
-      
-      
       FROM
-      
-      
-      
         employees 
-      
-      
-      
       ORDER BY department_id DESC,
-      
-      
-      
         salary ASC ;
-      ```
-
-    - 查询员工表的job_id中包含a和e的，并且a在e的前面
-
-      ```
-      SELECT 
+    ```
       
-      
-      
+  - 查询员工表的job_id中包含a和e的，并且a在e的前面
+  
+      ```sql
+    SELECT 
         job_id 
-      
-      
-      
-      FROM
-      
-      
-      
+    FROM
         employees 
-      
-      
-      
       WHERE job_id LIKE '%a%e%' ;
       ```
-
+      
     - 显示当前日期，以及去前后空格，截取子字符串的函数
-
-      ```
+    
+      ```sql
       select now();
-      
-      
-      
       select trim();
-      
-      
-      
       select substr(str, startIndex, [length])
       ```
-
+  
 - sql99语法
 
   - 语法：
@@ -2768,7 +1451,7 @@
 
     - 分类：
 
-      等值连接
+      **等值连接**
 
       非等值连接
 
@@ -2785,521 +1468,215 @@
 
       - 查询员工名、部门名
 
-        ```
+        ```sql
         SELECT 
-        
-        
-        
           last_name,
-        
-        
-        
           department_name 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
           INNER JOIN departments d 
-        
-        
-        
-            ON e.`department_id` = d.`department_id` ;
+          ON e.`department_id` = d.`department_id` ;
         ```
-
+        
       - 查询名字中包含e的给员工名和工种名
-
-        ```
+      
+        ```sql
         SELECT 
-        
-        
-        
           last_name,
-        
-        
-        
           job_title 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
           INNER JOIN jobs j 
-        
-        
-        
-            ON e.`job_id` = j.`job_id` 
-        
-        
-        
+          ON e.`job_id` = j.`job_id` 
         WHERE last_name LIKE "%e%" ;
         ```
-
+        
       - 查询部门个数>3的城市名和部门个数
-
-        ```
+      
+        ```sql
         SELECT 
-        
-        
-        
-          city,
-        
-        
-        
+    city,
           COUNT(*) 部门个数 
-        
-        
-        
-        FROM
-        
-        
-        
+  FROM
           departments d 
-        
-        
-        
           INNER JOIN locations l 
-        
-        
-        
-            ON d.`location_id` = l.`location_id` 
-        
-        
-        
+          ON d.`location_id` = l.`location_id` 
         GROUP BY city 
-        
-        
-        
         HAVING 部门个数 > 3 ;
         ```
-
+        
       - 查询哪个部门的部门员工个数>3的部门名和员工个数，并按个数降序排序
-
-      ```
+      
+      ```sql
       SELECT 
-      
-      
-      
         department_name,
-      
-      
-      
         COUNT(*) 员工个数 
-      
-      
-      
       FROM
-      
-      
-      
         departments d 
-      
-      
-      
         INNER JOIN employees e 
-      
-      
-      
-          ON d.`department_id` = e.`department_id` 
-      
-      
-      
+        ON d.`department_id` = e.`department_id` 
       GROUP BY d.`department_id` 
-      
-      
-      
       HAVING 员工个数 > 3 
-      
-      
-      
       ORDER BY 员工个数 DESC ;
       ```
-
+      
       - 查询员工名、部门名、工种名，并按部门名降序
-
-        ```
+      
+        ```sql
         SELECT 
-        
-        
-        
           last_name,
-        
-        
-        
           department_name,
-        
-        
-        
           job_title 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
-          INNER JOIN departments d 
-        
-        
-        
-            ON e.`department_id` = d.`department_id` 
-        
-        
-        
-          INNER JOIN jobs j 
-        
-        
-        
-            ON e.`job_id` = j.`job_id` 
-        
-        
-        
+    INNER JOIN departments d 
+          ON e.`department_id` = d.`department_id` 
+    INNER JOIN jobs j 
+          ON e.`job_id` = j.`job_id` 
         ORDER BY d.`department_id` DESC ;
         ```
-
+      
     - 非等值连接
-
+    
       - 查询员工的工资级别
-
-        ```
+    
+        ```sql
         SELECT 
-        
-        
-        
           salary,
-        
-        
-        
           grade_level 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
           INNER JOIN job_grades g 
-        
-        
-        
-            ON e.`salary` BETWEEN g.`lowest_sal` 
-        
-        
-        
-            AND g.`highest_sal` ;
+          ON e.`salary` BETWEEN g.`lowest_sal` 
+          AND g.`highest_sal` ;
         ```
-
+        
       - 查询每个工资级别>20的个数，并且按工资级别降序
-
-        ```
+      
+        ```sql
         SELECT 
-        
-        
-        
           COUNT(*),
-        
-        
-        
           grade_level 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
           INNER JOIN job_grades g 
-        
-        
-        
-            ON e.`salary` BETWEEN g.`lowest_sal` 
-        
-        
-        
-            AND g.`highest_sal` 
-        
-        
-        
+          ON e.`salary` BETWEEN g.`lowest_sal` 
+          AND g.`highest_sal` 
         GROUP BY grade_level 
-        
-        
-        
         HAVING COUNT(*) > 20 
-        
-        
-        
         ORDER BY grade_level DESC ;
         ```
-
-    - 自连接
-
-      - 查询员工的名字、上级的名字
-
-        ```
+      
+- 自连接
+    
+  - 查询员工的名字、上级的名字
+    
+        ```sql
         SELECT 
-        
-        
-        
           e.last_name,
-        
-        
-        
           m.last_name 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
           INNER JOIN employees m 
-        
-        
-        
-            ON e.`manager_id` = m.`employee_id` ;
+          ON e.`manager_id` = m.`employee_id` ;
         ```
-
+        
       - 查询姓名中包含字符k的员工的名字、上级的名字
-
-        ```
-        SELECT 
-        
-        
-        
+      
+        ```sql
+        SELECT
           e.last_name,
-        
-        
-        
           m.last_name 
-        
-        
-        
         FROM
-        
-        
-        
           employees e 
-        
-        
-        
           INNER JOIN employees m 
-        
-        
-        
-            ON e.`manager_id` = m.`employee_id` 
-        
-        
-        
+          ON e.`manager_id` = m.`employee_id` 
         WHERE e.`last_name` LIKE "%k%" ;
         ```
-
+    
   - 外连接
-
+  
     - 应用场景：用于查询一个表中有，另一个表没有的记录
-
+  
     - 特点：
-
+  
       - 外连接的查询结果为主表中的所有记录，如果从表中有和它匹配的，则显示匹配的值，如果从表中没有和它匹配的，则显示null
       - 外连接查询结果=内连接结果+主表中有而从表中没有的记录
       - 左外连接：left join左边的是主表
       - 右外连接：right join右边的是主表
       - 左外和右外交换两个表的顺序，可以实现同样的效果
       - 圈外链接=内连接的结果+表1中有但表2中没有的+表2中有但表1中没有的
-
+  
     - 查询没有男朋友的女神名
-
-      ```
+  
+    ```sql
       SELECT 
-      
-      
-      
-        b.name,
-      
-      
-      
+      b.name,
         bo.* 
-      
-      
-      
       FROM
-      
-      
-      
         beauty b 
-      
-      
-      
         LEFT JOIN boys bo 
-      
-      
-      
-          ON b.boyfriend_id = bo.id 
-      
-      
-      
+        ON b.boyfriend_id = bo.id 
       WHERE bo.`id` IS NULL ;
       ```
-
+      
     - 查询哪个部门没有员工
-
+    
     - 左外：
-
-      ```
+    
+      ```sql
       SELECT 
-      
-      
-      
         d.*,
-      
-      
-      
         e.employee_id 
-      
-      
-      
       FROM
-      
-      
-      
         departments d 
-      
-      
-      
         LEFT OUTER JOIN employees e 
-      
-      
-      
-          ON d.`department_id` = e.`department_id` 
-      
-      
-      
+        ON d.`department_id` = e.`department_id` 
       WHERE e.`employee_id` IS NULL ;
       ```
-
+      
     - 右外：
-
-      ```
+    
+      ```sql
       SELECT 
-      
-      
-      
         d.*,
-      
-      
-      
-        e.employee_id 
-      
-      
-      
+      e.employee_id 
       FROM
-      
-      
-      
-        employees e 
-      
-      
-      
+      employees e 
         RIGHT OUTER JOIN departments d 
-      
-      
-      
-          ON d.`department_id` = e.`department_id` 
-      
-      
-      
+      ON d.`department_id` = e.`department_id` 
       WHERE e.`employee_id` IS NULL ;
       ```
-
+      
     - 全外连接
-
+    
       - mysql不支持
-
+    
       - 案例：
-
-        ```
-        SELECT 
-        
-        
-        
+    
+        ```sql
+      SELECT 
           b.*,
-        
-        
-        
-          bo.* 
-        
-        
-        
+        bo.* 
         FROM
-        
-        
-        
-          beauty b FULL 
-        
-        
-        
+        beauty b FULL 
           OUTER JOIN boys bo 
-        
-        
-        
-            ON b.`boyfriend_id` = bo.id ;
+          ON b.`boyfriend_id` = bo.id ;
         ```
-
+      
     - 交叉连接（也就是笛卡尔乘积）
-
+    
       - 案例：
-
-        ```
+    
+        ```sql
         SELECT 
-        
-        
-        
           b.*,
-        
-        
-        
           bo.* 
-        
-        
-        
         FROM
-        
-        
-        
           beauty b 
-        
-        
-        
           CROSS JOIN boys bo ;
         ```
-
+  
 - sql92 和 sql99 pk
 
   - 功能：sql99支持的较多
@@ -3309,112 +1686,42 @@
 
   - 查询编号>3的女神的男朋友信息，如果有则列出详细信息，如果没有，则用null填充
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       a.id,
-    
-    
-    
       a.name,
-    
-    
-    
       b.* 
-    
-    
-    
     FROM
-    
-    
-    
       beauty a 
-    
-    
-    
       LEFT JOIN boys b 
-    
-    
-    
-        ON a.`boyfriend_id` = b.`id` 
-    
-    
-    
+      ON a.`boyfriend_id` = b.`id` 
     WHERE a.`id` > 3 ;
     ```
-
+    
   - 查询哪个城市没有部门
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       city,
-    
-    
-    
       d.* 
-    
-    
-    
     FROM
-    
-    
-    
       departments d 
-    
-    
-    
       RIGHT JOIN locations l 
-    
-    
-    
-        ON d.location_id = l.location_id 
-    
-    
-    
+      ON d.location_id = l.location_id 
     WHERE d.department_id IS NULL ;
     ```
-
+    
   - 查询部门名为SAL或IT的员工信息
-
-    ```
+  
+    ```sql
     SELECT 
-    
-    
-    
       d.`department_name`,
-    
-    
-    
-      e.* 
-    
-    
-    
+      e.*
     FROM
-    
-    
-    
       departments d 
-    
-    
-    
       LEFT JOIN employees e 
-    
-    
-    
-        ON d.`department_id` = e.`department_id` 
-    
-    
-    
-    WHERE d.`department_name` = 'SAL' 
-    
-    
-    
-      OR d.`department_name` = 'IT' ;
+      ON d.`department_id` = e.`department_id` 
+  WHERE d.`department_name` = 'SAL' OR d.`department_name` = 'IT' ;
     ```
 
 ### 7. 子查询
@@ -3451,193 +1758,67 @@
 
 - 案例1：谁的工资比Abel高？
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     salary 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE last_name = 'Abel' ;
   ```
-
+  
 - 案例2：返回job_id与141号员工相同，salary比143员工多的员工，姓名，job_id，工资
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     last_name,
-  
-  
-  
     job_id,
-  
-  
-  
     salary 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE job_id = 
-  
-  
-  
     (SELECT 
-  
-  
-  
       job_id 
-  
-  
-  
     FROM
-  
-  
-  
       employees 
-  
-  
-  
     WHERE employee_id = 141) 
-  
-  
-  
     AND salary > 
-  
-  
-  
     (SELECT 
-  
-  
-  
       salary 
-  
-  
-  
     FROM
-  
-  
-  
       employees 
-  
-  
-  
     WHERE employee_id = 143) ;
   ```
-
+  
 - 案例3：返回公司工资最少的员工的last_name, job_id和salary
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     last_name,
-  
-  
-  
     job_id,
-  
-  
-  
     salary 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE salary = 
-  
-  
-  
     (SELECT 
-  
-  
-  
-      MIN(salary) 
-  
-  
-  
+      MIN(salary)
     FROM
-  
-  
-  
       employees) ;
   ```
-
+  
 - 案例4：查询最低工资大于50号部门的最低工资的部门id和其最低工资
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     MIN(salary),
-  
-  
-  
     e.`department_id` 
-  
-  
-  
   FROM
-  
-  
-  
     employees e 
-  
-  
-  
   GROUP BY e.`department_id` 
-  
-  
-  
   HAVING MIN(salary) > 
-  
-  
-  
     (SELECT 
-  
-  
-  
       MIN(salary) 
-  
-  
-  
     FROM
-  
-  
-  
       employees 
-  
-  
-  
     WHERE department_id = 50) ;
   ```
 
@@ -3647,56 +1828,29 @@
 
 - 多行比较操作符：
 
-  IN/NOT IN：等于列表中的任意一个
+  **IN/NOT IN：等于列表中的任意一个**
 
-  ANY|SOME：和子查询返回的某一个值比较，用的较少
+  **ANY|SOME：和子查询返回的某一个值比较，用的较少**
 
   ALL：和子查询返回的所有值比较
 
   - 案例1：返回location_id是1400或1700的部门中的所有员工姓名
 
-    ```
+    ```sql
     SELECT 
-    
-    
-    
       last_name 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     WHERE department_id IN 
-    
-    
-    
       (SELECT DISTINCT 
-    
-    
-    
         department_id 
-    
-    
-    
       FROM
-    
-    
-    
         departments 
-    
-    
-    
       WHERE location_id IN (1400, 1700)) ;
     ```
-
+    
   - 案例2：返回其他工种中比job_id为‘IT_PROG’工种任一工资低的员工的员工号、姓名、job_id以及salary
-
+  
     ```
     SELECT 
     
@@ -3721,9 +1875,9 @@
     FROM
     
     
-    
+  
       employees 
-    
+  
     
     
     WHERE salary < ANY 
@@ -3752,9 +1906,9 @@
     
       AND job_id <> 'IT_PROG' ;
     ```
-
+  
     或者用max代替any
-
+  
     ```
     SELECT 
     
@@ -3779,9 +1933,9 @@
     FROM
     
     
-    
+  
       employees 
-    
+  
     
     
     WHERE salary < 
@@ -3810,9 +1964,9 @@
     
       AND job_id <> 'IT_PROG' ;
     ```
-
+  
   - 案例3：返回其他工种中比job_id为‘IT_PROG’工种所有工资都低的员工的员工号、姓名、job_id以及salary
-
+  
     ```
     SELECT 
     
@@ -3837,9 +1991,9 @@
     FROM
     
     
-    
+  
       employees 
-    
+  
     
     
     WHERE salary < ALL 
@@ -3868,9 +2022,9 @@
     
       AND job_id <> 'IT_PROG' ;
     ```
-
+  
     或者用min代替all
-
+  
     ```
     SELECT 
     
@@ -3895,9 +2049,9 @@
     FROM
     
     
-    
+  
       employees 
-    
+  
     
     
     WHERE salary < 
@@ -5055,9 +3209,6 @@
      
      
          LIMIT 1) 
-     
-     
-     
          AND manager_id IS NOT NULL) ;
      ```
 
@@ -5067,76 +3218,31 @@
 
 - 引入案例：查询部门编号>90或邮箱包含a的员工信息
 
-  ```
+  ```sql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE email LIKE "%a%" 
-  
-  
-  
-    OR department_id > 90 ;
+  OR department_id > 90 ;
   ```
-
+  
   用联合查询为：
-
-  ```
+  
+  ```sql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE email LIKE "%a%" 
-  
-  
-  
   UNION
-  
-  
-  
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE department_id > 90;
-  ```
-
+```
+  
 - 语法：
 
   查询语句1
@@ -5194,161 +3300,67 @@
 
   - 示例1：插入的值的类型要与列的类型一致或兼容
 
-    ```
+    ```sql
     INSERT INTO beauty (
-    
-    
-    
       id,
-    
-    
-    
       NAME,
-    
-    
-    
       sex,
-    
-    
-    
       borndate,
-    
-    
-    
       phone,
-    
-    
-    
       photo,
-    
-    
-    
       boyfriend_id
-    
-    
-    
-    ) 
-    
-    
-    
-    VALUES
-    
-    
-    
-      (
-    
-    
-    
-        13,
-    
-    
-    
-        '唐艺昕',
-    
-    
-    
-        '女',
-    
-    
-    
-        '1990-4-23',
-    
-    
-    
-        '18934531234',
-    
-    
-    
-        NULL,
-    
-    
-    
-        2
-    
-    
-    
-      );
+    ) VALUES(13,'唐艺昕','女','1990-4-23','18934531234',NULL,2);
     ```
-
+    
   - 示例2：不可以为null的列必须插入值。可以为null的列如何插入值？
-
-    ```
+  
+    ```sql
     方式1：字段的值写null
-    
-    
-    
     方式2：不写该字段
     ```
-
+    
   - 示例3：列的顺序是否可以调换
-
-    ```
+  
+    ```sql
     INSERT INTO beauty(NAME, sex, id, phone)
-    
-    
-    
     VALUES('蒋欣', '女', 16, '110');
     ```
-
+    
   - 示例4：列数和值的个数必须一致
-
+  
   - 示例5：可以省略列名，默认所有列，而且列的顺序和表中列的顺序一致
-
-    ```
+  
+    ```sql
     INSERT INTO beauty
-    
-    
-    
     VALUES(18, '李易峰', '男', NULL, '19', NULL, NULL);
     ```
-
+  
 - 方式2：
 
   - 语法：insert into 表名 set 列名=值，列名=值，…
 
-    ```
+    ```sql
     INSERT INTO beauty SET id = 19,
-    
-    
-    
     NAME = '刘涛',
-    
-    
-    
     phone = '999' ;
     ```
-
+  
 - 两种方式大pk
 
   - 方式1支持插入多行，但是方式2不支持
 
-    ```
+    ```sql
     INSERT INTO beauty
-    
-    
-    
     VALUES
-    
-    
-    
     (20, '李易峰', '男', NULL, '19', NULL, NULL),
-    
-    
-    
     (21, '李易峰', '男', NULL, '19', NULL, NULL),
-    
-    
-    
     (22, '李易峰', '男', NULL, '19', NULL, NULL);
     ```
-
+    
   - 方式1支持子查询，方式2不支持
-
-    ```
+  
+    ```sql
     INSERT INTO beauty(id, NAME, phone)
-    
-    
-    
     SELECT 26, '送钱', '12341234';
     ```
 
@@ -5392,49 +3404,22 @@
 
 - 案例1：修改beauty表中姓唐的女神电话为109090909
 
-  ```
+  ```sql
   UPDATE 
-  
-  
-  
     beauty 
-  
-  
-  
   SET
-  
-  
-  
     phone = '109090909' 
-  
-  
-  
   WHERE NAME LIKE '唐%' ;
   ```
-
+  
 - 案例2：修改boys表中id号位2的名称为张飞，魅力值为10
 
-  ```
+  ```sql
   UPDATE 
-  
-  
-  
     boys 
-  
-  
-  
   SET
-  
-  
-  
     boyname = '张飞',
-  
-  
-  
     usercp = 10 
-  
-  
-  
   WHERE id = 2 ;
   ```
 
@@ -5442,45 +3427,21 @@
 
 - 案例1：修改张无忌的女朋友的手机号为114
 
-  ```
+  ```sql
   UPDATE
-  
-  
-  
     boys b 
-  
-  
-  
     INNER JOIN beauty be 
-  
-  
-  
-      ON b.`id` = be.`boyfriend_id` SET be.`phone` = '114' 
-  
-  
-  
+    ON b.`id` = be.`boyfriend_id` SET be.`phone` = '114' 
   WHERE b.`boyName` = '张无忌' ;
   ```
-
+  
 - 案例2：修改没有男朋友的女神的男朋友编号都为 2号
 
-  ```
+  ```sql
   UPDATE 
-  
-  
-  
     boys b 
-  
-  
-  
     RIGHT JOIN beauty be 
-  
-  
-  
-      ON b.`id` = be.`boyfriend_id` SET be.`boyfriend_id` = 2 
-  
-  
-  
+    ON b.`id` = be.`boyfriend_id` SET be.`boyfriend_id` = 2 
   WHERE be.`boyfriend_id` IS NULL ;
   ```
 
@@ -5522,86 +3483,38 @@
 
   - 案例1：删除手机号以9结尾的女神信息
 
-    ```
+    ```sql
     DELETE 
-    
-    
-    
     FROM
-    
-    
-    
       beauty 
-    
-    
-    
     WHERE phone LIKE '%9' ;
     ```
-
+    
   - 案例2：删除张无忌的女朋友的信息
-
-    ```
+  
+    ```sql
     DELETE 
-    
-    
-    
       be 
-    
-    
-    
     FROM
-    
-    
-    
       beauty be 
-    
-    
-    
       INNER JOIN boys b 
-    
-    
-    
-        ON b.`id` = be.`boyfriend_id` 
-    
-    
-    
+    ON b.`id` = be.`boyfriend_id` 
     WHERE b.`boyName` = '张无忌' ;
-    ```
-
+  ```
+    
   - 案例3：删除黄晓明的信息以及他女朋友的信息
-
-    ```
+  
+    ```sql
     DELETE 
-    
-    
-    
       b,
-    
-    
-    
       be 
-    
-    
-    
     FROM
-    
-    
-    
       beauty be 
-    
-    
-    
       INNER JOIN boys b 
-    
-    
-    
-        ON b.`id` = be.`boyfriend_id` 
-    
-    
-    
+      ON b.`id` = be.`boyfriend_id` 
     WHERE b.`boyName` = '黄晓明' ;
     ```
-
+  
 - 方式2：truncate
 
   - 语法
@@ -5612,17 +3525,17 @@
 
   - 一删全删
 
-    ```
+    ```sql
     TRUNCATE TABLE boyes ;
     ```
 
-- delete pk truncate
+- **delete**  vs  **truncate**
 
   - delete可以加where条件，truncate不可以
   - truncate删除效率高一些
-  - 假如要删除的表中有自增长列，如果用delete删除后，再插入数据，自增长列的值从断点开始，而truncate删除后，再插入数据，自增长列的值从1开始。
+  - **假如要删除的表中有自增长列，如果用delete删除后，再插入数据，自增长列的值从断点开始，而truncate删除后，再插入数据，自增长列的值从1开始。**
   - truncate删除没有返回值，delete删除有返回值
-  - truncate删除不能回滚，delete删除可以回滚
+  - **truncate删除不能回滚，delete删除可以回滚**
 
 ## DDL（Data Definition Language）数据定义语言
 
@@ -5631,7 +3544,7 @@
   - 标的管理：创建、修改、删除
   - 创建：create
   - 修改：alter
-  - 删除：frop
+  - 删除：drop
 
 ### 1. 库的管理
 
@@ -5641,7 +3554,7 @@
 
   - 案例：创建库book
 
-    ```
+    ```mysql
     CREATE DATABASE IF NOT EXISTS books;
     ```
 
@@ -5649,19 +3562,19 @@
 
   - 修改库名的语句【已停用】
 
-    ```
+    ```mysql
     RENAME DATABASE books TO new_books;
     ```
 
   - 更改库的字符集
 
-    ```
+    ```mysql
     ALTER DATABASE books CHARACTER SET gbk;
     ```
 
 - 库的删除
 
-  ```
+  ```mysql
   DROP DATABASE IF EXISTS books;
   ```
 
@@ -5683,124 +3596,76 @@
 
   - 案例1：创建表 book
 
-    ```
+    ```mysql
     CREATE TABLE book (
-    
-    
-    
       id INT,
-    
-    
-    
       bname VARCHAR (20),
-    
-    
-    
       price DOUBLE,
-    
-    
-    
       authorid INT,
-    
-    
-    
       publishdate DATETIME
-    
-    
-    
     ) ;
     ```
-
+    
   - 案例2：创建表author
-
-    ```
+  
+    ```mysql
     CREATE TABLE author (
-    
-    
-    
       id INT,
-    
-    
-    
       au_name VARCHAR (20),
-    
-    
-    
       nation VARCHAR (10)
-    
-    
-    
     ) ;
     ```
-
+    
   - 案例3：查看创建的表
-
-    ```
+  
+    ```sql
     DESC author;
     ```
-
+  
 - 表的修改
 
   - 语法：alter table 表名 add | drop | modify | change column 列名 【列类型 约束】；
 
-  - 添加列：alter table 表名 add column 列名 类型 【first | after 字段名】；
+  - 添加列：alter table 表名 add column 列名 类型 【first | after 另一个列名】；
+
+    ​	**就是新添加一列这个列在语句后面指定的列的前面或者是后面。**
 
   - 修改列的类型或约束：alter table 表名 modify column 列名 新类型 【新约束】；
 
-  - 修改列名：alter table 表名 change column 旧列名 新列名 类型；
+  - 修改列名：alter table 表名 **change column** 旧列名 新列名 类型；
 
   - 删除列：alter table 表名 drop column 列名；
 
   - 修改表名：alter table 表名 rename 【to】 新表名；
 
   - 修改列名
-
+  
+    ```sql
+    ALTER TABLE book CHANGE COLUMN publishdate pubdate DATETIME ;
     ```
-    ALTER TABLE book 
-    
-    
-    
-      CHANGE COLUMN publishdate pubdate DATETIME ;
-    ```
-
+  
   - 修改列的类型或约束
 
+    ```sql
+  ALTER TABLE book MODIFY COLUMN pubdate TIMESTAMP ;
     ```
-    ALTER TABLE book 
-    
-    
-    
-      MODIFY COLUMN pubdate TIMESTAMP ;
-    ```
-
+  
   - 添加新列
-
-    ```
-    ALTER TABLE author 
-    
-    
-    
-      ADD COLUMN annual DOUBLE ;
+  
+    ```sql
+    ALTER TABLE author  ADD COLUMN annual DOUBLE ;
     ```
 
   - 删除列
 
+    ```sql
+    ALTER TABLE author DROP COLUMN annual ;
     ```
-    ALTER TABLE author 
-    
-    
-    
-      DROP COLUMN annual ;
-    ```
-
+  
   - 修改表名
-
-    ```
-    ALTER TABLE author 
-    
-    
-    
-      RENAME TO book_author ;
+  
+    ```sql
+  ALTER TABLE author RENAME TO book_author ;
     ```
 
 - 表的删除
@@ -5813,230 +3678,121 @@
 
   - 通用的写法：
 
-    ```
+    ```mysql
     DROP DATABASE IF EXISTS 旧库名;
-    
-    
-    
     CREATE DATABASE 新库名;
-    
-    
-    
-     
-    
-    
-    
     DROP TABLE IF EXISTS 旧表名;
-    
-    
-    
     CREATE TABLE 表名();
     ```
-
+  
 - 表的复制
 
-  - 仅仅复制表的结构
+  - **仅仅复制表的结构**
 
-    ```
-    CREATE TABLE copy LIKE book_author ;
+    ```mysql
+    CREATE TABLE copy1 LIKE book_author ;
     ```
 
-  - 复制表的结构+数据
+  - **复制表的结构+数据**
 
-    ```
+    ```mysql
     CREATE TABLE copy2 
-    
-    
-    
     SELECT 
-    
-    
-    
       * 
-    
-    
-    
     FROM
-    
-    
-    
-      book_author ;
+      book_author;
     ```
-
-  - 只复制部分数据
-
-    ```
+    
+  - **只复制部分数据**
+  
+    ```mysql
     CREATE TABLE copy3 
-    
-    
-    
     SELECT 
-    
-    
-    
       id,
-    
-    
-    
       au_name 
-    
-    
-    
     FROM
-    
-    
-    
       book_author 
-    
-    
-    
     WHERE nation = '中国' ;
     ```
+  
+  - **仅仅复制某些字段（部分结构）**：**设置where不满足，那么就没有数据**
 
-  - 仅仅复制某些字段（部分结构）：设置where不满足，那么就没有数据
-
-    ```
+    ```mysql
     CREATE TABLE copy4 
-    
-    
-    
     SELECT 
-    
-    
-    
       id,
-    
-    
-    
       au_name 
-    
-    
-    
     FROM
-    
-    
-    
       book_author 
-    
-    
-    
     WHERE 0 ;
     ```
-
+  
 - 习题集
 
   - 创建表dept1
 
-    ```
+    ```mysql
     USE myemployees;
-    
-    
-    
     CREATE TABLE dept1 (id INT (7), NAME VARCHAR (25)) ;
     ```
-
+    
   - 将表departments中的数据插入新表dept2中
-
-    ```
+  
+  ```mysql
     CREATE TABLE dept2 
-    
-    
-    
-    SELECT 
-    
-    
-    
+  SELECT 
       department_id,
-    
-    
-    
       department_name 
-    
-    
-    
     FROM
-    
-    
-    
-      departments ;
+      departments;
     ```
-
+    
   - 创建表emp5
-
-    ```
+  
+    ```mysql
     CREATE TABLE emp5 (
-    
-    
-    
       id INT (7),
-    
-    
-    
       first_name VARCHAR (25),
-    
-    
-    
       last_name VARCHAR (25),
-    
-    
-    
       dept_id INT (7)
-    
-    
-    
     ) ;
     ```
-
-  - `将`last_name的长度修改为50
-
-    ```
+    
+  - 将last_name的长度修改为50
+  
+    ```mysql
     ALTER TABLE emp5 MODIFY COLUMN last_name VARCHAR(50);
     ```
-
-  - 根据表employees创建employee2
-
-    ```
+  
+- 根据表employees创建employee2 (只复制了结构)
+  
+  ```mysql
     CREATE TABLE employee2 LIKE employees ;
     ```
-
+  
   - 删除表emp5
-
-    ```
+  
+    ```mysql
     DROP TABLE IF EXISTS emp5;
     ```
-
+  
   - 将表empoyees2重命名为emp5
-
+  
+    ```mysql
+    ALTER TABLE employee2 RENAME TO emp5 ;
     ```
-    ALTER TABLE employee2 
     
-    
-    
-      RENAME TO emp5 ;
-    ```
-
   - 在表dept和emp5中添加新列test_column，并检查所做的操作
-
-    ```
-    ALTER TABLE emp5 
-    
-    
-    
-      ADD COLUMN test_column INT ;
-    
-    
-    
+  
+    ```mysql
+    ALTER TABLE emp5 ADD COLUMN test_column INT ;
     DESC emp5;
     ```
-
+    
   - 直接删除表emp5中的列dept_id
 
-    ```
-    ALTER TABLE emp5 
-    
-    
-    
-      DROP COLUMN dept_id ;
+    ```mysql
+  ALTER TABLE emp5 DROP COLUMN dept_id ;
     ```
 
 ### 3. 常见的数据类型
@@ -6053,13 +3809,23 @@
 
 #### 整型
 
-- 分类：Tinyint、Smallint、Mediumint、int/integer、bigint
+- 分类：Tinyint(1B)、Smallint(2B)、Mediumint(3B)、int/integer(4B)、bigint(8B)
 - 特点
-  - 如果不设置无符号还是有符号，默认是有符号，如果想设置无符号，需要添加unsigned关键字
+  - 如果不设置无符号还是有符号，**默认是有符号**，如果想设置无符号，需要添加**unsigned**关键字
   - 如果插入的数值超出了整型的范围，会报out of range异常，并且插入临界值
   - 如果不设置长度，会有默认的长度，**长度代表了显示的最大宽度**，如果不够会用0在左边填充，但必须搭配zerofill使用，并且默认变为无符号的整型！
 
-![img](https://img-blog.csdnimg.cn/20190728125557263.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
+![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209190712.png)
+
+```sql
+int(7)
+
+表示 int 类型的数据最大长度为 7，如果填充不满的话会自动填满，如果不指定 int 数据类型的长度的话，默认是 `int(11)`。
+
+整数类型一般配合 `zerofill` 来使用，顾名思义，就是用 0 进行填充，也就是数字位数不够的空间使用 0 进行填充。
+```
+
+
 
 #### 小数
 
@@ -6071,31 +3837,124 @@
     - dec（M，D）
     - decimal（M，D）
 - 特点
+- 浮点数和定点数都可以使用 `(M,D)` 的方式来表示，M 表示的就是 **整数位 + 小数位** 的数字，D 表示位于 `.` 后面的小数。M 也被称为精度 ，D 被称为标度。
   - M：整数部位+小数部位
   - D：小数部位
   - 如果超过范围，则插入临界值
   - M和D都可以省略，如果是decimal，则M默认为10，D默认为0
-  - 如果是float和double，则会根据插入的数值的精度来决定精度
+  - 如果是float和double省略的话，则会根据插入的数值的精度来决定精度
   - 定点型的精确度较高，如果要求插入数值的精度较高如货币运算等则考虑使用定点型
+  - 定点数只有一种 `decimal`。**定点数在 MySQL 内部中以字符串的形式存在，比浮点数更为准确，适合用来表示精度特别高的数据。**
 - 原则：所选择的类型越简单越好，能保存数值的类型越小越好
 
-![img](https://img-blog.csdnimg.cn/20190728130632166.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
+![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209193516.png)
+
+* 浮点数如果不写精度和标度，会按照实际的精度值进行显示
+* 定点数如果不写精度和标度，会按照 `decimal(10,0)` 来进行操作，如果数据超过了精度和标题，MySQL 会报错
+
+#### 位类型
+
+​	对于位类型，用于存放字段值，`BIT(M)` 可以用来存放多位二进制数，M 的范围是 1 - 64，如果不写的话默认为 1 位。
+
+下面我们来演示一下位类型
+
+新建一个 test3 表，表中只有一个位类型的字段
+
+```mysql
+create table test3(id bit(1));
+```
+
+然后随意插入一条数据
+
+```mysql
+insert into test3 values(1);
+```
+
+发现无法查询出对应结果。
+
+![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209193512.png)
+
+然后我们使用 `hex()` 和 `bin()` 函数进行查询
+
+![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209193524.png)
+
+发现能够查询出对应结果。
+
+也就是说当数据插入 test3 时，会首先把数据转换成为二进制数，如果位数允许，则将成功插入；如果位数小于实际定义的位数，则插入失败。如果我们像表中插入数据 2 
+
+```mysql
+insert into test3 values(2);
+```
+
+那么会报错
+
+![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209193530.png)
+
+因为 2 的二进制数表示是 `10`，而表中定义的是 `bit(1)` ，所以无法插入。
+
+那么我们将表字段修改一下
+
+![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209193533.png)
+
+然后再进行插入，发现已经能够插入了
+
+![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209193537.png)
+
+
 
 #### 字符型
 
+MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
+
+![img](https://img2020.cnblogs.com/blog/1515111/202006/1515111-20200621190652649-1363650823.png)
+
 - 较短的文本：char、varchar
+
 - 较长的文本：text，blob
-- 特点：
-  - 写法 M的意思 特点 空间耗费 效率
-  - char char(M) 最大的字符数，可以省略，默认为1 固定长度的字符 比较耗费 高
-  - varchar varchar(M) 最大的字符数，不可以省略 可变长度的字符 比较节省 低
 
-![img](https://img-blog.csdnimg.cn/20190728131433517.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
-
-- 其他类型
-  - binary和varbinary用于保存较短的二进制
-  - enum：枚举，eg. `enum('男', '女')`
-  - set：集合，eg. `set('a', 'b', 'c', 'd')`
+- #### CHAR 和 VARCHAR 类型
+  
+  CHAR 和 VARCHAR 类型很相似，导致很多同学都会忽略他们之间的差别，首先他俩都是用来保存字符串的数据类型，他俩的主要区别在于存储方式不同。CHAR 类型的长度就是你定义多少显示多少。占用 M 字节，比如你声明一个 `CHAR(20)` 的字符串类型，那么每个字符串占用 20 字节，M 的取值范围时 0 - 255。`VARCHAR` 是可变长的字符串，范围是 0 - 65535，在字符串检索的时候，CHAR 会去掉尾部的空格，而 VARCHAR 会保留这些空格。下面是演示例子
+  
+  ```mysql
+  create table vctest1 (vc varchar(6),ch char(6));
+  
+  insert into vctest1 values("abc  ","abc  ");
+  
+  select length(vc),length(ch) from vctest1;
+  ```
+  
+  结果如下
+  
+  ![](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209194100.png)
+  
+  可以看到 vc 的字符串类型是 varchar ，长度是 5，ch 的字符串类型是 char，长度是 3。可以得出结论，varchar 会保留最后的空格，char 会去掉最后的空格。
+  
+  #### BINARY 和 VARBINARY 类型
+  
+  BINARY 和 VARBINARY 与 CHAR 和 VARCHAR 非常类似，不同的是它们包含二进制字符串而不包含非二进制字符串。BINARY 与 VARBINARY 的最大长度和 CHAR 与 VARCHAR 是一样的，只不过他们是定义字节长度，而 CHAR 和 VARCHAR 对应的是字符长度。
+  
+  #### BLOB 类型
+  
+  BLOB 是一个二进制大对象，可以容纳可变数量的数据。有 4 种 BLOB 类型：TINYBLOB、BLOB、MEDIUMBLOB 和 LONGBLOB。它们区别在于可容纳存储范围不同。
+  
+  #### TEXT 类型
+  
+  有 4 种 TEXT 类型：TINYTEXT、TEXT、MEDIUMTEXT 和 LONGTEXT。对应的这 4 种 BLOB 类型，可存储的最大长度不同，可根据实际情况选择。
+  
+  #### ENUM 类型
+  
+  ENUM 我们在 Java 中经常会用到，它表示的是枚举类型。它的范围需要在创建表时显示指定，对 1 - 255 的枚举需要 1 个字节存储；对于 255 - 65535 的枚举需要 2 个字节存储。ENUM 会忽略大小写，在存储时都会转换为大写。
+  
+  #### SET 类型
+  
+  SET 类型和 ENUM 类型有两处不同
+  
+  * 存储方式
+  
+  SET 对于每 0 - 8 个成员，分别占用 1 个字节，最大到 64 ，占用 8 个字节
+  
+  * Set 和 ENUM 除了存储之外，最主要的区别在于 Set 类型一次可以选取多个成员，而 ENUM 则只能选一个。
 
 #### 日期型
 
@@ -6110,11 +3969,11 @@
   - datetime 8 1000-9999 不受
   - timestamp 4 1970-2038 受
 
-![img](https://img-blog.csdnimg.cn/20190728132519753.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
+![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209194153.png)
 
 ### 4. 常见约束
 
-- 含义：一种限制，用于限制表中的数据，为了保证表中的数据的准确和可靠性
+- 含义：**一种限制，用于限制表中的数据，为了保证表中的数据的准确和可靠性**
 
 - 分类：六大约束
 
@@ -6136,213 +3995,84 @@
 
   - 表级约束：除了非空、默认，其他的都支持
 
-    |          | 位置         | 支持的约束类型             | 是否可以起约束名     |
-    | :------- | :----------- | :------------------------- | :------------------- |
-    | 列级约束 | 列的后面     | 语法都支持，但外键没有效果 | 不可以               |
-    | 表级约束 | 所有列的下面 | 默认和非空不支持，其他支持 | 可以（主键没有效果） |
+    |          | 位置         | 支持的约束类型                 | 是否可以起约束名     |
+    | :------- | :----------- | :----------------------------- | :------------------- |
+    | 列级约束 | 列的后面     | 语法都支持，**但外键没有效果** | 不可以               |
+    | 表级约束 | 所有列的下面 | 默认和非空不支持，其他支持     | 可以（主键没有效果） |
 
 #### 创建表时添加约束
 
 - 添加列级约束
 
-  ```
+  ```mysql
   CREATE DATABASE students;
-  
-  
-  
   USE students;
-  
-  
-  
-   
-  
-  
-  
   CREATE TABLE stuinfo (
-  
-  
-  
     id INT PRIMARY KEY,
-  
-  
-  
     stuname VARCHAR (20) NOT NULL,  # 非空
-  
-  
-  
     gender CHAR(1) CHECK (gender = '男' 
-  
-  
-  
       OR gender = '女'),
-  
-  
-  
     seat INT UNIQUE,    # 唯一
-  
-  
-  
     age INT DEFAULT 18, # 默认
-  
-  
-  
     majorID INT REFERENCES major (id)
-  
-  
-  
   ) ;
-  
-  
-  
-   
-  
-  
   
   CREATE TABLE major (
-  
-  
-  
     id INT PRIMARY KEY,
-  
-  
-  
     majorName VARCHAR (20)
-  
-  
-  
   ) ;
-  
-  
-  
-   
-  
   
   
   DESC stuinfo;
-  
-  
-  
   SHOW INDEX FROM stuinfo;
   ```
-
-  - 语法：直接在字段名和类型后面追加约束类型即可。
-  - 只支持：默认、非空、主键、唯一（除了外键都支持）
-
+  
+  - 语法：**直接在字段名和类型后面追加约束类型即可。**
+  - 只支持：**默认、非空、主键、唯一**（除了外键都支持）
+  
 - 添加表级约束
 
-  ```
+  ```sql
   DROP TABLE IF EXISTS stuinfo ;
-  
-  
-  
-   
-  
-  
-  
   CREATE TABLE stuinfo(
-  
-  
-  
   id INT,
-  
-  
-  
   stuname VARCHAR(20),
-  
-  
-  
   gender CHAR(1),
-  
-  
-  
   seat INT,
-  
-  
-  
   age INT,
-  
-  
-  
   majorid INT,
-  
-  
-  
-   
-  
-  
-  
   CONSTRAINT pk PRIMARY KEY(id),
-  
-  
-  
-  CONSTRAINT uq UNIQUE(seat),
-  
-  
-  
+  CONSTRAINT uq UNIQUE(seat)
   CONSTRAINT ck CHECK(gender='男' OR gender='女'),
-  
-  
-  
-  CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES major(id)
-  
-  
-  
+  FOREIGN KEY(majorid) REFERENCES major(id)
   );
-  
-  
-  
-   
-  
-  
   
   SHOW INDEX FROM stuinfo;
   ```
-
-  - 语法：在各个字段的最下面
-
-    【constraint 约束名】 约束类型（字段名）
-
+  
+  - 语法：**在各个字段的最下面**
+  
+    【constraint   约束名 】 约束类型（字段名）(constraint 和约束名是可选的可以不写)
+  
   - 除了非空、默认，其他的都支持
-
+  
 - 通用的写法：
 
-  ```
+  ```mysql
   CREATE TABLE IF NOT EXISTS stuinfo (
-  
-  
-  
     id INT PRIMARY KEY,
-  
-  
-  
     stuname VARCHAR (20) NOT NULL,
-  
-  
-  
     gender CHAR(1),
-  
-  
-  
     seat INT UNIQUE,
-  
-  
-  
     age INT DEFAULT 18,
-  
-  
-  
     majorID INT,
-  
-  
-  
     CONSTRAINT fk_stuinfo_major FOREIGN KEY (majorid) REFERENCES major (id)
-  
-  
-  
   ) ;
+  将外键在表级约束处添加 (因为列级约束出无效)
+  将主键在列级约束添加 (因为表级约束处无效)
   ```
-
-- 表级约束pk列级约束
+  
+- 表级约束 VS 列级约束
 
   |          | 支持类型       | 可以起约束名与否   |
   | :------- | :------------- | :----------------- |
@@ -6357,9 +4087,9 @@
            保证唯一性    是否允许为空    一个表中可以有多少个    是否允许组合
     ```
 
-  - 主键 √ × 至多有1个 √，但不推荐
+  - 主键           √                       ×                                至多有1个              √，但不推荐
 
-  - 唯一 √ √ 可以有多个 √，但不推荐
+  - 唯一          √                        √                                可以有多个             √，但不推荐
 
 - 外键特点
 
@@ -6367,7 +4097,7 @@
 
   - 从表的外键列的类型和主表的关联列的类型要求一致或兼容，名称无要求
 
-  - 主表的关联列必须是一个key（一般是主键或唯一）
+  - **主表的关联列必须是一个key（一般是主键或唯一）**
 
   - 插入数据时，先插入主表，再插入从表
 
@@ -6375,7 +4105,7 @@
 
     - 方式1：级联删除
 
-      ```
+      ```mysql
       ALTER TABLE stuinfo ad CONSTRAINT fk_stu_major FOREIGN KEY(majorid) REFERENCES major(id) ON DELETE CASCADE;
       ```
 
@@ -6383,7 +4113,7 @@
 
     - 方式2：级联置空
 
-      ```
+      ```mysql
       ALTER TABLE stuinfo ad CONSTRAINT fk_stu_major FOREIGN KEY(majorid) REFERENCES major(id) ON DELETE SET NULL;
       ```
 
@@ -6397,55 +4127,42 @@
 
 - 添加非空约束
 
-  ```
+  ```mysql
   ALTER TABLE stuinfo MODIFY COLUMN stuname VARCHAR(20) NOT NULL;
   ```
 
 - 添加默认约束
 
-  ```
+  ```mysql
   ALTER TABLE stuinfo MODIFY COLUMN age INT DEFAULT 18;
   ```
 
 - 添加主键
 
-  ```
+  ```mysql
   # 列级约束的写法
-  
-  
-  
   ALTER TABLE stuinfo MODIFY COLUMN id INT PRIMARY KEY;
   
   
-  
   # 表级约束的写法
-  
-  
-  
   ALTER TABLE stuinfo ADD PRIMARY KEY(id);
   ```
-
+  
 - 添加唯一
 
-  ```
+  ```mysql
   # 列级约束的写法
-  
-  
-  
   ALTER TABLE stuinfo MODIFY COLUMN seat INT UNIQUE;
   
   
-  
   # 表级约束的写法
-  
-  
-  
   ALTER TABLE stuinfo ADD UNIQUE(seat);
   ```
-
+  
 - 添加外键
 
-  ```
+  ```mysql
+  # 表级约束写法
   ALTER TABLE (CONSTRAINT fk_stuinfo_major) stuinfo ADD FOREIGN KEY(majorid) REFERENCES major(id);
   ```
 
@@ -6453,31 +4170,31 @@
 
 - 删除非空约束
 
-  ```
-  ALTER TABLE stuinfo MODIFY COLUMN stuname VARCHAR(20) NULL;
+  ```mysql
+  ALTER TABLE stuinfo MODIFY COLUMN stuname VARCHAR(20) NULL;(NOT NULL 变为 NULL)
   ```
 
 - 删除默认约束
 
-  ```
+  ```mysql
   ALTER TABLE stuinfo MODIFY COLUMN age INT;
   ```
 
 - 删除主键
 
-  ```
+  ```mysql
   ALTER TABLE stuinfo DROP PRIMARY KEY;
   ```
 
 - 删除唯一
 
-  ```
+  ```mysql
   ALTER TABLE stuinfo DROP INDEX seat;
   ```
 
 - 删除外键
 
-  ```
+  ```mysql
   ALTER TABLE stuinfo DROP FOREIGN KEY fk_stuinfo_major;
   ```
 
@@ -6534,39 +4251,27 @@
 
   ）
 
-  ```
+  ```mysql
   CREATE TABLE tab_identity (
-  
-  
-  
     id INT PRIMARY KEY AUTO_INCREMENT,
-  
-  
-  
     NAME varcahr (20)
-  
-  
-  
   ) ;
   ```
-
+  
 - 设置表时列的步长
 
-  ```
+  ```mysql
   SHOW VARIABLES LIKE '%auto_increment%';
-  
-  
-  
   SET auto_increment_increment = 3;
   ```
+  
+- 设置标识列的起始值：想在什么地方更改自增长列的值，则手动插入值（不手动的时候，值是null）。
 
-- 设置表时列的起始值：想在什么地方更改自增长列的值，则手动插入值（不手动的时候，值是null）。
-
-- 修改表时设置标识列
+- 修改表时 设置标识列
 
   alter table 表 modify column 字段名 字段类型 约束 auto_increment
 
-  ```
+  ```mysql
   ALTER TABLE tab_identity MODIFY COLUMN id INT PRIMARY KEY AUTO_INCREMENT;
   ```
 
@@ -6574,8 +4279,8 @@
 
   alter table 表 modify column 字段名 字段类型 约束
 
-  ```
-  ALTER TABLE tab_identity MODIFY COLUMN id INT;
+  ```mysql
+  ALTER TABLE tab_identity MODIFY COLUMN id INT;  (INT默认数据最大长度为11)
   ```
 
 ## TCL（Transaction Control Language）事务控制语言
@@ -6602,101 +4307,63 @@
 
     - 前提：必须先设置自动提交功能为禁用
 
-      ```
+      ```mysql
       SET autocommit=0;
       ```
 
     - 步骤1：开启事务
 
-      ```
+      ```mysql
       SET autocommit=0;
-      
-      
-      
       START TRANSACTION;（可选）
       ```
-
+      
     - 步骤2：编写事务中的sql语句(select insert update delete，只有增删改查，不包括DDL语言)
-
-      语句1；
-
-      语句2；
-
-      …
-
-    - 步骤3：结束事务
-
-      commit；提交事务
-
-      rollback；回滚事务
-
-  - savepoint 结点名：设置保存点
-
-    ```
+    
+  语句1；
+    
+  语句2；
+    
+  …
+    
+- 步骤3：结束事务
+    
+  commit；提交事务
+    
+  rollback；回滚事务
+    
+- **savepoint 结点名：设置保存点**
+  
+  ```mysql
     SET autocommit = 0 ;
-    
-    
-    
-     
-    
-    
-    
-    START TRANSACTION;
-    
-    
+  START TRANSACTION;
     
     DELETE FROM account WHERE id=25;
-    
-    
-    
     SAVEPOINT a;
-    
-    
-    
     DELETE FROM accound WHERE id=28;
-    
-    
-    
     ROLLBACK TO a;
     ```
-
+    
   - delete和truncate在事务使用时的区别
-
+  
     - delete删除后支持回滚
-
-    ```
+  
+    ```mysql
     SET autocommit = 0 ;
-    
-    
-    
     START TRANSACTION;
-    
-    
     
     DELETE FROM account;
-    
-    
-    
     ROLLBACK;
     ```
-
+    
     - truncate删除后不支持回滚
-
-    ```
+    
+    ```mysql
     SET autocommit = 0 ;
-    
-    
-    
     START TRANSACTION;
-    
-    
-    
     TRUNCATE TABLE account;
-    
-    
-    
     ROLLBACK;
-    ```
+  ```
 
 - 数据库的隔离级别
 
@@ -6706,13 +4373,13 @@
     - **幻读**：对于两个事务T1，T2。T1从一个表中读取了一个字段，然后T2在该表中插入了一些新的行之后，如果T1再次读取同一个表，就会多出几行。主要是其他事务**插入**的数据
   - 数据库事务的隔离性：数据库系统必须具有隔离并发运行各个事务的能力，使他们不会相互影响，避免各种并发问题。
   - **一个事务与其他事务隔离的程度称为隔离级别。**数据库规定了多种事务隔离级别，不同隔离级别对应不同的干扰程度，隔离级别越高，数据一致性就越好，但并发性弱。
-  - 数据库提供的4种事务隔离级别：![img](https://img-blog.csdnimg.cn/20190729101402904.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
+  - 数据库提供的4种事务隔离级别：![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209201405.png)
   - Oracle支持2种事务隔离级别：READ COMMITED，SERIALIZABLE。Oracle默认的事务隔离级别是：READ COMMITED。
   - Mysql支持4种事务隔离级别。Mysql默认的事务隔离级别为：REPEATABLE READ。
   - 每启动一个mysql程序，就会获得一个单独的数据库连接，每个数据库连接都有一个全局变量@@tx_isolation，表示当前事务隔离级别。
-  - 查看当前的隔离级别：select @@tx_isolation;
-  - 设置当前mysql连接的隔离级别：set transaction isolation level read committed;
-  - 设置数据库系统的全局的隔离级别：set global transaction isolation level read committed;
+  - 查看当前的隔离级别：**select @@tx_isolation**;
+  - 设置当前mysql连接的隔离级别：**set transaction isolation level read committed;**
+  - 设置数据库系统的==全局的隔离级别==：**set global transaction isolation level read committed;**
 
 ## 视图
 
@@ -6727,106 +4394,36 @@
 
 - 案例1：查询姓张的学生名和专业名
 
-  ```
+  ```mysql
   # 普通写法
   
-  
-  
   SELECT 
-  
-  
-  
     stuname,
-  
-  
-  
     majorname 
-  
-  
-  
   FROM
-  
-  
-  
     suinfo s 
-  
-  
-  
     INNER JOIN major m 
-  
-  
-  
-      ON s.majorid = m.`id` 
-  
-  
-  
+    ON s.majorid = m.`id` 
   WHERE s.stuname LIKE '张%' ;
-  
-  
-  
-   
-  
   
   
   # 视图写法
   
-  
-  
   CREATE VIEW v1 AS 
-  
-  
-  
   SELECT 
-  
-  
-  
     stuname,
-  
-  
-  
     majorname 
-  
-  
-  
   FROM
-  
-  
-  
     suinfo s 
-  
-  
-  
     INNER JOIN major m 
-  
-  
-  
       ON s.majorid = m.`id` ;
-  
-  
-  
-   
-  
-  
-  
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     v1 
-  
-  
-  
   WHERE stuname LIKE '张%' ;
   ```
-
+  
 - 创建视图
 
   - 语法：
@@ -6843,239 +4440,87 @@
 
   - 习题1：查询姓名中包含a字符的员工名、部门名和工种信息
 
-    ```
+    ```mysql
     CREATE VIEW myv1 AS 
-    
-    
-    
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       department_name,
-    
-    
-    
       job_title 
-    
-    
-    
     FROM
-    
-    
-    
       employees e 
-    
-    
-    
       JOIN departments d 
-    
-    
-    
         ON e.`department_id` = d.`department_id` 
-    
-    
-    
       JOIN jobs j 
-    
-    
-    
         ON j.`job_id` = e.`job_id` ;
-    
-    
-    
-     
-    
-    
-    
+        
+        
+        
     SELECT 
-    
-    
-    
       * 
-    
-    
-    
     FROM
-    
-    
-    
       myv1 
-    
-    
-    
     WHERE last_name LIKE '%a%' ;
     ```
-
+    
   - 习题2：查询各部门的平均工资级别
-
-    ```
+  
+    ```mysql
     # 创建视图查看每个部门的平均工资
-    
-    
-    
     CREATE VIEW myv2 AS 
-    
-    
-    
     SELECT 
-    
-    
-    
       AVG(salary) ag,
-    
-    
-    
       department_id 
-    
-    
-    
     FROM
-    
-    
-    
       employees 
-    
-    
-    
     GROUP BY department_id ;
     
     
-    
-     
-    
-    
-    
     # 使用
-    
-    
-    
     SELECT 
-    
-    
-    
       myv2.`ag`,
-    
-    
-    
       g.grade_level 
-    
-    
-    
     FROM
-    
-    
-    
       myv2 
-    
-    
-    
-      JOIN job_grades g 
-    
-    
-    
-        ON myv2.`ag` BETWEEN g.`lowest_sal` 
-    
-    
-    
-        AND g.`highest_sal` ;
+      inner JOIN job_grades g 
+      ON myv2.`ag` BETWEEN g.`lowest_sal`AND g.`highest_sal` ; (外连接)
     ```
-
+    
   - 习题3：查询平均工资最低的部门信息
-
-    ```
+  
+    ```mysql
     # 用习题2的视图myv2
-    
-    
-    
     SELECT 
-    
-    
-    
       * 
-    
-    
-    
     FROM
-    
-    
-    
       myv2 
-    
-    
-    
     ORDER BY ag 
-    
-    
-    
     LIMIT 1 ;
     ```
-
-  - 习题4：查询平均工资最低的部门名和工资
-
-    ```
+    
+  - 习题4：查询平均工资最低的部门名和平均工资
+  
+    ```mysql
     CREATE VIEW myv3 AS 
-    
-    
-    
     SELECT 
-    
-    
-    
       * 
-    
-    
-    
     FROM
-    
-    
-    
       myv2 
-    
-    
-    
     ORDER BY ag LIMIT 1 ;
     
-    
-    
-     
-    
-    
-    
+  
     SELECT 
-    
-    
-    
-      d.*,
-    
-    
-    
+    d.*,
       m.`ag` 
-    
-    
-    
     FROM
-    
-    
-    
       myv3 m 
-    
-    
-    
       JOIN departments d 
-    
-    
-    
-        ON m.`department_id` = d.`department_id` ;
+      ON m.`department_id` = d.`department_id` ;
     ```
-
+  
 - 视图的修改
 
   - 方式1：create or replace view 视图名 as 查询语句；
+  - create or replace view myv1 as select .......
   - 方式2：alter view 视图名 as 查询语句；
 
 - 删除视图
@@ -7092,205 +4537,81 @@
 
 - 案例1：创建一个视图emp_v1，要求查询电话号码以‘011’开头的员工姓名和工资、邮箱
 
-  ```
+  ```mysql
   CREATE OR REPLACE VIEW emp_v1 AS 
-  
-  
-  
   SELECT 
-  
-  
-  
     last_name,
-  
-  
-  
     salary,
-  
-  
-  
     email 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE phone_number LIKE '011%' ;
   ```
-
+  
 - 案例2：创建视图emp_v2，要求查询部门的最高工资高于12000的部门信息
 
-  ```
+  ```mysql
   CREATE OR REPLACE VIEW emp_v2 AS 
-  
-  
-  
   SELECT 
-  
-  
-  
     MAX(salary) mx,
-  
-  
-  
     department_id 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   GROUP BY department_id 
-  
-  
-  
-  HAVING MAX(salary) > 12000 ;
-  
-  
-  
-   
+  HAVING MAX(salary) > 12000 ;  # (分组之后的筛选用having)
   
   
   
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     emp_v2 ;
-  
-  
-  
-   
-  
-  
-  
+    
+    
+    
   SELECT 
-  
-  
-  
     d.*,
-  
-  
-  
     m.mx 
-  
-  
-  
   FROM
-  
-  
-  
     departments d 
-  
-  
-  
     JOIN emp_v2 m 
-  
-  
-  
       ON m.department_id = d.`department_id` ;
   ```
-
+  
 - 视图的更新
 
-  - 增、删、改（视图基于的表也会发生更改）
+  - 增、删、改（**视图基于的表也会发生更改**）
 
-    ```
+    ```mysql
     CREATE OR REPLACE VIEW myv1 AS 
-    
-    
-    
     SELECT 
-    
-    
-    
       last_name,
-    
-    
-    
       email
-    
-    
-    
     FROM
-    
-    
-    
       employees;
-    
-    
-    
-     
-    
     
     
     SELECT * FROM myv1;
     
-    
-    
-     
-    
-    
-    
     # 插入
-    
-    
-    
     INSERT INTO myv1 VALUES('张飞', 'zhangfei');
     
-    
-    
-     
-    
-    
-    
     # 修改
-    
-    
-    
     UPDATE myv1 SET last_name='张无忌' WHERE last_name = '张飞';
     
-    
-    
-     
-    
-    
-    
     # 删除
-    
-    
-    
     DELETE FROM myv1 WHERE last_name='张无忌';
     ```
-
-  - 视图的可更新性和视图中查询的定义有关系，以下类型的视图是不能更新的。（注意：视图一般用于查询，而不是更新。）
-
+    
+  - 视图的可更新性和视图中查询的定义有关系，以下类型的视图是不能更新的。（**注意：视图一般用于查询，而不是更新。**）
+  
     - 包含以下关键字的sql语句：分组函数、distinct、group by、having、union或union all
-    - 常量视图
-    - select中包含子查询
-    - join
-    - from 一个不能更新的视图
-    - where子句的子查询应用了from子句中的表
-
+    - 常量视图 
+    - select中包含子查询 
+    - join 
+    - from 一个不能更新的视图 
+    - where子句的子查询应用了from子句中的表 
+  
 - 视图和表的对比
 
   |      | 创建语法的关键字 | 是否实际占用物理空间 | 使用                     |
@@ -7302,127 +4623,55 @@
 
   - 题1：创建表
 
-    ```
+    ```mysql
     CREATE TABLE book (
-    
-    
-    
       bid INT PRIMARY KEY,
-    
-    
-    
       bname VARCHAR (20) UNIQUE nut NULL,
-    
-    
-    
       price FLOAT DEFAULT 10,
-    
-    
-    
       btypeid INT,
-    
-    
-    
       FOREIGN KEY (btypeid) REFERENCES booktype (id)
-    
-    
-    
     ) ;
     ```
-
+    
   - 题2：开启事务，向表中插入1行数据，并结束
-
-    ```
+  
+    ```mysql
     SET autocommit = 0 ;
-    
-    
-    
     INSERT INTO book(bid, bname, price, btypeid)
-    
-    
-    
     VALUES(1, '小李飞刀', 100, 1);
-    
-    
-    
     COMMIT;
     ```
-
+    
   - 题3：创建视图，实现查询价格大于100的书名和类型名
-
-    ```
+  
+    ```mysql
     CREATE VIEW myv1 AS 
-    
-    
-    
     SELECT 
-    
-    
-    
       bname,
-    
-    
-    
       NAME 
-    
-    
-    
     FROM
-    
-    
-    
-      book b 
-    
-    
-    
+    book b 
       INNER JOIN booktype t 
-    
-    
-    
-        ON b.btypeid = t.id 
-    
-    
-    
+      ON b.btypeid = t.id 
     WHERE price > 100 ;
     ```
-
+    
   - 题4：修改视图，实现查询价格在90-120之间的书名和价格
-
-    ```
+  
+    ```mysql
     CREATE OR REPLACE VIEW myv1 AS 
-    
-    
-    
     SELECT 
-    
-    
-    
       bname,
-    
-    
-    
       price 
-    
-    
-    
     FROM
-    
-    
-    
       book 
-    
-    
-    
     WHERE price BETWEEN 90 
-    
-    
-    
       AND 120 ;
     ```
-
+  
   - 题5：删除刚才创建的视图
 
-    ```
+    ```mysql
     DROP VIEW myv1;
     ```
 
@@ -7438,19 +4687,19 @@
 
     - 查看所有的系统变量
 
-      ```
+      ```mysql
       SHOW GLOBAL|【SESSION】 VARIABLES;
       ```
 
     - 查看满足条件的部分系统变量
 
-      ```
+      ```mysql
       SHOW GLOBAL|【SESSION】 VARIABLES LIKE '%char%';
       ```
 
     - 查看指定的某个系统变量的值
 
-      ```
+      ```mysql
       SELECT @@GLOBAL|【SESSION】.系统变量名;
       ```
 
@@ -7458,13 +4707,13 @@
 
       - 方式一
 
-        ```
+        ```mysql
         set GLOBAL|【SESSION】 系统变量名 = 值;
         ```
 
       - 方式二
 
-        ```
+        ```mysql
         set @@GLOBAL|【SESSION】.系统变量名 = 值;
         ```
 
@@ -7472,262 +4721,206 @@
 
     - 全局变量
 
-      - 服务器层面上的，必须拥有super权限才能为系统变量赋值。
+      - **服务器层面上的，必须拥有super权限才能为系统变量赋值。**
 
-      - 作用域：服务器每次启动将为所有的全局变量赋初始值，针对于所有的会话（连接）有效，但不能跨重启。
+      - 作用域：**服务器每次启动将为所有的全局变量赋初始值，针对于所有的会话（连接）有效，但不能跨重启。**(意思是修改之后再重启修改就没有了)
 
       - 查看所有的全局变量
 
-        ```
+        ```mysql
         SHOW GLOBAL VARIABLES;
         ```
 
       - 查看部分的全局变量
 
-        ```
+        ```mysql
         SHOW GLOBAL VARIABLES LIKE '%char%';
         ```
 
       - 查看指定的全局变量的值
 
-        ```
+        ```mysql
         SELECT @@global.autocommit;
-        
-        
-        
         SELECT @@global.tx_isolation;
         ```
-
+        
       - 为某个指定的全局变量赋值
-
-        - 方式1：
-
-          ```
+      
+  - 方式1：
+      
+    ```mysql
           set global autocommit=0;
-          ```
-
+    ```
+      
         - 方式2：
-
-          ```
+      
+    ```mysql
           SET @@global.autocommit=0;
-          ```
-
+    ```
+      
     - 会话变量
-
-      - 服务器为每一个连接的客户端都提供了系统变量。
-
-      - 作用域：仅仅针对于当前会话（连接）有效。
-
-      - 查看所有的会话变量
-
-        ```
+    
+  - 服务器为每一个连接的客户端都提供了系统变量。
+    
+  - 作用域：仅仅针对于当前会话（连接）有效。
+    
+  - 查看所有的会话变量
+    
+    ```mysql
         SHOW 【SESSION】 VARIABLES;
-        ```
-
+    ```
+    
       - 查看部分的会话变量
-
-        ```
+    
+    ```mysql
         SHOW 【SESSION】 VARIABLES LIKE '%char%';
-        ```
-
+    ```
+    
       - 查看指定的某个会话变量
-
-        ```
+    
+    ```mysql
         SELECT @@【SESSION.】autocommit;
-        ```
-
+    ```
+    
       - 为某个会话变量赋值
-
-        - 方式1：
-
-          ```
+    
+    - 方式1：
+    
+      ```mysql
           set session autocommit=0;
-          ```
-
+      ```
+    
         - 方式2：
-
-          ```
+    
+      ```mysql
           SET @@【session.】autocommit=0;
-          ```
-
+      ```
+  
 - 自定义变量
 
-  - 变量是用户自定义的，不是由系统定义的
+  - **变量是用户自定义的，不是由系统定义的**
 
   - 使用步骤：声明 赋值 使用（查看、比较、运算等）
 
   - 分类
 
-    - 用户变量
+    - 1.  ==用户变量==
 
       - 作用域：针对于当前会话（连接）有效，等同于会话变量的作用域
       - 应用在任何地方，也就是begin end里面或begin end的外面
 
       1. 声明并初始化（三种方式）
 
-         ```
+         ```mysql
          set @用户变量名=值；
-         
-         
-         
          set @用户变量名:=值；（推荐）
-         
-         
-         
          select @用户变量名:=值；
          ```
-
+         
+         ![image-20201209203533465](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209203533.png)
+         
       2. 赋值（更新用户变量的值）
-
+      
          - 方式1：通过set或select（同上）
 
-           ```
-           set @用户变量名=值；
-           
-           
-           
+           ```mysql
+     set @用户变量名=值；
            set @用户变量名:=值；（推荐）
-           
-           
-           
+     
            select @用户变量名:=值；
            ```
-
+           
            - 案例1：
-
-             ```
+           
+             ```mysql
              SET @name='John';
-             
-             
-             
-             SET @name=100;
+        SET @name=100;
              ```
-
+      
          - 方式2：通过select into
-
-           ```
-           select 字段 into 变量名
-           
-           
-           
+   
+           ```mysql
+     select 字段 into 变量名
            from 表；
            ```
-
-           - 案例1：
-
-             ```
+           
+        - 案例1：
+           
+        ```mysql
              SELECT 
-             
-             
-             
-               COUNT(*) INTO @count 
-             
-             
-             
+       COUNT(*) INTO @count   # (经过一个查询来给一个自定义用户变量赋值)
              FROM
-             
-             
-             
-               employees ;
+         employees ;
              ```
-
-      3. 使用（查看用户变量的值）
-
+         
+      3. **使用（查看用户变量的值）**
+      
          select @用户变量名；
+         
+         ![image-20201209203722775](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209203722.png)
 
-    - 局部变量
+    - 2. ==局部变量==
 
-      - 作用域：仅仅在定义它的begin end中有效
+      - **作用域：仅仅在定义它的begin end中有效**
       - 应用在begin end中的第一句话
-
+    
       1. 声明
-
-         declare 变量名 类型；
-
+    
+         **declare 变量名 类型；**
+    
          declare 变量名 类型 default 值；
-
+    
       2. 赋值
-
+    
          - 方式1：通过set或select（同上）
-
-           ```
+    
+           ```mysql
            set 局部变量名=值；
+       set 局部变量名:=值；（推荐）
            
-           
-           
-           set 局部变量名:=值；（推荐）
-           
-           
-           
-           select @局部变量名:=值；
+       select @局部变量名:=值；
            ```
-
+       
          - 方式2：通过select into
-
-           ```
+     
+           ```sql
            select 字段 into 局部变量名
-           
-           
-           
-           from 表；
+  from 表；
            ```
 
       3. 使用
-
+  
          select 局部变量名；
-
+  
     - 对比用户变量和局部变量：
 
       |          | 作用域      | 定义和使用的位置                | 语法                          |
-      | :------- | :---------- | :------------------------------ | :---------------------------- |
+  | :------- | :---------- | :------------------------------ | :---------------------------- |
       | 用户变量 | 当前会话    | 会话中的任何地方                | 必须加@符号，不用限定类型     |
       | 局部变量 | begin end中 | 只能在begin end中，且为第一句话 | 一般不用加@符号，需要限定类型 |
-
+    
     - 案例1：声明两个变量并赋初始值，求和，并打印
-
+    
       - 用户变量
-
-        ```
+    
+        ```mysql
         SET @m=1;
-        
-        
-        
         SET @n=2;
-        
-        
-        
         SET @sum=@m+@n;
-        
-        
-        
-        SELECT @sum;
+    SELECT @sum;
         ```
-
+    
       - 局部变量
-
-        ```
-        # 报错
-        
-        
+      
+        ```mysql
+        # 报错 (因为仅仅再begin  end 中有效)
         
         DECLARE m INT DEFAULT 1;
-        
-        
-        
         DECLARE n INT DEFAULT 2;
-        
-        
-        
-        DECLARE SUM INT;
-        
-        
-        
-        SET SUM=m+n;
-        
-        
-        
-        SELECT SUM;
-        ```
+    DECLARE SUM INT;
+      SET SUM=m+n;
+    SELECT SUM;
+      ```
 
 ## 存储过程和函数
 
@@ -7738,481 +4931,254 @@
 
 ### 1. 存储过程
 
-- 含义：一组预先编译好的sql语句的集合，理解成批处理语句
+- 含义：**一组预先编译好的sql语句的集合，理解成批处理语句**
 
 - 好处：
 
   - 提高代码的重用性
   - 简化操作
-  - 减少了编译次数并且减少了和数据库服务器的连接次数，提高了效率
+  - **减少了编译次数并且减少了和数据库服务器的连接次数，提高了效率**
 
 - 语法：
 
   - 创建语法
 
-    ```
+    ```mysql
     CREATE PROCEDURE 存储过程名(参数列表)
-    
-    
-    
     BEGIN
-    
-    
-    
         存储过程体(一组合法的SQL语句)
-    
-    
-    
     END
     ```
-
+    
   - 注意
-
+  
     - 参数列表包含三部分：参数模式，参数名，参数类型
-
+  
       - 举例：in stuname varchar(20)
       - 参数模式：
-        - in：该参数可以作为输入，也就是该参数需要调用方传入值
-        - out：该参数可以作为输出，也就是该参数可以作为返回值
-        - inout：该参数既可以作为输入又可以作为输出，也就是该参数既需要传入值，又需要返回值
-
-    - 如果存储过程体仅仅只有一句话，begin end可以省略
-
-    - **存储过程体中的每条SQL语句的结尾要求必须加分号**
-
+        - in：**该参数可以作为输入，也就是该参数需要调用方传入值**
+        - out：**该参数可以作为输出，也就是该参数可以作为返回值**
+      - inout：**该参数既可以作为输入又可以作为输出，也就是该参数既需要传入值，又需要返回值**
+  
+  - **如果存储过程体仅仅只有一句话，begin end可以省略**
+  
+  - ==**存储过程体中的每条SQL语句的结尾要求必须加分号**==
+  
     - 存储过程的结尾可以使用 DELIMITER 重新设置
-
+  
       - 语法：DELIMITER 结束标记
-
-      - 案例：
-
-        ```
+  
+    - 案例：
+  
+      ```mysql
         DELIMITER $
-        ```
-
-  - 调用语法
-
-    - call 存储过程名(实参列表)；
-
+      ```
+  
+- 调用语法
+  
+  - **call 存储过程名(实参列表)；**
+  
 - 空参列表
 
   - 案例1：插入到admin表中五条记录
 
-    ```
+    ```sql
     SELECT * FROM admin;
-    
-    
-    
     DELIMITER $
     
-    
-    
-     
-    
-    
-    
     CREATE PROCEDURE myp1()
-    
-    
-    
     BEGIN
-    
-    
-    
     INSERT INTO admin(username, `password`) 
-    
-    
-    
     VALUES
-    
-    
-    
     ('john1', '0000'),
-    
-    
-    
     ('asd', '0000'),
-    
-    
-    
     ('joqqhn1', '0000'),
-    
-    
-    
     ('qa', '0000'),
-    
-    
-    
     ('ww', '0000');
-    
-    
-    
     END $
-    
-    
-    
-     
-    
-    
     
     CALL myp1()$
     ```
-
-- 创建带in模式参数的存储过程
+    
+    ![image-20201209205905319](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209205905.png)
+    
+    ![image-20201209205751851](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209205752.png)
+    
+    
+  
+- **创建带in模式参数的存储过程**
 
   - 案例1：创建存储过程实现：根据女神名，查询对应的男神信息
 
-    ```
+    ```mysql
     CREATE PROCEDURE myp2(IN beautyname VARCHAR(20))
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT bo.*
-    
-    
-    
     FROM boys bo
-    
-    
-    
     RIGHT JOIN beauty b ON bo.id = b.boyfriend_id
-    
-    
-    
     WHERE b.name=beautyname;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
     
     
     CALL myp2('柳岩')$
-    
-    
-    
     CALL myp2('王语嫣')$
     ```
-
+    
+    ![image-20201209210018532](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209210018.png)
+    
   - 案例2：创建存储过程实现，用户是否登录成功
-
-    ```
+  
+    ```mysql
     CREATE PROCEDURE myp4(IN username VARCHAR(20), IN passward VARCHAR(20))
-    
-    
-    
     BEGIN
-    
-    
-    
     DECLARE result INT DEFAULT 0;   # 声明并初始化
-    
-    
-    
-     
-    
-    
-    
-    SELECT COUNT(*) INTO result # 赋值
-    
-    
-    
+    SELECT COUNT(*) INTO result # 给用户自定义的局部变量赋值
     FROM admin
-    
-    
-    
     WHERE admin.username = username
-    
-    
-    
     AND admin.password = PASSWORD;
     
     
-    
-     
-    
-    
-    
     SELECT IF(result>0, '成功！', '失败！'); # 使用
-    
-    
-    
     END $
-    
-    
-    
-     
-    
     
     
     CALL myp4('张飞', '8888')$
     ```
+  
+  ![image-20201209210644325](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209210644.png)
 
-- 创建带out模式的存储过程
+
+
+​		![image-20201209210801862](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209210802.png)
+
+​		
+
+- **创建带out模式的存储过程**
 
   - 案例1：根据女神名，返回对应的男神名
 
-    ```
+    ```mysql
     CREATE PROCEDURE myp5(IN beautyname VARCHAR(20), OUT boyname VARCHAR(20))
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT bo.boyname INTO boyname
-    
-    
-    
     FROM boys bo
-    
-    
-    
     INNER JOIN beauty b ON bo.id = b.boyfriend_id
-    
-    
-    
     WHERE b.name=beautyname;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
-    
     
     CALL myp5('王语嫣', @bname)$
-    
-    
-    
     SELECT @bname$
     ```
-
+    
+    ![image-20201209211046262](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209211046.png)
+    
+    ![image-20201209211142081](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209211142.png)
+    
   - 案例2：根据女神名，返回对应的男神名和男神魅力值
-
-    ```
+  
+    ```mysql
     CREATE PROCEDURE myp6(IN beautyname VARCHAR(20), OUT boyname VARCHAR(20), OUT usercp INT)
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT bo.boyname, bo.usercp INTO boyname, usercp
-    
-    
-    
     FROM boys bo
-    
-    
-    
     INNER JOIN beauty b ON bo.id = b.boyfriend_id
-    
-    
-    
     WHERE b.name=beautyname;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
     
     
     CALL myp6('王语嫣', @bname, @usercp)$
-    
-    
-    
     SELECT @bname, @usercp$
     ```
-
+    
+    ![image-20201209211343618](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209211343.png)
+    
+    ![image-20201209211422728](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209211422.png)
+  
 - 创建带inout模式参数的存储过程
 
   - 案例1：传入a和b两个值，最终a和b都翻倍并返回
 
-    ```
+    ```mysql
     CREATE PROCEDURE myp8(INOUT a INT, INOUT b INT)
-    
-    
-    
     BEGIN
-    
-    
-    
     SET a=a*2;
-    
-    
-    
     SET b=b*2;
-    
-    
-    
     END $
     
-    
-    
-     
-    
-    
-    
-    SET @m=10$
-    
-    
-    
+    SET @m=10$ 
     SET @n=20$
-    
-    
-    
     CALL myp8(@m,@n)$
-    
-    
-    
     SELECT @m,@n$
     ```
-
+    
+    ![image-20201209211706706](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209211706.png)
+  
 - 练习题
 
   - 习题1：创建存储过程实现传入用户名和密码，插入到admin表中
 
-    ```
+    ```mysql
     CREATE PROCEDURE test_pro1(IN username VARCHAR(20), IN loginpwd VARCHAR(20))
-    
-    
-    
     BEGIN
-    
-    
-    
-    INSERT INTO admin(admin.`username`, PASSWORD)
-    
-    
-    
-    VALUES(username, loginpwd);
-    
-    
-    
+    INSERT INTO admin(admin.`username`, PASSWORD)    #这里注意两个username相同无法区分时
+    VALUES(username, loginpwd);						#可以给另一个username加上表名。
     END $
-    
-    
-    
-     
-    
     
     
     CALL test_pro1('litian', '1234')$
-    
-    
-    
     SELECT * FROM admin$
     ```
-
+    
+    ![image-20201209212159181](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209212159.png)
+    
   - 习题2：创建存储过程实现传入女神编号，返回女神名称和女神电话
-
-    ```
+  
+    ```mysql
     CREATE PROCEDURE test_pro2(IN id INT, OUT NAME VARCHAR(20), OUT phone VARCHAR(20))
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT b.name, b.phone INTO NAME, phone
-    
-    
-    
     FROM beauty b
-    
-    
-    
     WHERE b.id=id;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
     
     
     SET @n=''$
-    
-    
-    
     SET @m=''$
-    
-    
-    
     CALL test_pro2(1, @n, @m)$
-    
-    
-    
     SELECT @m,@n$
     ```
-
-  - 习题3：创建存储过程来实现传入两个女神生日，返回大小
-
-    ```
+    
+  ![image-20201209212348281](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209212348.png)
+    
+- 习题3：创建存储过程来实现传入两个女神生日，返回大小
+  
+    ```mysql
     CREATE PROCEDURE test_pro3(IN birth1 DATETIME, IN birth2 DATETIME, OUT result INT)
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT DATEDIFF(birth1, birth2) INTO result;
-    
-    
-    
     END $
     
-    
-    
-     
-    
-    
-    
     CALL test_pro3('1990-2-3', NOW(), @result)$
-    
-    
-    
     SELECT @result$
     ```
-
+    
+    ![image-20201209212544383](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209212544.png)
+  
 - 存储过程的删除
 
   - 语法：drop procedure 存储过程名
 
-    ```
+    ```mysql
     DROP PROCEDURE myp1;
     ```
 
-  - 不能同时删除多个存储过程
+  - **不能同时删除多个存储过程**
 
 - 查看存储过程的信息
 
   - 语法：show create procedure 存储过程名
 
-    ```
+    ```mysql
     SHOW CREATE PROCEDURE myp2;
     ```
 
@@ -8222,105 +5188,52 @@
 
   - 练习题1：创建存储过程实现传入一个日期，格式化成xx年xx月xx日并返回
 
-    ```
+    ```mysql
     CREATE PROCEDURE test_pro4(IN mydate DATETIME, OUT strdate VARCHAR(20))
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT DATE_FORMAT(mydate, '%y年%m月%d天') INTO strdate;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
-    
     
     CALL test_pro4(NOW(), @str)$
-    
-    
-    
     SELECT @str $
     ```
-
+    
+    ![image-20201209212837906](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209212838.png)
+    
   - 练习题2：创建存储过程实现传入女神名称，返回：女神 and 男神 格式的字符串
-
-    ```
+  
+    ```mysql
     CREATE PROCEDURE test_pro5(IN beautyname VARCHAR(20), OUT str VARCHAR(50))
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT CONCAT(beautyname, ' and ', IFNULL(boyname, 'null')) INTO str
-    
-    
-    
     FROM boys bo
-    
-    
-    
     RIGHT JOIN beauty b
-    
-    
-    
     ON b.boyfriend_id=bo.id
-    
-    
-    
     WHERE b.name=beautyname;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
     
     
     CALL test_pro5('王语嫣', @result)$
-    
-    
-    
     SELECT @result$
-    ```
+  ```
+    
 
+  
+  
+  ​		![image-20201209213032065](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213032.png)
+  
   - 练习题3：创建存储过程，根据传入的起始索引和条目数，查询beauty表的记录
-
-    ```
+  
+    ```mysql
     CREATE PROCEDURE test_pro6(IN startindex INT, IN size INT)
-    
-    
-    
     BEGIN
-    
-    
-    
     SELECT * FROM beauty LIMIT startindex, size;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
-    
     
     CALL test_pro6(3, 3)$
     ```
+  
+    ![image-20201209213205231](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213205.png)
 
 ### 2. 函数
 
@@ -8333,206 +5246,109 @@
 - 与存储过程的区别：
 
   - 存储过程：可以有0个返回，也可以有多个返回（适合做批量插入、更新）
-  - 函数：有且仅有1个返回（适合处理数据后返回一个结果）
+  - 函数：**有且仅有1个返回（适合处理数据后返回一个结果）**
 
 - 创建语法：
 
-  create function 函数名（参数列表） returns 返回类型
+  create function 函数名（参数列表） **returns 返回类型**
 
   begin
 
-  函数体
+  ​	函数体(一定包含return语句)
 
   end
 
   - 注意事项：
-    - 参数列表：包含两部分：参数名 参数类型，**注意：没有in，out，inout这种模式了**
-    - 函数体：肯定会有return语句，如果没有会报错
-    - 如果return语句没有放在函数体的最后也不报错，但不建议
-    - 函数体中仅有一句话，则可以省略begin end
-    - 使用delimiter语句设置结束标记
+    - 参数列表：包含两部分：参数名 参数类型，**注意：没有in，out，inout这种参数模式了**
+    - 函数体：**肯定会有return语句，如果没有会报错**
+    - **如果return语句没有放在函数体的最后也不报错，但不建议**
+    - **函数体中仅有一句话，则可以省略begin end**
+    - **使用delimiter语句设置结束标记**
 
-- 调用语法：select 函数名(参数列表)
+- 调用语法：select 函数名(参数列表)      存储过程是call
 
   - 无参有返回
 
     - 案例1：返回公司的员工个数
 
-      ```
+      ```mysql
       CREATE FUNCTION myf1() RETURNS INT
-      
-      
-      
       BEGIN
-      
-      
-      
       DECLARE c INT DEFAULT 0;# 定义变量
-      
-      
-      
       SELECT COUNT(*) INTO c# 赋值
-      
-      
-      
       FROM employees;
-      
-      
-      
       RETURN c;
-      
-      
-      
       END $
-      
-      
-      
-       
-      
-      
       
       SELECT myf1()$
       ```
-
+      
+      ![image-20201209213616624](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213616.png)
+    
   - 有参有返回
-
+  
     - 案例1：根据员工名，返回他的工资
-
-      ```
+  
+      ```mysql
       CREATE FUNCTION myf2(empname VARCHAR(20)) RETURNS DOUBLE
-      
-      
-      
       BEGIN
-      
-      
-      
-      SET @sal=0;# 定义用户变量
-      
-      
-      
+      SET @sal=0;  # 定义用户变量
       SELECT salary INTO @sal# 赋值
-      
-      
-      
       FROM employees
-      
-      
-      
       WHERE last_name = empname;
-      
-      
-      
       RETURN @sal;
-      
-      
-      
       END $
-      
-      
-      
-       
-      
-      
       
       SELECT myf2('kochhar')$
       ```
-
+      
+      ![image-20201209213743856](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213744.png)
+      
     - 案例2：根据部门名，返回该部门的平均工资
-
-      ```
+    
+    ```mysql
       CREATE FUNCTION myf3(deptname VARCHAR(20)) RETURNS DOUBLE
-      
-      
-      
-      BEGIN
-      
-      
-      
-      DECLARE sal DOUBLE;
-      
-      
-      
-      SELECT AVG(salary) INTO sal
-      
-      
-      
+    BEGIN
+      DECLARE sal DOUBLE;  #定义局部变量
+    SELECT AVG(salary) INTO sal #赋值
       FROM employees e
-      
-      
-      
       JOIN departments d ON e.department_id = d.department_id
-      
-      
-      
       WHERE d.department_name=deptname;
-      
-      
-      
-       
-      
-      
-      
       RETURN sal;
-      
-      
-      
       END $
-      
-      
-      
-       
-      
       
       
       SELECT myf3('IT')$
       ```
-
+      
+      ![image-20201209213931529](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213931.png)
+  
 - 查看函数：
 
-  ```
+  ```mysql
   SHOW CREATE FUNCTION myf3;
   ```
 
 - 删除函数：
 
-  ```
+  ```mysql
   DROP FUNCTION myf3;
   ```
 
 - 案例1：创建函数，实现传入两个float，返回二者之和
 
-  ```
+  ```mysql
   CREATE FUNCTION test_fun1(num1 FLOAT, num2 FLOAT) RETURNS FLOAT
-  
-  
-  
   BEGIN
-  
-  
-  
   DECLARE SUM FLOAT DEFAULT 0;
-  
-  
-  
-  SET SUM=num1+num2;
-  
-  
-  
+  SET SUM = num1+num2;
   RETURN SUM;
-  
-  
-  
   END $
-  
-  
-  
-   
-  
-  
   
   SELECT test_fun1(1,2)$
   ```
+  
+  ![image-20201209214138972](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209214139.png)
 
 ## 流程控制结构
 
@@ -8540,27 +5356,29 @@
 
   - 顺序结构：结构从上往下依次执行
   - 分支结构：程序从两条或多条路径中选择一条去执行
-  - 循环结构：程序在满足一定条件的基础上，重复执行一段代码
+  - 循环结构：**程序在满足一定条件的基础上，重复执行一段代码**
 
 - 分支结构
 
-  - if函数
+  - ==if函数==
 
     - 功能：实现简单的双分支
 
     - 语法：
 
-      select if(表达式1，表达式2，表达式3)
+      s**elect if  (表达式1，表达式2，表达式3)**
 
     - 执行顺序：
 
-      如果表达式1成立，则if函数返回表达式2的值，否则返回表达式3的值
+      **如果表达式1成立，则if函数返回表达式2的值，否则返回表达式3的值**
 
     - 应用环境：任何地方
 
-  - case结构
+      ![image-20201209214330639](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209214330.png)
 
-    - 情况1：类似于java中的switch语句，一般用于实现等值判断
+  - ==case结构==
+
+    - 情况1：**类似于java中的switch语句，一般用于实现等值判断**
 
       - 语法：
 
@@ -8574,9 +5392,9 @@
 
         else 要返回的值n或语句n；
 
-        end case；
+        **end case；**
 
-    - 情况2：类似于java中的多重if语句，一般用于实现区间判断
+    - 情况2：**类似于java中的多重if语句，一般用于实现区间判断**
 
       - 语法：
 
@@ -8590,14 +5408,14 @@
 
         else 要返回的值n或语句n；
 
-        end case；
+        **end case；**
 
     - 特点：
-
+  
       - 可以作为表达式，嵌套在其他语句中使用，可以放在任何地方，begin end 中，或 begin end 的外面
       - 也可以作为独立的语句去使用，只能放在begin end 中
       - 如果when中的值满足或条件成立，则执行对应的then后面的语句，并且结束case
-      - 如果都不满足，则执行else中的语句或值
+    - 如果都不满足，则执行else中的语句或值
       - else可以省略，如果else省略了，并且所有的when条件都不满足，则返回null
 
     ![img](https://img-blog.csdnimg.cn/20190801203053262.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
@@ -8605,47 +5423,22 @@
     ![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201118213204.png)
 
   - 案例1：创建存储过程，根据传入的成绩，来显示等级，比如传入的成绩：90-100，显示A；80-90：显示B；60-80：显示C；否则显示D
-
-    ```
-    CREATE PROCEDURE test_case(IN score INT)
-    
-    
-    
+  
+    ```mysql
+    CREATE PROCEDURE test_case(IN score INT)   #很明显是case结构的第二种情况
     BEGIN
-    
-    
-    
     CASE 
     WHEN score >= 90 AND score <= 100 THEN SELECT 'A';
-    
-    
-    
     WHEN score >=80 THEN SELECT 'B';
-    
-    
-    
     WHEN score >= 60 THEN SELECT 'C';
-    
-    
-    
     ELSE SELECT 'D';
-    
-    
-    
     END CASE;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
-    
     
     CALL test_case(95)$
     ```
+    
+    ![image-20201209214923684](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209214923.png)
     
   - if结构
   
@@ -8661,51 +5454,26 @@
   
     【else 语句n；】
   
-    end if；
+    **end if；**
   
   - 应用场合：应用在begin end中
   
 - 案例2：创建存储过程，根据传入的成绩，来返回等级，比如传入的成绩：90-100，返回A；80-90：返回B；60-80：返回C；否则返回D
   
-  ```
+  ```mysql
     CREATE FUNCTION test_if(score INT) RETURNS CHAR
-  
-    
-    
     BEGIN
-    
-    
-    
     IF score >= 90 AND score <= 100 THEN RETURN 'A';
-    
-    
-    
     ELSEIF score >=80 THEN RETURN 'B';
-    
-    
-    
     ELSEIF score >= 60 THEN RETURN 'C';
-    
-    
-    
     ELSE RETURN 'D';
-    
-    
-    
     END IF;
-    
-    
-    
     END $
-    
-    
-    
-     
-    
-    
-    
+   
     SELECT test_if(86)$
-    ```
+  ```
+  
+  ![image-20201209215131630](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209215131.png)
   
 - 循环结构
 
@@ -8713,8 +5481,8 @@
 
   - 循环控制：
 
-    - iterate：类似于continue，继续；结束本次循环，继续下一次
-    - leave：类似于break，跳出；结束当前所在循环
+    - iterate：类似于continue，继续；**结束本次循环，继续下一次**
+    - leave：类似于break，跳出；**结束当前所在循环**
 
   - while
 
@@ -8761,143 +5529,53 @@
 
 - 批量插入，根据次数插入到admin表中多条记录
 
-  ```
+  ```mysql
   CREATE PROCEDURE pro_while1(IN insertcount INT)
-  
-  
-  
   BEGIN
-  
-  
-  
-  DECLARE i INT DEFAULT 1;
-  
-  
-  
+  DECLARE i INT DEFAULT 1; #定义一个局部变量
   WHILE i <= insertcount DO
-  
-  
-  
   INSERT INTO admin(username, `password`) VALUES(CONCAT('Rose', i), '666');
-  
-  
-  
   SET i=i+1;
-  
-  
-  
   END WHILE;
-  
-  
-  
   END $
   
-  
-  
-   
-  
-  
-  
   CALL pro_while1(100)$
-  
-  
-  
-  SELECT * FROM admin;
+  SELECT * FROM admin$
   ```
-
+  
 - 案例2：添加leave语句
 
 - 批量插入，根据次数插入到admin表中20条记录
 
-  ```
+  ```mysql
   CREATE PROCEDURE test_while1(IN insertcount INT)
-  
-  
-  
   BEGIN
-  
-  
-  
   DECLARE i INT DEFAULT 1;
-  
-  
-  
   a:WHILE i <= insertcount DO
-  
-  
-  
   INSERT INTO admin(username, `password`) VALUES(CONCAT('xiaohua', i), '000');
-  
-  
-  
   IF i>=20 THEN LEAVE a;
-  
-  
-  
   END IF;
-  
-  
-  
   SET i=i+1;
-  
-  
-  
   END WHILE a;
-  
-  
-  
   END $
   
-  
-  
-   
-  
-  
-  
   CALL test_while1(100)$
-  
-  
-  
   SELECT * FROM admin;
   ```
-
+  
 - 案例3：添加iterate语句
 
 - 批量插入，根据次数插入到admin表中多条记录，只插入偶数次
 
-  ```
+  ```mysql
   CREATE PROCEDURE test_while2(IN insertcount INT)
-  
-  
-  
   BEGIN
-  
-  
-  
   DECLARE i INT DEFAULT 0;
-  
-  
-  
   a:WHILE i <= insertcount DO
-  
-  
-  
   SET i=i+1;
-  
-  
-  
   IF MOD(i,2) != 0 THEN ITERATE a;
-  
-  
-  
   END IF;
-  
-  
-  
   INSERT INTO admin(username, `password`) VALUES(CONCAT('xiaohua', i), '000');
-  
-  
-  
   END WHILE a;
   END $
   
@@ -8911,17 +5589,10 @@
 
   ```sql
   USE test;
-  
-  
   DROP TABLE IF EXISTS stringcontent;
-  
   CREATE TABLE stringcontent(
-  
-  
   id INT PRIMARY KEY AUTO_INCREMENT,
-  
   content VARCHAR(20)
-  
   );
   
   DELIMITER $
@@ -8933,13 +5604,13 @@
   DECLARE len INT DEFAULT 1;# 代表截取的字符的长度
   
   WHILE i<=insertcount DO
-  SET len=FLOOR(RAND()*(20-startindex+1)+1);# 产生一个随机的整数，代表截取长度，1-(26-startindex+1)
+  SET len=FLOOR(RAND()*(20-startindex+1)+1); #产生一个随机的整数，代表截取长度，1-(26-startindex+1)
   SET startindex=FLOOR(RAND()*26+1);# 产生一个随机的整数，代表起始索引1-26
   INSERT INTO stringcontent(content) VALUES(SUBSTR(str, startindex, len));
   SET i=i+1;
-  
   END WHILE;
   END $
+  
   CALL test_randstr_insert(10)$
   SELECT * FROM stringcontent;
   CALL test_randstr_insert(10)$

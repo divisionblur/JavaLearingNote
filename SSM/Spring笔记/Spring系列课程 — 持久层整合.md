@@ -1,4 +1,4 @@
-###  百知教育 — Spring系列课程 — 持久层整合
+###  Spring系列— 持久层整合
 
 ----
 
@@ -410,6 +410,8 @@ public class XXXUserServiceImpl{
     本质： 一把行锁
     ~~~
 
+    
+
   - 幻影读
 
     ~~~markdown
@@ -499,8 +501,8 @@ public class XXXUserServiceImpl{
 
   | 传播属性的值  | 外部不存在事务 | 外部存在事务               | 用法                                                    | 备注           |
   | ------------- | -------------- | -------------------------- | ------------------------------------------------------- | -------------- |
-  | REQUIRED      | 开启新的事务   | 融合到外部事务中           | @Transactional(propagation = Propagation.REQUIRED)      | 增删改方法     |
-  | SUPPORTS      | 不开启事务     | 融合到外部事务中           | @Transactional(propagation = Propagation.SUPPORTS)      | 查询方法       |
+  | REQUIRED      | 开启新的事务   | **融合**到外部事务中       | @Transactional(propagation = Propagation.REQUIRED)      | 增删改方法     |
+  | SUPPORTS      | 不开启事务     | **融合**到外部事务中       | @Transactional(propagation = Propagation.SUPPORTS)      | 查询方法       |
   | REQUIRES_NEW  | 开启新的事务   | 挂起外部事务，创建新的事务 | @Transactional(propagation = Propagation.REQUIRES_NEW)  | 日志记录方法中 |
   | NOT_SUPPORTED | 不开启事务     | 挂起外部事务               | @Transactional(propagation = Propagation.NOT_SUPPORTED) | 及其不常用     |
   | NEVER         | 不开启事务     | 抛出异常                   | @Transactional(propagation = Propagation.NEVER)         | 及其不常用     |
@@ -516,7 +518,7 @@ public class XXXUserServiceImpl{
 
   ~~~markdown
   增删改 方法：直接使用默认值REQUIRED 
-  查询   操作：显示指定传播属性的值为SUPPORTS  
+  查询   操作：显示指定传播属性的值为 SUPPORTS  
   ~~~
 
 ###### 3. 只读属性(readOnly)
@@ -540,6 +542,16 @@ public class XXXUserServiceImpl{
    最终由对应的数据库来指定
 ~~~
 
+测试时我们可以让方法睡眠来模拟事务在等待(我认为这个超时时间是事务开始然后结束总的时间，如果到了设置的时间就会抛出异常)
+
+
+
+![image-20201209104829254](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209104829.png)
+
+![image-20201209104757924](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209104805.png)
+
+
+
 ###### 5. 异常属性
 
 ~~~markdown
@@ -547,20 +559,38 @@ Spring事务处理过程中
 默认 对于RuntimeException及其子类 采用的是回滚的策略
 默认 对于Exception及其子类 采用的是提交的策略
 
-rollbackFor = {java.lang.Exception,xxx,xxx} 
-noRollbackFor = {java.lang.RuntimeException,xxx,xx}
+回滚 rollbackFor = {java.lang.Exception,xxx,xxx} 
+提交  noRollbackFor = {java.lang.RuntimeException,xxx,xx}
 
 @Transactional(rollbackFor = {java.lang.Exception.class},noRollbackFor = {java.lang.RuntimeException.class})
-
-建议：实战中使用RuntimeExceptin及其子类 使用事务异常属性的默认值
+设置之后Exception就使用回滚的策略
+建议：实战中使用 RuntimeExceptin及其子类 使用事务异常属性的默认值
 ~~~
+
+```java
+ @Override
+    public void register(User user) throws Exception {
+
+        userDAO.save(user);
+        throw new RuntimeException("测试");
+//        throw new Exception("测试2");
+    }
+```
+
+**默认 对于RuntimeException及其子类 采用的是回滚的策略**
+
+![image-20201209105751149](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209105751.png)
+
+**默认 对于Exception及其子类 采用的是提交的策略**
+
+![image-20201209105644606](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209105644.png)
 
 ##### 4. 事务属性常见配置总结
 
 ~~~markdown
 1. 隔离属性   默认值 
-2. 传播属性   Required(默认值) 增删改   Supports 查询操作
-3. 只读属性   readOnly false  增删改   true 查询操作
+2. 传播属性   Required(默认值) 增删改操作   Supports 查询操作
+3. 只读属性   readOnly false  增删改操作   true 查询操作
 4. 超时属性   默认值 -1
 5. 异常属性   默认值 
 
@@ -587,6 +617,12 @@ public class UserServiceImpl implements UserService {
 
 <tx:annotation-driven transaction-manager="dataSourceTransactionManager"/>
 
+
+
+
+
+
+
 基于标签的事务配置
 <bean id="userService" class="com.baizhiedu.service.UserServiceImpl">
   <property name="userDAO" ref="userDAO"/>
@@ -596,6 +632,7 @@ public class UserServiceImpl implements UserService {
 <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
   <property name="dataSource" ref="dataSource"/>
 </bean>
+
 
 事务属性 
 <tx:advice id="txAdvice" transacation-manager="dataSourceTransactionManager">
@@ -607,12 +644,11 @@ public class UserServiceImpl implements UserService {
           public void register(){
         
           }
-      
     </tx:attributes>
 </tx:advice>
 
 <aop:config>
-     <aop:pointcut id="pc" expression="execution(* com.baizhiedu.service.UserServiceImpl.register(..))"></aop:pointcut>
+     <aop:pointcut id="pc" expression="execution(* com.lihai.service.UserServiceImpl.register(..))"></aop:pointcut>
      <aop:advisor advice-ref="txAdvice" pointcut-ref="pc"></aop:advisor>
 </aop:config>
 ~~~
@@ -639,169 +675,11 @@ public class UserServiceImpl implements UserService {
       </tx:attributes>
   </tx:advice>
   
-  应用的过程中，service放置到service包中
+  应用的过程中，service放置到service包中(使用包切入点)
   <aop:config>
-       <aop:pointcut id="pc" expression="execution(* com.baizhiedu.service..*.*(..))"></aop:pointcut>
-       <aop:advisor advice-ref="txAdvice" pointcut-ref="pc"></aop:advisor>
+       <aop:pointcut id="pc" expression="execution(* com.lihai.service..*.*(..))"></aop:pointcut>
+       <aop:advisor advice-ref="txAdvice" pointcut-ref="pc"></aop:advisor>  
   </aop:config>
   ~~~
 
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-###### 
-
-
-
-###### 
-
-###### 
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
