@@ -154,7 +154,7 @@
 
 - ifnull函数检测是否为null，如果为null，则返回指定的值，否则返回原本的值：
 
-  ```
+  ```mysql
   select ifnull(commission_pct, 0) as 奖金率, commission_pct from employees;
   ```
 
@@ -341,8 +341,8 @@
       location_id 
     FROM
       departments ;
-    ```
-    
+  ```
+  
   - 经典面试题：`select * from employees;` 和 `select * from employees where commission_pct like ‘%%’ and last_name like ‘%%’;` 结果是否一样？并说明原因：**不一样！如果判断的字段中有null值**，如果查询是`select * from employees where commission_pct like ‘%%’ or last_name like ‘%%’ or ...;`把所有字段都or写齐了就一样了。
 
 ### 3. 排序查询
@@ -505,8 +505,8 @@
           '李莫愁爱上了陆展元',
         6
         ) AS output ;  #陆展元
-    ```
-      
+      ```
+    
   - 截取从指定索引处指定字符长度的字符
     
       ```mysql
@@ -529,18 +529,17 @@
       ) AS output 
   FROM
       employees ;
-  ```
+    ```
+  ```mysql
     
   - instr：返回子串第一次出现的索引，如果找不到返回0
-  
-    ```mysql
     SELECT 
       INSTR(
         '杨不悔爱上了殷六侠',
         '殷六侠'
       ) AS output ;
-    ```
-    
+  ```
+  
   - trim：去掉字符串前后的空格或子串
   
     ```mysql
@@ -553,8 +552,9 @@
     TRIM('a' FROM 'aaa张a翠aa山aaaaa') AS output ;
     ```
     
+  
   ![image-20201209220401649](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209220401.png)
-    
+  
 - lpad：用指定的字符实现左填充指定长度
   
   - rpad：用指定的字符实现右填充指定长度
@@ -601,14 +601,14 @@
     FROM
         employees 
       WHERE hiredate = STR_TO_DATE('4-3 1992', '%c-%d %Y') ;
-      ```
+    ```
     
   - **date_format：将日期转换成字符串**
   
   ```mysql
     SELECT DATE_FORMAT(NOW(), '%y年%m月%d日)') AS output ;
   ```
-    
+  
     - 查询有奖金的员工名和入职日期（xx月/xx日 xx年）
     
       ```mysql
@@ -686,9 +686,11 @@
     	END  AS 新工资 
     FROM
         employees ;
+      ```
     ```
       
     ![image-20201209220957861](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209220958.png)
+    ```
     
   - case函数的使用2：类似于多重if
   
@@ -722,7 +724,7 @@
       END AS 工资级别 
       FROM
     	employees ;
-      ```
+    ```
   
 - 测试题
 
@@ -872,7 +874,7 @@
     FROM
       employees 
     WHERE department_id = 90 ;
-  ```
+    ```
 
 ### 5. 分组查询
 
@@ -1048,12 +1050,12 @@
           employees 
         GROUP BY 姓名长度 
         HAVING 员工个数 > 5 ;
-      ```
-    
+        ```
+  
 - 按多个字段分组
   
     - 查询每个部门每个工种的员工的平均工资
-  
+    
       ```sql
       SELECT 
         AVG(salary),
@@ -1282,8 +1284,8 @@
         locations l 
       WHERE d.`location_id` = l.`location_id` 
       GROUP BY city ;
-    ```
-      
+      ```
+    
   - 查询有将近的每个部门的部门名和部门的领导编号和该部门的最低工资
     
     ```sql
@@ -1297,7 +1299,7 @@
       WHERE d.`department_id` = e.`department_id` 
       AND commission_pct IS NOT NULL 
       GROUP BY department_name,d.manager_id ;
-      ```
+    ```
     
   - 可以加排序
   
@@ -1385,8 +1387,8 @@
         employees 
       ORDER BY department_id DESC,
         salary ASC ;
-    ```
-      
+      ```
+    
   - 查询员工表的job_id中包含a和e的，并且a在e的前面
   
       ```sql
@@ -1395,8 +1397,8 @@
     FROM
         employees 
       WHERE job_id LIKE '%a%e%' ;
-      ```
-      
+    ```
+    
     - 显示当前日期，以及去前后空格，截取子字符串的函数
     
       ```sql
@@ -1566,21 +1568,21 @@
         HAVING COUNT(*) > 20 
         ORDER BY grade_level DESC ;
         ```
-      
+  
 - 自连接
-    
+  
   - 查询员工的名字、上级的名字
     
-        ```sql
-        SELECT 
-          e.last_name,
-          m.last_name 
-        FROM
-          employees e 
-          INNER JOIN employees m 
-          ON e.`manager_id` = m.`employee_id` ;
-        ```
-        
+    ```mysql
+    SELECT 
+      e.last_name,
+      m.last_name 
+    FROM
+      employees e 
+      INNER JOIN employees m 
+      ON e.`manager_id` = m.`employee_id` ;
+    ```
+    
       - 查询姓名中包含字符k的员工的名字、上级的名字
       
         ```sql
@@ -1618,8 +1620,8 @@
         LEFT JOIN boys bo 
         ON b.boyfriend_id = bo.id 
       WHERE bo.`id` IS NULL ;
-      ```
-      
+    ```
+    
     - 查询哪个部门没有员工
     
     - 左外：
@@ -1851,233 +1853,77 @@
     
   - 案例2：返回其他工种中比job_id为‘IT_PROG’工种任一工资低的员工的员工号、姓名、job_id以及salary
   
-    ```
+    ```mysql
     SELECT 
-    
-    
-    
       employee_id,
-    
-    
-    
       last_name,
-    
-    
-    
       job_id,
-    
-    
-    
       salary 
-    
-    
-    
-    FROM
-    
-    
-  
+    FRO
       employees 
-  
-    
-    
     WHERE salary < ANY 
-    
-    
-    
       (SELECT DISTINCT 
-    
-    
-    
         salary 
-    
-    
-    
       FROM
-    
-    
-    
         employees 
-    
-    
-    
       WHERE job_id = 'IT_PROG') 
-    
-    
-    
       AND job_id <> 'IT_PROG' ;
     ```
-  
+    
     或者用max代替any
-  
-    ```
+    
+    ```mysql
     SELECT 
-    
-    
-    
       employee_id,
-    
-    
-    
       last_name,
-    
-    
-    
       job_id,
-    
-    
-    
-      salary 
-    
-    
-    
+    salary 
     FROM
-    
-    
-  
-      employees 
-  
-    
-    
+    employees 
     WHERE salary < 
-    
-    
-    
       (SELECT 
-    
-    
-    
         MAX(salary) 
-    
-    
-    
       FROM
-    
-    
-    
         employees 
-    
-    
-    
       WHERE job_id = 'IT_PROG') 
-    
-    
-    
       AND job_id <> 'IT_PROG' ;
     ```
-  
+    
   - 案例3：返回其他工种中比job_id为‘IT_PROG’工种所有工资都低的员工的员工号、姓名、job_id以及salary
   
-    ```
+    ```mysql
     SELECT 
-    
-    
-    
       employee_id,
-    
-    
-    
       last_name,
-    
-    
-    
       job_id,
-    
-    
-    
       salary 
-    
-    
-    
     FROM
-    
-    
-  
       employees 
-  
-    
-    
     WHERE salary < ALL 
-    
-    
-    
       (SELECT DISTINCT 
-    
-    
-    
         salary 
-    
-    
-    
       FROM
-    
-    
-    
         employees 
-    
-    
-    
       WHERE job_id = 'IT_PROG') 
-    
-    
-    
       AND job_id <> 'IT_PROG' ;
     ```
-  
+    
     或者用min代替all
-  
-    ```
+    
+    ```mysql
     SELECT 
-    
-    
-    
       employee_id,
-    
-    
-    
       last_name,
-    
-    
-    
       job_id,
-    
-    
-    
-      salary 
-    
-    
-    
+    salary 
     FROM
-    
-    
-  
-      employees 
-  
-    
-    
+    employees 
     WHERE salary < 
-    
-    
-    
       (SELECT 
-    
-    
-    
         MIN(salary) 
-    
-    
-    
       FROM
-    
-    
-    
         employees 
-    
-    
-    
       WHERE job_id = 'IT_PROG') 
-    
-    
-    
       AND job_id <> 'IT_PROG' ;
     ```
 
@@ -2087,43 +1933,16 @@
 
 - 案例1：查询员工编号最少并且工资最高的员工信息
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE (employee_id, salary) = 
-  
-  
-  
     (SELECT 
-  
-  
-  
       MIN(employee_id),
-  
-  
-  
       MAX(salary) 
-  
-  
-  
     FROM
-  
-  
-  
       employees) ;
   ```
 
@@ -2133,73 +1952,28 @@
 
 - 案例1：查询每个部门的员工个数
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     d.*,
-  
-  
-  
     (SELECT 
-  
-  
-  
       COUNT(*) 
-  
-  
-  
     FROM
-  
-  
-  
       employees e 
-  
-  
-  
     WHERE e.department_id = d.department_Id) 个数 
-  
-  
-  
   FROM
-  
-  
-  
     departments d ;
   ```
-
+  
 - 案例2：查询员工号=102的部门名
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     (SELECT 
-  
-  
-  
       department_name 
-  
-  
-  
     FROM
-  
-  
-  
       departments d 
-  
-  
-  
       INNER JOIN employees e 
-  
-  
-  
-        ON d.department_id = e.department_id 
-  
-  
-  
+      ON d.department_id = e.department_id 
     WHERE e.employee_id = 102) 部门名 ;
   ```
 
@@ -2209,56 +1983,20 @@
 
 - 案例1：查询每个部门的平均工资的工资等级
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     ag_dep.*,
-  
-  
-  
     g.`grade_level` 
-  
-  
-  
   FROM
-  
-  
-  
     (SELECT 
-  
-  
-  
       AVG(salary) ag,
-  
-  
-  
       department_id 
-  
-  
-  
     FROM
-  
-  
-  
       employees 
-  
-  
-  
     GROUP BY department_id) ag_dep 
-  
-  
-  
     INNER JOIN job_grades g 
-  
-  
-  
-      ON ag_dep.ag BETWEEN g.`lowest_sal` 
-  
-  
-  
-      AND g.`highest_sal` ;
+    ON ag_dep.ag BETWEEN g.`lowest_sal` 
+    AND g.`highest_sal` ;
   ```
 
 #### exists后面
@@ -2271,425 +2009,149 @@
 
 - 案例1：查询有员工的部门名
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     department_name 
-  
-  
-  
   FROM
-  
-  
-  
     departments d 
-  
-  
-  
   WHERE EXISTS 
-  
-  
-  
     (SELECT 
-  
-  
-  
       * 
-  
-  
-  
     FROM
-  
-  
-  
-      employees e 
-  
-  
-  
+    employees e 
     WHERE d.`department_id` = e.`department_id`) ;
   ```
-
+  
   用in更简单
-
-  ```
+  
+  ```mysql
   SELECT 
-  
-  
-  
     department_name 
-  
-  
-  
   FROM
-  
-  
-  
     departments d 
-  
-  
-  
   WHERE d.`department_id` IN 
-  
-  
-  
     (SELECT 
-  
-  
-  
       department_id 
-  
-  
-  
     FROM
-  
-  
-  
       employees e) ;
   ```
-
+  
 - 习题集
 
   1. 查询和zlotkey相同部门的员工姓名和工资
 
-     ```
+     ```mysql
      SELECT 
-     
-     
-     
        last_name,
-     
-     
-     
        salary 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      WHERE department_id = 
-     
-     
-     
        (SELECT 
-     
-     
-     
          department_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees e 
-     
-     
-     
        WHERE e.`last_name` = 'Zlotkey') ;
      ```
-
+     
   2. 查询工资比公司平均工资高的员工的员工号，姓名和工资
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        employee_id,
-     
-     
-     
        last_name,
-     
-     
-     
        salary 
-     
-     
-     
      FROM
-     
-     
-     
        employees e 
-     
-     
-     
      WHERE e.`salary` > 
-     
-     
-     
        (SELECT 
-     
-     
-     
          AVG(salary) 
-     
-     
-     
        FROM
-     
-     
-     
          employees) ;
      ```
-
+     
   3. 查询各部门中工资比本部门平均工资高的员工的员工号，姓名和工资
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        employee_id,
-     
-     
-     
        last_name,
-     
-     
-     
        salary 
-     
-     
-     
      FROM
-     
-     
-     
        employees e 
-     
-     
-     
        INNER JOIN 
-     
-     
-     
          (SELECT 
-     
-     
-     
            AVG(salary) ag,
-     
-     
-     
            department_id 
-     
-     
-     
-         FROM
-     
-     
-     
+       FROM
            employees 
-     
-     
-     
-         GROUP BY department_id) nt 
-     
-     
-     
+       GROUP BY department_id) nt 
          ON nt.department_id = e.department_id 
-     
-     
-     
      WHERE salary > ag ;
      ```
-
+     
   4. 查询和姓名中包含字母u的员工在相同部门的员工的员工号和姓名
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        employee_id,
-     
-     
-     
        last_name 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      WHERE department_id IN 
-     
-     
-     
        (SELECT DISTINCT 
-     
-     
-     
          department_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        WHERE last_name LIKE '%u%') ;
      ```
-
+     
   5. 查询在部门的location_id为1700的部门工作的员工的员工号
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        employee_id 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      WHERE department_id IN 
-     
-     
-     
        (SELECT DISTINCT 
-     
-     
-     
          department_id 
-     
-     
-     
        FROM
-     
-     
-     
          departments 
-     
-     
-     
        WHERE location_id = 1700) ;
      ```
-
+     
   6. 查询管理者是King的员工姓名和工资
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        last_name,
-     
-     
-     
        salary 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
-     WHERE manager_id IN 
-     
-     
-     
+   WHERE manager_id IN 
        (SELECT 
-     
-     
-     
-         employee_id 
-     
-     
-     
+       employee_id 
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        WHERE last_name = 'K_ing') ;
      ```
-
+     
   7. 查询工资最高的员工的姓名，要求first_name和last_name显示为一列，列名为 姓.名
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        CONCAT(nt.first_name, nt.last_name) "姓.名" 
-     
-     
-     
      FROM
-     
-     
-     
        (SELECT 
-     
-     
-     
          first_name,
-     
-     
-     
          last_name 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        WHERE salary = 
-     
-     
-     
          (SELECT 
-     
-     
-     
            MAX(salary) 
-     
-     
-     
          FROM
-     
-     
-     
            employees)) nt ;
      ```
 
@@ -2723,7 +2185,7 @@
 
 - 特点：
 
-  - limit语句放在查询语句的最后
+  - **limit语句放在查询语句的最后**
 
   - 公式：
 
@@ -2737,477 +2199,171 @@
 
 - 案例1：查询前5条员工信息
 
-  ```
+  ```mysql
   SELECT * FROM employees LIMIT 0, 5;
-  
-  
-  
   或者
-  
-  
-  
   SELECT * FROM employees LIMIT 5;
   ```
-
+  
 - 案例2：查询第11条-第25条
 
-  ```
+  ```mysql
   SELECT * FROM employees LIMIT 10, 15;
   ```
 
 - 案例3：有奖金的员工信息，并且工资较高的前10名显示出来
 
-  ```
+  ```mysql
   SELECT 
-  
-  
-  
     * 
-  
-  
-  
   FROM
-  
-  
-  
     employees 
-  
-  
-  
   WHERE commission_pct IS NOT NULL 
-  
-  
-  
   ORDER BY salary DESC 
-  
-  
-  
   LIMIT 10 ;
   ```
-
+  
 - 经典案例1：
 
   1. 查询工资最低的员工信息：last_name, salary
 
-     ```
+     ```mysql
      SELECT 
-     
-     
-     
        last_name,
-     
-     
-     
        salary 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      WHERE salary = 
-     
-     
-     
        (SELECT 
-     
-     
-     
          MIN(salary) 
-     
-     
-     
        FROM
-     
-     
-     
          employees) ;
      ```
-
+     
   2. 查询平均工资最低的部门信息
-
-     ```
-     SELECT 
-     
-     
-     
+  
+     ```mysql
+     SELECT
        * 
-     
-     
-     
      FROM
-     
-     
-     
        departments 
-     
-     
-     
      WHERE department_id = 
-     
-     
-     
        (SELECT 
-     
-     
-     
          department_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        GROUP BY department_id 
-     
-     
-     
        ORDER BY AVG(salary) ASC 
-     
-     
-     
        LIMIT 1) ;
      ```
-
+     
   3. 查询平均工资最低的部门信息和该部门的平均工资
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        d.*,
-     
-     
-     
        dd.ag 
-     
-     
-     
      FROM
-     
-     
-     
        departments d 
-     
-     
-     
        INNER JOIN 
-     
-     
-     
-         (SELECT 
-     
-     
-     
+       (SELECT 
            AVG(salary) ag,
-     
-     
-     
-           department_id 
-     
-     
-     
+         department_id 
          FROM
-     
-     
-     
            employees 
-     
-     
-     
          GROUP BY department_id 
-     
-     
-     
          ORDER BY ag 
-     
-     
-     
          LIMIT 1) dd 
-     
-     
-     
          ON d.`department_id` = dd.department_id ;
      ```
-
+     
   4. 查询平均工资最高的job信息
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        * 
-     
-     
-     
      FROM
-     
-     
-     
        jobs j 
-     
-     
-     
      WHERE j.`job_id` = 
-     
-     
-     
        (SELECT 
-     
-     
-     
          job_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        GROUP BY job_id 
-     
-     
-     
        ORDER BY AVG(salary) DESC 
-     
-     
-     
        LIMIT 1) ;
      ```
-
+     
   5. 查询平均工资高于公司平均工资的部门有哪些
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        AVG(salary) ag,
-     
-     
-     
        department_id 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      GROUP BY department_id 
-     
-     
-     
      HAVING ag > 
-     
-     
-     
        (SELECT 
-     
-     
-     
          AVG(salary) 
-     
-     
-     
        FROM
-     
-     
-     
          employees) ;
      ```
-
+     
   6. 查询出公司中所有manager的详细信息
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        * 
-     
-     
-     
      FROM
-     
-     
-     
-       employees 
-     
-     
-     
+     employees 
      WHERE employee_id IN 
-     
-     
-     
-       (SELECT DISTINCT 
-     
-     
-     
+     (SELECT DISTINCT 
          manager_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        WHERE manager_id IS NOT NULL) ;
      ```
-
+     
   7. 各个部门中，最高工资中，最低的那个部门的最低工资是多少
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        MIN(salary) 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      WHERE department_id = 
-     
-     
-     
        (SELECT 
-     
-     
-     
          department_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        GROUP BY department_id 
-     
-     
-     
        ORDER BY MAX(salary) ASC 
-     
-     
-     
        LIMIT 1) ;
      ```
-
+     
   8. 查询平均工资最高的部门的manager的详细信息
-
-     ```
+  
+     ```mysql
      SELECT 
-     
-     
-     
        last_name,
-     
-     
-     
        department_id,
-     
-     
-     
        email,
-     
-     
-     
        salary 
-     
-     
-     
      FROM
-     
-     
-     
        employees 
-     
-     
-     
      WHERE employee_id = 
-     
-     
-     
        (SELECT DISTINCT 
-     
-     
-     
          manager_id 
-     
-     
-     
        FROM
-     
-     
-     
          employees 
-     
-     
-     
        WHERE department_id = 
-     
-     
-     
          (SELECT 
-     
-     
-     
            department_id 
-     
-     
-     
          FROM
-     
-     
-     
            employees 
-     
-     
-     
          GROUP BY department_id 
-     
-     
-     
          ORDER BY AVG(salary) DESC 
-     
-     
-     
          LIMIT 1) 
          AND manager_id IS NOT NULL) ;
      ```
@@ -3241,7 +2397,8 @@
   FROM
     employees 
   WHERE department_id > 90;
-```
+  ```
+```mysql
   
 - 语法：
 
@@ -3299,8 +2456,6 @@
   - 语法：insert into 表名（列名，…） values（值1，…）
 
   - 示例1：插入的值的类型要与列的类型一致或兼容
-
-    ```sql
     INSERT INTO beauty (
       id,
       NAME,
@@ -3310,8 +2465,8 @@
       photo,
       boyfriend_id
     ) VALUES(13,'唐艺昕','女','1990-4-23','18934531234',NULL,2);
-    ```
-    
+```
+
   - 示例2：不可以为null的列必须插入值。可以为null的列如何插入值？
   
     ```sql
@@ -3500,11 +2655,10 @@
       INNER JOIN boys b 
     ON b.`id` = be.`boyfriend_id` 
     WHERE b.`boyName` = '张无忌' ;
-  ```
+    ```
+  ```mysql
     
   - 案例3：删除黄晓明的信息以及他女朋友的信息
-  
-    ```sql
     DELETE 
       b,
       be 
@@ -3513,7 +2667,7 @@
       INNER JOIN boys b 
       ON b.`id` = be.`boyfriend_id` 
     WHERE b.`boyName` = '黄晓明' ;
-    ```
+  ```
   
 - 方式2：truncate
 
@@ -3745,8 +2899,8 @@
       department_name 
     FROM
       departments;
-    ```
-    
+  ```
+  
   - 创建表emp5
   
     ```mysql
@@ -3768,7 +2922,7 @@
   
   ```mysql
     CREATE TABLE employee2 LIKE employees ;
-    ```
+  ```
   
   - 删除表emp5
   
@@ -4320,30 +3474,31 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
       
     - 步骤2：编写事务中的sql语句(select insert update delete，只有增删改查，不包括DDL语言)
     
+  
   语句1；
-    
+  
   语句2；
-    
+  
   …
-    
+  
 - 步骤3：结束事务
-    
+  
   commit；提交事务
-    
+  
   rollback；回滚事务
-    
+  
 - **savepoint 结点名：设置保存点**
   
   ```mysql
-    SET autocommit = 0 ;
+  SET autocommit = 0 ;
   START TRANSACTION;
     
     DELETE FROM account WHERE id=25;
     SAVEPOINT a;
     DELETE FROM accound WHERE id=28;
     ROLLBACK TO a;
-    ```
-    
+  ```
+  
   - delete和truncate在事务使用时的区别
   
     - delete删除后支持回滚
@@ -4363,7 +3518,7 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
     START TRANSACTION;
     TRUNCATE TABLE account;
     ROLLBACK;
-  ```
+    ```
 
 - 数据库的隔离级别
 
@@ -4745,19 +3900,19 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
         ```
         
       - 为某个指定的全局变量赋值
-      
+    
   - 方式1：
-      
+    
     ```mysql
           set global autocommit=0;
     ```
-      
+    
         - 方式2：
-      
+    
     ```mysql
           SET @@global.autocommit=0;
     ```
-      
+    
     - 会话变量
     
   - 服务器为每一个连接的客户端都提供了系统变量。
@@ -4834,25 +3989,25 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
            
              ```mysql
              SET @name='John';
-        SET @name=100;
+          SET @name=100;
              ```
       
          - 方式2：通过select into
-   
+  
            ```mysql
      select 字段 into 变量名
            from 表；
            ```
            
         - 案例1：
-           
+          
         ```mysql
              SELECT 
        COUNT(*) INTO @count   # (经过一个查询来给一个自定义用户变量赋值)
              FROM
          employees ;
-             ```
-         
+        ```
+      
       3. **使用（查看用户变量的值）**
       
          select @用户变量名；
@@ -4878,24 +4033,26 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
            set 局部变量名=值；
        set 局部变量名:=值；（推荐）
            
+           ```
+    
        select @局部变量名:=值；
            ```
-       
+    
          - 方式2：通过select into
-     
-           ```sql
+    
+         ```sql
            select 字段 into 局部变量名
   from 表；
            ```
-
+  
       3. 使用
   
          select 局部变量名；
-  
-    - 对比用户变量和局部变量：
 
+    - 对比用户变量和局部变量：
+  
       |          | 作用域      | 定义和使用的位置                | 语法                          |
-  | :------- | :---------- | :------------------------------ | :---------------------------- |
+    | :------- | :---------- | :------------------------------ | :---------------------------- |
       | 用户变量 | 当前会话    | 会话中的任何地方                | 必须加@符号，不用限定类型     |
       | 局部变量 | begin end中 | 只能在begin end中，且为第一句话 | 一般不用加@符号，需要限定类型 |
     
@@ -4917,9 +4074,12 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
         
         DECLARE m INT DEFAULT 1;
         DECLARE n INT DEFAULT 2;
-    DECLARE SUM INT;
-      SET SUM=m+n;
-    SELECT SUM;
+      DECLARE SUM INT;
+        SET SUM=m+n;
+      SELECT SUM;
+        ```
+      ```
+      
       ```
 
 ## 存储过程和函数
@@ -5148,8 +4308,9 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
     SELECT @m,@n$
     ```
     
+  
   ![image-20201209212348281](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209212348.png)
-    
+  
 - 习题3：创建存储过程来实现传入两个女神生日，返回大小
   
     ```mysql
@@ -5215,9 +4376,10 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
     
     CALL test_pro5('王语嫣', @result)$
     SELECT @result$
+    ```
   ```
-    
-
+  
+  
   
   
   ​		![image-20201209213032065](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213032.png)
@@ -5231,7 +4393,7 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
     END $
     
     CALL test_pro6(3, 3)$
-    ```
+  ```
   
     ![image-20201209213205231](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213205.png)
 
@@ -5319,8 +4481,8 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
       
       
       SELECT myf3('IT')$
-      ```
-      
+    ```
+    
       ![image-20201209213931529](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201209213931.png)
   
 - 查看函数：
@@ -5416,12 +4578,13 @@ MySQL 提供了很多种字符串类型，下面是字符串类型的汇总
       - 也可以作为独立的语句去使用，只能放在begin end 中
       - 如果when中的值满足或条件成立，则执行对应的then后面的语句，并且结束case
     - 如果都不满足，则执行else中的语句或值
-      - else可以省略，如果else省略了，并且所有的when条件都不满足，则返回null
-
-    ![img](https://img-blog.csdnimg.cn/20190801203053262.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
-
-    ![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201118213204.png)
-
+      
+    - else可以省略，如果else省略了，并且所有的when条件都不满足，则返回null
+  
+  ![img](https://img-blog.csdnimg.cn/20190801203053262.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxNTc5MDQ1,size_16,color_FFFFFF,t_70)
+  
+  ![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201118213204.png)
+  
   - 案例1：创建存储过程，根据传入的成绩，来显示等级，比如传入的成绩：90-100，显示A；80-90：显示B；60-80：显示C；否则显示D
   
     ```mysql

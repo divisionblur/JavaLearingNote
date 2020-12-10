@@ -1,4 +1,4 @@
-### 百知教育 --- Spring系列课程 --- 注解编程
+### Spring系列课程 --- 注解编程
 
 -----
 
@@ -8,9 +8,10 @@
 
 ```java
 指的是在类或者方法上加入特定的注解（@XXX),完成特定功能的开发。
-  
-	@Component
-public class XXX{}
+@Component
+public class XXX{
+    
+}
 ```
 
 ##### 2. 为什么要讲解注解编程
@@ -26,7 +27,7 @@ public class XXX{}
 
 - 替换XML这种配置形式，简化配置
 
-  ![image-20200527164703807](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200527164703807.png)
+  ![image-20200527164703807](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201210221727.png)
 
 - 替换接口，实现调用双方的契约性 
 
@@ -40,9 +41,9 @@ public class XXX{}
 
 ```markdown
 1. Spring2.x开始支持注解编程 @Component @Service @Scope..
-     目的：提供的这些注解只是为了在某些情况下简化XML的配置,作为XML开发的有益补充。
+     目的：提供的这些注解只是为了在某些情况下简化XML的配置,作为XML开发的有益补充实际上此时还是以xml为主
 2. Spring3.x @Configuration @Bean..
-     目的：彻底替换XML，基于纯注解编程
+     目的：希望彻底替换XML，基于纯注解编程
 3. Spring4.x SpringBoot 
      提倡使用注解常见开发
 ```
@@ -66,7 +67,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
 - 搭建开发环境
 
   ```xml
-  <context:component-scan base-package="com.baizhiedu"/>
+  <context:component-scan base-package="com.lihai"/>
   
   作用：让Spring框架在设置包及其子包中扫描对应的注解，使其生效。
   ```
@@ -78,26 +79,26 @@ Spring基于注解进行配置后，还能否解耦合呢？
     ~~~markdown
     作用：替换原有spring配置文件中的<bean标签 
     注意：
-        id属性 component注解 提供了默认的设置方式  首单词首字母小写
+        id属性 component注解 提供了默认的设置方式  首单词首字母小写  如user
         class属性 通过反射获得class内容 
     ~~~
 
-    ![image-20200528112232356](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200528112232356.png)
+    ![image-20200528112232356](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201210230010.png)
 
   - @Component 细节
 
-    - 如何显示指定工厂创建对象的id值
+    - **如何显示指定工厂创建对象的id值**
 
       ```java
       @Component("u")
       ```
 
-    - Spring配置文件覆盖注解配置内容
+    - **Spring配置文件覆盖注解配置内容**
 
       ```xml
       applicationContext.xml
       
-      <bean id="u" class="com.baizhiedu.bean.User"/>
+      <bean id="u" class="com.lihai.bean.User"/>
       
       id值 class的值 要和 注解中的设置保持一值 
       ```
@@ -126,7 +127,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
     
     目的：更加准确的表达一个类型的作用
     
-    注意：Spring整合Mybatis开发过程中 不使用@Repository @Component
+    注意：Spring整合Mybatis开发过程中 不使用 @Repository @Component
          
     ```
 
@@ -149,10 +150,10 @@ Spring基于注解进行配置后，还能否解耦合呢？
 - 生命周期方法相关注解
 
   ~~~markdown
-  1. 初始化相关方法 @PostConstruct
+  1. 初始化相关方法		 @PostConstruct
      InitializingBean
      <bean init-method=""/>
-  2. 销毁方法 @PreDestroy
+  2. 销毁方法 (工厂关闭的时候才会被调用)			@PreDestroy
      DisposableBean
      <bean destory-method=""/>
   注意：1. 上述的2个注解并不是Spring提供的，JSR(JavaEE规范)520
