@@ -1,4 +1,4 @@
-### Spring系列课程 --- 注解编程
+### 百知教育 — Spring系列课程 --- 注解编程
 
 -----
 
@@ -35,7 +35,7 @@ public class XXX{
   通过注解的方式，在功能调用者和功能提供者之间达成约定，进而进行功能的调用。因为注解应用更为方便灵活，所以在现在的开发中，更推荐通过注解的形式，完成
   ~~~
 
-  ![image-20200527171704953](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200527171704953.png)
+  
 
 ##### 4. Spring注解的发展历程
 
@@ -164,29 +164,32 @@ Spring基于注解进行配置后，还能否解耦合呢？
 
 - 用户自定义类型 @Autowired
 
-  ![image-20200601114751016](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200601114751016.png)
+  ![image-20200601114751016](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211092105.png)
 
   
 
   ```markdown
   @Autowired细节
-  1. Autowired注解基于类型进行注入 [推荐]
+  1. Autowired 注解基于类型进行注入 [推荐]
      基于类型的注入：注入对象的类型，必须与目标成员变量类型相同或者是其子类（实现类）
   
   2. Autowired Qualifier 基于名字进行注入 [了解]
      基于名字的注入：注入对象的id值，必须与Qualifier注解中设置的名字相同
+     @Autowired
+     @Qualifier("userDAOImpl")
   
   3. Autowired注解放置位置 
       a) 放置在对应成员变量的set方法上 
       b) 直接把这个注解放置在成员变量之上，Spring通过反射直接对成员变量进行注入（赋值）[推荐]
   
   4. JavaEE规范中类似功能的注解
-      JSR250 @Resouce(name="userDAOImpl") 基于名字进行注入
+      JSR250 @Resouce(name="userDAOImpl") 基于名字进行注入  等同于下面两个注解
              @Autowired()
              @Qualifier("userDAOImpl")
              注意：如果在应用Resource注解时，名字没有配对成功，那么他会继续按照类型进行注入。
       JSR330 @Inject 作用 @Autowired完全一致 基于类型进行注入 ---》 EJB3.0
-            <dependency>
+      需要引入jar包
+            <dependency>     
               <groupId>javax.inject</groupId>
               <artifactId>javax.inject</artifactId>
               <version>1</version>
@@ -219,16 +222,30 @@ Spring基于注解进行配置后，还能否解耦合呢？
            属性 @Value()
     ~~~
 
+    ![image-20201211101808214](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211101808.png)
+
+    ![image-20201211101836309](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211101836.png)
+
+    ![image-20201211101901803](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211101902.png)
+  
   - @Value注解使用细节
 
-    - @Value注解不能应用在静态成员变量上
+    - **@Value注解不能应用在静态成员变量上**
 
       ~~~markdown
       如果应用，赋值（注入）失败
       ~~~
-
-    - @Value注解+Properties这种方式，不能注入集合类型
-
+  
+      测试如下:
+  
+      ![image-20201211102056319](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211102056.png)
+    
+    
+    
+    ​		![image-20201211102126099](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211102126.png)
+    
+    - @Value注解+Properties这种方式，**不能注入集合类型**
+    
       ~~~markdown
       Spring提供新的配置形式 YAML YML (SpringBoot)
       ~~~
@@ -236,8 +253,8 @@ Spring基于注解进行配置后，还能否解耦合呢？
 ##### 3. 注解扫描详解
 
 ~~~markdown
-<context:component-scan base-package="com.baizhiedu"/>
-当前包 及其 子包 
+<context:component-scan base-package="com.lihai"/>
+当前包 及其 子包 进行注解的扫描
 ~~~
 
 ###### 1. 排除方式
@@ -245,27 +262,28 @@ Spring基于注解进行配置后，还能否解耦合呢？
 ~~~markdown
 <context:component-scan base-package="com.baizhiedu">
    <context:exclude-filter type="" expression=""/>
+   expression后面填切入点表达式不用切入点函数了
    type:assignable:排除特定的类型 不进行扫描
-        annotation:排除特定的注解 不进行扫描
-        aspectj:切入点表达式
-                包切入点： com.baizhiedu.bean..*
+        annotation:排除特定的注解 不进行扫描  谁具有特点的注解就排除谁
+        aspectj(实战):切入点表达式  支持下面两种切入点 
+                包切入点： com.lihai.bean..*
                 类切入点： *..User
         regex:正则表达式 
         custom：自定义排除策略框架底层开发
 </context:component-scan>
 
-排除策略可以叠加使用 
+  # 排除策略可以叠加使用 
 <context:component-scan base-package="com.baizhiedu">
-  <context:exclude-filter type="assignable" expression="com.baizhiedu.bean.User"/>
+  <context:exclude-filter type="assignable" expression="com.lihai.bean.User"/>
 
-  <context:exclude-filter type="aspectj" expression="com.baizhiedu.injection..*"/>
+  <context:exclude-filter type="aspectj" expression="com.lihai.injection..*"/>
 </context:component-scan>
 ~~~
 
 ###### 2. 包含方式 
 
 ~~~xml
-<context:component-scan base-package="com.baizhiedu" use-default-filters="false">
+<context:component-scan base-package="com.lihai" use-default-filters="false">
    <context:include-filter type="" expression=""/>
 </context:component-scan>
 
@@ -273,16 +291,16 @@ Spring基于注解进行配置后，还能否解耦合呢？
    作用：让Spring默认的注解扫描方式 失效。
 2. <context:include-filter type="" expression=""/>
    作用：指定扫描那些注解 
-   type:assignable:排除特定的类型 不进行扫描
-        annotation:排除特定的注解 不进行扫描
+   type:assignable:排除特定的类型 进行扫描
+        annotation:排除特定的注解 进行扫描
         aspectj:切入点表达式
-                包切入点： com.baizhiedu.bean..*
+                包切入点： com.lihai.bean..*
                 类切入点： *..User
         regex:正则表达式 
         custom：自定义排除策略框架底层开发
 
-包含的方式支持叠加
- <context:component-scan base-package="com.baizhiedu" use-default-filters="false">
+包含的方式也支持叠加
+ <context:component-scan base-package="com.lihai" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
  </context:component-scan>
@@ -290,38 +308,37 @@ Spring基于注解进行配置后，还能否解耦合呢？
 
 ##### 4. 对于注解开发的思考
 
-- 配置互通
+- **配置互通**
 
   ~~~markdown
   Spring注解配置 配置文件的配置 互通
   
   @Repository
   public class UserDAOImpl{
-  
-  
   }
   
   public class UserServiceImpl{
      private UserDAO userDAO;
-     set get
+     set
+     get
   }
   
-  <bean id="userService" class="com.baizhiedu.UserServiceImpl">
+  <bean id="userService" class="com.lihai.UserServiceImpl">
      <property name="userDAO" ref="userDAOImpl"/>
   </bean>
   ~~~
-
-- 什么情况下使用注解 什么情况下使用配置文件
+  
+- **什么情况下使用注解 什么情况下使用配置文件**
 
   ~~~markdown
-  @Component 替换 <bean 
+  @Component 替换 <bean>标签 
   
   基础注解（@Component @Autowired @Value) 程序员开发类型的配置
   
   1. 在程序员开发的类型上 可以加入对应注解 进行对象的创建 
      User  UserService  UserDAO  UserAction 
   
-  2. 应用其他非程序员开发的类型时，还是需要使用<bean 进行配置的
+  2. 应用其他非程序员开发的类型时，还是需要使用<bean>标签 进行配置的
      SqlSessionFactoryBean  MapperScannerConfigure 
   ~~~
 
@@ -342,7 +359,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
 - 编码
 
   ~~~markdown
-  <context:component-scan base-package=""/>
+  <context:component-scan base-package=""/>  扫描注解
   ~~~
 
   - DAO (Spring+Mybatis)
@@ -406,7 +423,7 @@ public class AppConfig{
 
    ![image-20200703100033265](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200703100033265.png)
 
-2. AnnotationConfigApplicationContext
+2. **AnnotationConfigApplicationContext**
 
    ~~~markdown
    1. 创建工厂代码
@@ -420,11 +437,11 @@ public class AppConfig{
 
 - 配置Bean开发的细节分析
 
-  - 基于注解开发使用日志
+  - **基于注解开发使用日志**
 
     ~~~markdown
-    不能集成Log4j
-    集成logback 
+    # 不能集成 Log4j
+    # 集成logback 
     ~~~
 
     - 引入相关jar

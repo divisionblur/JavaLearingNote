@@ -431,32 +431,31 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
 
      ~~~markdown
      * login(..)
-     
      # 定义register作为切入点
      * register(..)
      ~~~
-
-   - 定义login方法且login方法有两个字符串类型的参数 作为切入点
-
-     ~~~markdown
+     
+- 定义login方法且login方法有两个字符串类型的参数 作为切入点
+   
+  ~~~markdown
      * login(String,String)
      形参不关注形参名只关注类型
      #注意：非java.lang包中的类型，必须要写全限定名
-     * register(com.baizhiedu.proxy.User)
+     * register(com.lihai.proxy.User)
      
      # ..可以和具体的参数类型连用
-     * login(String,..)  --> login(String),login(String,String),login(String,com.baizhiedu.proxy.User)
+     * login(String,..)  --> login(String),login(String,String),login(String,com.lihai.proxy.User)
      ~~~
-
-   - 精准方法切入点限定
-
-     ~~~markdown
+   
+- **精准方法切入点限定**
+   
+  ~~~markdown
      修饰符 返回值         包.类.方法(参数)
      
-         *               com.baizhiedu.proxy.UserServiceImpl.login(..)
-         *               com.baizhiedu.proxy.UserServiceImpl.login(String,String)
+         *               com.lihai.proxy.UserServiceImpl.login(..)
+         *               com.lihai.proxy.UserServiceImpl.login(String,String)
      ~~~
-
+   
 2. 类切入点
 
    ~~~markdown
@@ -473,7 +472,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
    - 语法2 
 
      ~~~markdown
-     (最多只能处理一层包 )
+     (最多只能处理一层包)
      #忽略包  
      1. 类只存在一级包中  com.UserServiceImpl
      * *.UserServiceImpl.*(..)
@@ -499,7 +498,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
 
      ~~~markdown
      # 切入点当前包及其子包都生效 (包和类分隔的时候用两个点)
-     * com.lihai.proxy..*.*(..)  
+     * com.lihai.proxy..*.*(..)
      ~~~
 
 ###### 2.2 切入点函数
@@ -539,12 +538,13 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
    切入点：UserServiceImpl这个类
    
    execution(* *..UserServiceImpl.*(..))
+   为类切入点
+   within( *..UserServiceImpl )
    
-   within(*..UserServiceImpl)
    
    execution(* com.lihai.proxy..*.*(..))
-   (proxy包及其当中的子包)
-   within(com.lihai.proxy..*)
+   为包切入点(proxy包及其当中的子包)
+   within( com.lihai.proxy..* )
    
    ~~~
 
@@ -579,11 +579,9 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      execution(* login(..)) or  execution(* register(..))
      
      ~~~
-  ~~~
+  ~~~markdown
    
 - **or或操作**
-   
-     ~~~markdown
      案例：register方法 和 login方法作为切入点 
      
      execution(* login(..)) or  execution(* register(..))
