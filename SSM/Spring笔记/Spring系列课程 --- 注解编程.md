@@ -1,3 +1,5 @@
+   
+
 ### 百知教育 — Spring系列课程 --- 注解编程
 
 -----
@@ -40,7 +42,7 @@ public class XXX{
 ##### 4. Spring注解的发展历程
 
 ```markdown
-1. Spring2.x开始支持注解编程 @Component @Service @Scope..
+1. Spring2.x开始支持注解编程 @Component @Service @Scope......
      目的：提供的这些注解只是为了在某些情况下简化XML的配置,作为XML开发的有益补充实际上此时还是以xml为主
 2. Spring3.x @Configuration @Bean..
      目的：希望彻底替换XML，基于纯注解编程
@@ -74,10 +76,10 @@ Spring基于注解进行配置后，还能否解耦合呢？
 
 - 对象创建相关注解
 
-  - @Component
+  - @Component 
 
     ~~~markdown
-    作用：替换原有spring配置文件中的<bean标签 
+    作用：替换原有spring配置文件中的<bean>标签 
     注意：
         id属性 component注解 提供了默认的设置方式  首单词首字母小写  如user
         class属性 通过反射获得class内容 
@@ -102,6 +104,20 @@ Spring基于注解进行配置后，还能否解耦合呢？
       
       id值 class的值 要和 注解中的设置保持一值 
       ```
+      
+      ![image-20201212140111576](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212140118.png)
+      
+      但是在配置文件中设置<bean>标签对其进行覆盖
+      
+      ![image-20201212140305612](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212140305.png)
+      
+      如何验证进行了覆盖呢？可以看到在bean标签中注入了id字段的值那么只要在测试的时候获取id的值看是否能输出10就能测试是否进行了覆盖
+      
+      ![image-20201212140439306](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212140439.png)
+      
+      输出结果如下：
+      
+      ![image-20201212140510938](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212140511.png)
 
   - @Component的衍生注解
 
@@ -111,12 +127,12 @@ Spring基于注解进行配置后，还能否解耦合呢？
       public class UserDAO{
       
       }
-    @Service
+    @Service   --->  Service
       @Service
       public class UserService{
       
       }
-    @Controller 
+    @Controller --->  Controller
       @Controller 
       public class RegAction{
       
@@ -139,26 +155,46 @@ Spring基于注解进行配置后，还能否解耦合呢？
   <bean id="" class="" scope="singleton|prototype"/>
   ```
 
+  确保能够被扫描到，然后再类上加上@Scope注解  singleton只会创建一个对象，而prototype每次都会创建新的对象。如果不加@Scope注解的话默认是singleton
+
 - @Lazy注解
 
   ~~~markdown
   作用：延迟创建单实例对象
-  注意：一旦使用了@Lazy注解后，Spring会在使用这个对象时候，进行这个对象的创建
+  注意：一旦使用了@Lazy注解后，Spring会在使用这个对象时候,才进行对象的创建 而不是当工厂创建好之后
   <bean id="" class="" lazy="false"/>
   ~~~
 
 - 生命周期方法相关注解
 
   ~~~markdown
-  1. 初始化相关方法		 @PostConstruct
-     InitializingBean
-     <bean init-method=""/>
-  2. 销毁方法 (工厂关闭的时候才会被调用)			@PreDestroy
-     DisposableBean
-     <bean destory-method=""/>
+  1. 初始化相关方法	
+     1.实现InitializingBean接口
+     2.<bean init-method=""/>
+     使用注解 @PostConstruct来实现
+  2. 销毁方法 (工厂关闭的时候才会被调用)	 
+     1.实现DisposableBean接口
+     2.<bean destory-method=""/>
+     使用注解 @PreDestroy来实现
   注意：1. 上述的2个注解并不是Spring提供的，JSR(JavaEE规范)520
        2. 再一次的验证，通过注解实现了接口的契约性
   ~~~
+  
+  ```java
+  @Component
+  public class Product {
+  
+      @PostConstruct
+      public void myInit() {
+          System.out.println("Product.myInit");
+      }
+  
+      @PreDestroy
+      public void myDestory() {
+          System.out.println("Product.myDestory");
+      }
+  }
+  ```
 
 ##### 2. 注入相关注解
 
@@ -169,7 +205,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
   
 
   ```markdown
-  @Autowired细节
+  @Autowired 细节
   1. Autowired 注解基于类型进行注入 [推荐]
      基于类型的注入：注入对象的类型，必须与目标成员变量类型相同或者是其子类（实现类）
   
@@ -187,6 +223,8 @@ Spring基于注解进行配置后，还能否解耦合呢？
              @Autowired()
              @Qualifier("userDAOImpl")
              注意：如果在应用Resource注解时，名字没有配对成功，那么他会继续按照类型进行注入。
+             
+             
       JSR330 @Inject 作用 @Autowired完全一致 基于类型进行注入 ---》 EJB3.0
       需要引入jar包
             <dependency>     
@@ -202,8 +240,8 @@ Spring基于注解进行配置后，还能否解耦合呢？
   @Value注解完成
   1. 设置xxx.properties 
      id = 10
-     name = suns
-  2. Spring的工厂读取这个配置文件 
+     name = lihai
+  2. Spring的工厂读取这个配置文件 	
      <context:property-placeholder location=""/>
   3. 代码 
      属性 @Value("${key}")
@@ -260,9 +298,9 @@ Spring基于注解进行配置后，还能否解耦合呢？
 ###### 1. 排除方式
 
 ~~~markdown
-<context:component-scan base-package="com.baizhiedu">
+<context:component-scan base-package="com.lihai">
    <context:exclude-filter type="" expression=""/>
-   expression后面填切入点表达式不用切入点函数了
+   # expression 后面填切入点表达式不用切入点函数了
    type:assignable:排除特定的类型 不进行扫描
         annotation:排除特定的注解 不进行扫描  谁具有特点的注解就排除谁
         aspectj(实战):切入点表达式  支持下面两种切入点 
@@ -273,12 +311,24 @@ Spring基于注解进行配置后，还能否解耦合呢？
 </context:component-scan>
 
   # 排除策略可以叠加使用 
-<context:component-scan base-package="com.baizhiedu">
+<context:component-scan base-package="com.lihai">
   <context:exclude-filter type="assignable" expression="com.lihai.bean.User"/>
 
   <context:exclude-filter type="aspectj" expression="com.lihai.injection..*"/>
 </context:component-scan>
 ~~~
+
+排除设置如下：
+
+![image-20201212143835393](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212143835.png)
+
+测试：
+
+![image-20201212143853985](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212143854.png)
+
+可以看到在排除标签中的没有被扫描
+
+
 
 ###### 2. 包含方式 
 
@@ -291,33 +341,42 @@ Spring基于注解进行配置后，还能否解耦合呢？
    作用：让Spring默认的注解扫描方式 失效。
 2. <context:include-filter type="" expression=""/>
    作用：指定扫描那些注解 
-   type:assignable:排除特定的类型 进行扫描
-        annotation:排除特定的注解 进行扫描
+   type:assignable:包含特定的类型 进行扫描
+        annotation:包含特定的注解 进行扫描
         aspectj:切入点表达式
                 包切入点： com.lihai.bean..*
                 类切入点： *..User
         regex:正则表达式 
-        custom：自定义排除策略框架底层开发
+        custom：自定义包含策略框架底层开发
 
 包含的方式也支持叠加
- <context:component-scan base-package="com.lihai" use-default-filters="false">
+<context:component-scan base-package="com.lihai" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
  </context:component-scan>
 ~~~
+
+包含设置如下：
+
+![image-20201212144525272](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212144525.png)
+
+测试：
+
+![image-20201212144459727](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212144459.png)
 
 ##### 4. 对于注解开发的思考
 
 - **配置互通**
 
   ~~~markdown
-  Spring注解配置 配置文件的配置 互通
+  Spring注解的配置和 配置文件的配置 互通
   
   @Repository
   public class UserDAOImpl{
+  
   }
   
-  public class UserServiceImpl{
+  public class UserServiceImpl {
      private UserDAO userDAO;
      set
      get
@@ -326,6 +385,8 @@ Spring基于注解进行配置后，还能否解耦合呢？
   <bean id="userService" class="com.lihai.UserServiceImpl">
      <property name="userDAO" ref="userDAOImpl"/>
   </bean>
+  
+  可以看到UserDAOImpl对象是由注解方式创建的，而UserServiceImpl是由配置文件设置的
   ~~~
   
 - **什么情况下使用注解 什么情况下使用配置文件**
@@ -411,9 +472,9 @@ Spring基于注解进行配置后，还能否解耦合呢？
 ##### 1. 配置Bean
 
 ~~~java
-Spring在3.x提供的新的注解，用于替换XML配置文件。
+Spring在3.x提供的新的注解，用于替换ApplicationContext.XML配置文件。
   
-  @Configuration
+@Configuration
 public class AppConfig{
   
 }
@@ -421,7 +482,7 @@ public class AppConfig{
 
 1. 配置Bean在应用的过程中 替换了XML具体什么内容呢？
 
-   ![image-20200703100033265](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200703100033265.png)
+   ![image-20200703100033265](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212145138.png)
 
 2. **AnnotationConfigApplicationContext**
 
@@ -441,7 +502,7 @@ public class AppConfig{
 
     ~~~markdown
     # 不能集成 Log4j
-    # 集成logback 
+    # 集成 logback 
     ~~~
 
     - 引入相关jar
@@ -509,14 +570,14 @@ public class AppConfig{
 ##### 2. @Bean注解
 
 ~~~markdown
-@Bean注解在配置bean中进行使用，等同于XML配置文件中的<bean标签
+@Bean注解在配置bean中进行使用，等同于XML配置文件中的<bean>标签
 ~~~
 
 ###### 1. @Bean注解的基本使用
 
 - 对象的创建
 
-  ![image-20200703150632630](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200703150632630.png)
+  ![image-20200703150632630](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212145825.png)
 
   ~~~markdown
   1. 简单对象
@@ -556,25 +617,37 @@ public class AppConfig{
   @Bean
   @Scope("singleton|prototype") 默认值 singleton
   ~~~
+  
+  ![image-20201212151322552](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212151322.png)
+  
+  ![image-20201212151021686](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212151021.png)
+  
+  ![image-20201212151005305](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212151005.png)
+  
+  当@Scope注解中填的是singleton时只会创建一个对象
+  
+  ![image-20201212151514883](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212151514.png)
+  
+  ![image-20201212151529084](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212151529.png)
 
 ###### 2. @Bean注解的注入
 
-- 用户自定义类型
+- 用户自定义类型的注入
 
   ~~~java
   @Bean
   public UserDAO userDAO() {
     return new UserDAOImpl();
   }
-  
+  1.通过形参来完成
   @Bean
   public UserService userService(UserDAO userDAO) {
     UserServiceImpl userService = new UserServiceImpl();
     userService.setUserDAO(userDAO);
     return userService;
   }
-  
-  //简化写法
+  2.通过调用对应的方法来完成
+  //上面的简化写法不需要把DAO作为形参了  直接去调用我们前面创建好的userDAO对象即可
   @Bean
   public UserService userService() {
     UserServiceImpl userService = new UserServiceImpl();
@@ -624,7 +697,7 @@ public class AppConfig{
 ##### 3. @ComponentScan注解
 
 ~~~markdown
-@ComponentScan注解在配置bean中进行使用，等同于XML配置文件中的<context:component-scan>标签
+@ComponentScan注解在配置bean中进行使用，等同于XML配置文件中的 <context:component-scan> 标签
 
 目的：进行相关注解的扫描 （@Component @Value ...@Autowired)
 ~~~
@@ -633,7 +706,7 @@ public class AppConfig{
 
 ~~~java
 @Configuration
-@ComponentScan(basePackages = "com.baizhiedu.scan")
+@ComponentScan(basePackages = "com.lihai.scan")
 public class AppConfig2 {
 
 }
@@ -646,11 +719,11 @@ public class AppConfig2 {
 - 排除
 
   ~~~xml
-  <context:component-scan base-package="com.baizhiedu">
-    <context:exclude-filter type="assignable" expression="com.baizhiedu.bean.User"/>
+  <context:component-scan base-package="com.lihai">
+    <context:exclude-filter type="assignable" expression="com.lihai.bean.User"/>
   </context:component-scan>
   
-  @ComponentScan(basePackages = "com.baizhiedu.scan",
+  @ComponentScan(basePackages = "com.lihai.scan",
                  excludeFilters = {@ComponentScan.Filter(type= FilterType.ANNOTATION,value={Service.class}),
                                    @ComponentScan.Filter(type= FilterType.ASPECTJ,pattern = "*..User1")})
   
@@ -664,11 +737,11 @@ public class AppConfig2 {
 - 包含
 
   ~~~xml
-  <context:component-scan base-package="com.baizhiedu" use-default-filters="false">
+  <context:component-scan base-package="com.lihai" use-default-filters="false">
      <context:include-filter type="" expression=""/>
   </context:component-scan>
   
-  @ComponentScan(basePackages = "com.baizhiedu.scan",
+  @ComponentScan(basePackages = "com.lihai.scan",
                  useDefaultFilters = false,
                  includeFilters = {@ComponentScan.Filter(type= FilterType.ANNOTATION,value={Service.class})})
   
@@ -683,7 +756,7 @@ public class AppConfig2 {
 
 ###### 1. 多种配置方式的应用场景
 
-![image-20200706174301418](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200706174301418.png)
+![image-20200706174301418](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212162051.png)
 
 ###### 2. 配置优先级
 
@@ -749,26 +822,36 @@ public User user(){
 
 - 多配置的信息汇总
 
-  - base-package进行多个配置Bean的整合
+  - **base-package进行多个配置Bean的整合**
 
-    ![image-20200707170421669](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200707170421669.png)
+    ![image-20200707170421669](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212172150.png)
 
-  - @Import
+    ![image-20201212174452460](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212174452.png)
+
+    ![image-20201212174503685](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212174503.png)
+
+    ![image-20201212174525200](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212174525.png)
+
+    输出结果如下：
+
+    ![image-20201212174542949](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212174543.png)
+
+  - **@Import**
 
     ~~~markdown
     1. 可以创建对象
     2. 多配置bean的整合
     ~~~
 
-    ![image-20200707170745814](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200707170745814.png)
+    ![image-20200707170745814](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212172216.png)
 
-  - 在工厂创建时，指定多个配置Bean的Class对象 【了解】
+  - **在工厂创建时，指定多个配置Bean的Class对象 【了解】**
 
     ~~~java
     ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig1.class,AppConfig2.class);
     ~~~
 
-- 跨配置进行注入
+- **跨配置进行注入**（适用于应用配置Bean的所有场景）
 
   ~~~java
   在应用配置Bean的过程中，不管使用哪种方式进行配置信息的汇总，其操作方式都是通过成员变量加入@Autowired注解完成。
@@ -796,14 +879,18 @@ public User user(){
       }
   }
   ~~~
+  
+  ![image-20201212181028684](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212181028.png)
+  
+  ![image-20201212181041385](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212181041.png)
 
 ###### 2. 配置Bean与@Component相关注解的整合
 
 ~~~java
-@Component(@Repository)
+@Component  或衍生注解 (@Repository)
 public class UserDAOImpl implements UserDAO{
   
-}
+} 
 
 @Configuration
 @ComponentScan("")
@@ -812,7 +899,7 @@ public class AppConfig3 {
     @Autowired
     private UserDAO userDAO;
 
-    @Bean
+    @Bean 
     public UserService userService() {
         UserServiceImpl userService = new UserServiceImpl();
         userService.setUserDAO(userDAO);
@@ -854,10 +941,11 @@ ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig4.class
 ##### 6. 配置Bean底层实现原理
 
 ```markdown
-Spring在配置Bean中加入了@Configuration注解后，底层就会通过Cglib的代理方式，来进行对象相关的配置、处理
+Spring在配置Bean中加入了@Configuration注解后，底层就会通过Cglib的代理方式，来进行对象相关的配置、处理 (因为配置Bean没有实现任何接口)
+整个配置Bean的底层就是代理设计模式 
 ```
 
-![image-20200709114200371](/百知教育 --- Spring系列课程 --- 注解编程.assets/image-20200709114200371.png)
+![image-20200709114200371](https://gitee.com/studylihai/pic-repository/raw/master/\img/20201212172228.png)
 
 ##### 7. 四维一体的开发思想
 
@@ -867,7 +955,7 @@ Spring在配置Bean中加入了@Configuration注解后，底层就会通过Cglib
 Spring开发一个功能的4种形式，虽然开发方式不同，但是最终效果是一样的。
 1. 基于schema
 2. 基于特定功能注解
-3. 基于原始<bean
+3. 基于原始<bean> 
 4. 基于@Bean注解
 ~~~
 
@@ -875,10 +963,78 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
 
 ~~~java
 1. <context:property-placehoder
-2. @PropertySource  【推荐】
+2. @PropertySource(专属注解)  【推荐】
 3. <bean id="" class="PropertySourcePlaceholderConfigure"/>
 4. @Bean            【推荐】
 ~~~
+
+**1.基于schema**
+
+​	![image-20201213093224308](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093224.png)
+
+
+
+在配置文件中
+
+![image-20201213093320472](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093320.png)
+
+测试：
+
+![image-20201213092935750](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213092935.png)
+
+结果如下：
+
+![image-20201213093054973](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093055.png)
+
+ **2.用注解的方式**
+
+![image-20201213093517363](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093517.png)
+
+配置文件中：
+
+![image-20201213093550894](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093550.png)
+
+测试：
+
+![image-20201213093636159](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093636.png)
+
+结果如下：
+
+![image-20201213093658641](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213093658.png)
+
+3. **基于原始<bean>标签使用PropertySourcesPlaceholderConfigurer这个类**
+
+   ![image-20201213094215777](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213094215.png)
+
+
+
+​		![image-20201213094305698](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213094305.png)
+
+测试:
+
+![image-20201213094336096](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213094336.png)
+
+结果：
+
+![image-20201213094358334](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213094358.png)
+
+**4.基于配置Bean**
+
+​	首先编写一个配置类AppConfig10    ==（能通过<bean>标签来开发的那显然能通过@Bean注解来完成）==
+
+​		![image-20201213094959328](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213094959.png)
+
+​	在配置文件中:
+
+​		![image-20201213094941727](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213094941.png)
+
+测试：
+
+![image-20201213095102111](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213095102.png)
+
+结果:
+
+![image-20201213095120381](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213095120.png)
 
 ##### 8. 纯注解版AOP编程
 
@@ -886,7 +1042,7 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
 
 ~~~markdown
 1. 应用配置Bean 
-2. 注解扫描
+2. 注解扫描   
 ~~~
 
 ###### 2. 开发步骤
@@ -894,12 +1050,12 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
 ~~~java
 1. 原始对象
    @Service(@Component)
-   public class UserServiceImpl implements UserService{
+   public class UserServiceImpl implements UserService{ 	
      
    }
 2. 创建切面类 （额外功能 切入点 组装切面）
-    @Aspect
-    @Component
+    @Aspect 
+    @Component 这个注解相当于在配置文件中配置bean标签
     public class MyAspect {
 
         @Around("execution(* login(..))")
@@ -913,19 +1069,45 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
             return ret;
         }
     }
-3. Spring的配置文件中
+3. Spring的配置文件中告诉spring基于注解开发
    <aop:aspectj-autoproxy />
+   下面这个注解的作用实际上就是上面这个标签的作用
    @EnableAspectjAutoProxy ---> 配置Bean 
 ~~~
+
+**AOP注解编程：**
+
+ 1. 先创建UserService接口和它的实现类UserServiceImpl
+
+    ![image-20201213101004882](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213101004.png)
+
+    ![image-20201213101019247](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213101019.png)
+
+2.  增加切面类
+
+   ![image-20201213101815807](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213101815.png)
+
+3. 创建配置类
+
+   ![image-20201213101948557](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213101948.png)
+
+4. 进行测试
+
+   ![image-20201213102247566](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213102247.png)
+
+5. 测试结果
+
+   ![image-20201213102321630](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213102321.png)
 
 ###### 3. 注解AOP细节分析
 
 ~~~java
 1. 代理创建方式的切换 JDK Cglib 
-   <aop:aspectj-autoproxy proxy-target-class=true|false />
+   <aop:aspectj-autoproxy proxy-target-class = true|false/> true采用CGLIB fale采用JDK  而默认是false即JDK动态代理。
    @EnableAspectjAutoProxy(proxyTargetClass)
+       
 2. SpringBoot AOP的开发方式
-     @EnableAspectjAutoProxy 已经设置好了 
+     @EnableAspectjAutoProxy 已经设置好了 SpringBoot已经集成了
      
     1. 原始对象
      @Service(@Component)
@@ -948,8 +1130,14 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
           return ret;
         }
       }
-    Spring AOP 代理默认实现 JDK  SpringBOOT AOP 代理默认实现 Cglib 
+    Spring AOP 代理默认实现 JDK    SpringBOOT AOP 代理默认实现 Cglib 
 ~~~
+
+![image-20201213103117562](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213103117.png)
+
+
+
+![image-20201213103406085](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213103406.png)
 
 ##### 9. 纯注解版Spring+MyBatis整合
 
@@ -960,9 +1148,9 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
     <!--连接池-->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
       <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-      <property name="url" value="jdbc:mysql://localhost:3306/suns?useSSL=false"></property>
+      <property name="url" value="jdbc:mysql://localhost:3306/spring?useSSL=false"></property>
       <property name="username" value="root"></property>
-      <property name="password" value="123456"></property>
+      <property name="password" value="123456"></property>  
     </bean>
      
      @Bean
@@ -978,10 +1166,10 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
       <!--创建SqlSessionFactory SqlSessionFactoryBean-->
       <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"></property>
-        <property name="typeAliasesPackage" value="com.baizhiedu.entity"></property>
+        <property name="typeAliasesPackage" value="com.lihia.entity"></property>
         <property name="mapperLocations">
           <list>
-            <value>classpath:com.baizhiedu.mapper/*Mapper.xml</value>
+            <value>classpath:com.lihai.mapper/*Mapper.xml</value>
           </list>
         </property>
       </bean>
@@ -999,10 +1187,11 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
      <!--创建DAO对象 MapperScannerConfigure-->
     <bean id="scanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
       <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"></property>
-      <property name="basePackage" value="com.baizhiedu.dao"></property>
+      <property name="basePackage" value="com.lihai.dao"></property>
     </bean>
     
-    @MapperScan(basePackages={"com.baizhiedu.dao"}) ---> 配置bean完成
+    @MapperScan(basePackages={"com.lihai.dao"}) ---> 配置bean完成
+  	@MapperScan这个注解会扫描SqlsessionFactoryBean
     
   ~~~
 
@@ -1015,8 +1204,103 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
   4. Mapper文件 
   ~~~
 
-  ###### 1. MapperLocations编码时通配的写法
+  配置类：
 
+  ```java
+  @Configuration
+  @ComponentScan(basePackages = "com.lihai.mybatis")
+  @MapperScan(basePackages = "com.lihai.mybatis")
+  public class MybatisAutoConfiguration {
+  
+  
+      @Bean
+      public DataSource dataSource() {
+          DruidDataSource dataSource = new DruidDataSource();
+          dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+          dataSource.setUrl("jdbc:mysql://localhost:3306/spring?useSSL=false");
+          dataSource.setUsername("root");
+          dataSource.setPassword("lihai520");
+  
+          return dataSource;
+      }
+  
+    @Bean
+      public SqlSessionFactoryBean sqlSessionFactoryBean(DataSource dataSource) {
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+          sqlSessionFactoryBean.setDataSource(dataSource);
+          sqlSessionFactoryBean.setTypeAliasesPackage("com.lihai.mybatis");
+          sqlSessionFactoryBean.setMapperLocations(new ClassPathResource("UserDAOMapper.xml"));
+          return sqlSessionFactoryBean;
+      }
+  }
+  ```
+  
+  User类：
+  
+  ```java
+  public class User {
+      private Integer id;
+      private String name;
+      private String password;
+      public Integer getId() {
+          return id;
+      }
+      public void setId(Integer id) {
+          this.id = id;
+      }
+      public String getName() {
+          return name;
+      }
+      public void setName(String name) {
+          this.name = name;
+      }
+      public String getPassword() {
+          return password;
+      }
+      public void setPassword(String password) {
+          this.password = password;
+      }
+  }
+  ```
+  
+  UserDAO:
+  
+  ```java
+  public interface UserDAO {
+  
+      void save(User user);
+  }
+  ```
+  
+  UserDAOMapper.xml  (sql映射文件)
+  
+  ```xml
+  <mapper namespace="com.lihai.mybatis.UserDAO">
+      <insert id="save" parameterType="User">
+          insert into t_users (name,password) values (#{name},#{password})
+      </insert>
+  </mapper>
+  ```
+  
+  测试：
+  
+  ```java
+  /**
+       * 用于测试 spring与mybatis注解的整合
+       */
+      @Test
+      public void test1() {
+          ApplicationContext ctx = new AnnotationConfigApplicationContext(MybatisAutoConfiguration.class);
+          UserDAO userDAO = (UserDAO) ctx.getBean("userDAO");
+          User user = new User();
+          user.setName("annotation");
+          user.setPassword("1234567");
+          userDAO.save(user);
+      }
+  ```
+  
+  ###### 1. MapperLocations编码时通配的写法
+  
   ~~~java
   //设置Mapper文件的路径
   sqlSessionFactoryBean.setMapperLocations(Resource..);
@@ -1029,22 +1313,23 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
        <value>classpath:com.baizhiedu.mapper/*Mapper.xml</value>
      </list>
   </property>
+  
   一组Mapper文件 
   
   ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-  Resource[] resources = resolver.getResources("com.baizhi.mapper/*Mapper.xml");
-  sqlSessionFactoryBean.setMapperLocations(resources)
+  Resource[] resources = resolver.getResources("com.lihai .mapper/*Mapper.xml");
+  sqlSessionFactoryBean.setMapperLocations(resources) 
   ~~~
-
+  
   ###### 2. 配置Bean数据耦合的问题
-
+  
   ~~~java
   mybatis.driverClassName = com.mysql.jdbc.Driver
-  mybatis.url = jdbc:mysql://localhost:3306/suns?useSSL=false
+  mybatis.url = jdbc:mysql://localhost:3306/spring?useSSL=false
   mybatis.username = root
-  mybatis.password = 123456
-  mybatis.typeAliasesPackages = com.baizhiedu.mybatis
-  mybatis.mapperLocations = com.baizhiedu.mapper/*Mapper.xml
+  mybatis.password = lihai520
+  mybatis.typeAliasesPackages = com.lihai.mybatis
+  mybatis.mapperLocations = com.lihai.mapper/*Mapper.xml
   
   @Component
   @PropertySource("classpath:mybatis.properties")
@@ -1138,11 +1423,13 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
    @EnableTransactionManager ---> 配置Bean
 ~~~
 
+
+
 ~~~markdown
-1. ApplicationContext ctx = new AnnotationConfigApplicationContext("com.baizhiedu.mybatis");
+1. ApplicationContext ctx = new AnnotationConfigApplicationContext("com.lihai.mybatis");
    SpringBoot 实现思想
-2. 注解版MVC整合，SpringMVC中进行详细讲解
-   SpringMyBatis --->DAO  事务基于注解 --> Service   Controller 
+2. 注解版MVC整合，SpringMVC中进行详细讲解   
+   SpringMyBatis --->DAO  事务基于注解 --> Service   Controller   (目前来说还没有注解版控制器开发的)
    org.springframework.web.context.ContextLoaderListener ---> XML工厂 无法提供 new AnnotationConfigApplicationContext
 ~~~
 
@@ -1159,7 +1446,7 @@ YAML is a nice human-readable format for configuration, and it has some useful h
 ###### 2. Properties进行配置问题  
 
 ~~~markdown
-1. Properties表达过于繁琐,无法表达数据的内在联系. 
+1. Properties表达过于繁琐,无法表达数据的内在联系
 2. Properties无法表达对象 集合类型
 ~~~
 
@@ -1170,7 +1457,7 @@ YAML is a nice human-readable format for configuration, and it has some useful h
    xxx.yml xxx.yaml
 2. 语法
    1. 基本语法
-      name: suns
+      name: lihai 中间一定要有空格存在
       password: 123456
    2. 对象概念 
       account: 
@@ -1182,13 +1469,13 @@ YAML is a nice human-readable format for configuration, and it has some useful h
          - 22222
 ~~~
 
-###### 4. Spring与YML集成思路的分析 
+###### 4. Spring与YML集成思路的分析   (默认是不支持的)
 
 ~~~markdown
 1. 准备yml配置文件 
    init.yml
-   name: suns
-   password: 123456
+   name: lihai  
+   password: 123456  
 2. 读取yml 转换成 Properties
    YamlPropertiesFactoryBean.setResources( yml配置文件的路径 ) new ClassPathResource();
    YamlPropertiesFactoryBean.getObject() ---> Properties 
@@ -1239,162 +1526,3 @@ YAML is a nice human-readable format for configuration, and it has some useful h
    
 SpringBoot  @ConfigurationProperties
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-### 百知教育 — Spring系列课程 — 工厂
+### 百知教育 — Spring系列课程 — 工厂 
 
 ---
 
@@ -84,7 +84,6 @@ public class BeanFactory {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -209,7 +208,7 @@ Spring本质：工厂 ApplicationContext (applicationContext.xml)
 - Spring的jar包
 
   ~~~markdown
-  #设置pom 依赖
+  # 设置pom 依赖
   <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
   <dependency>
     <groupId>org.springframework</groupId>
@@ -278,10 +277,11 @@ Spring本质：工厂 ApplicationContext (applicationContext.xml)
 
    <bean id="person" class="com.lihai.basic.Person"/>
 3. 通过工厂类，获得对象
-   ApplicationContext
-          |- ClassPathXmlApplicationContext 
-   ApplicationContext ctx = new ClassPathXmlApplicationContext("/applicationContext.xml");
-   Person person = (Person)ctx.getBean("person"); 
+  ApplicationContext   #ClassPathXmlApplicationContext 
+  
+  ApplicationContext ctx = new ClassPathXmlApplicationContext("/applicationContext.xml");
+  
+  Person person = (Person)ctx.getBean("person"); 
 ~~~
 
 ##### 5. 细节分析
@@ -340,9 +340,9 @@ Spring本质：工厂 ApplicationContext (applicationContext.xml)
   ~~~markdown
   1. 只配置class属性
   <bean  class="com.lihai.basic.Person"/>
-  a) 上述这种配置 有没有id值 com.lihai.basic.Person#0  是有id值的由spring创建
-  b) 应用场景： 如果这个bean只需要使用一次，那么就可以省略id值
-              如果这个bean会使用多次，或者被其他bean引用则需要设置id值
+  a) 上述这种配置 有没有id值呢？ 是有id值的由spring创建  com.lihai.basic.Person#0  
+  b) 应用场景：如果这个bean只需要使用一次，那么就可以省略id值
+             如果这个bean会使用多次，或者被其他bean引用则需要设置id值
   
   
   2. name属性
@@ -429,9 +429,6 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
       <version>1.2.17</version>
     </dependency>
     ~~~
-  ~~~
-  
-  ~~~
   
 - log4j.properties
   
@@ -472,13 +469,12 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
   ~~~xml
    <bean id="person" class="com.lihai.basic.Person">
      <property name="id">
-       <value>10</value>
+       <value>s200231267</value>
      </property>
        
      <property name="name">
        <value>joy divioson</value>
      </property>
-       
   </bean>
   ~~~
 
@@ -515,14 +511,14 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
 ###### 1.1 String+8种基本数据类型
 
 ~~~markdown
-<value>suns</value>  里面填具体的值
+<value>lihai</value>  里面填具体的值
 ~~~
 
 ###### 1.2 数组 
 
 ~~~markdown
 <list>
-  <value>suns@zparkhr.com.cn</value>
+  <value>lihai@zparkhr.com.cn</value>
   <value>liucy@zparkhr.com.cn</value>
   <value>chenyn@zparkhr.com.cn</value>
 </list>
@@ -565,12 +561,12 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
                        值根据对应类型选择对应类型的标签
 <map>
   <entry>
-    <key><value>suns</value></key>
-    <value>3434334343</value>
+    <key><value>lihai</value></key>
+    <value>123456</value>
   </entry> 
     
   <entry>
-    <key><value>chenyn</value></key>
+    <key><value>joy</value></key>
     <ref bean
   </entry>
 </map>
@@ -579,7 +575,7 @@ Spring与日志框架进行整合，日志框架就可以在控制台中，输�
 ###### 1.6 Properites
 
 ~~~markdown
-Properties类型 特殊的Map     key=String value=String 
+Properties类型 相当于特殊的Map     key = String && value = String 
 ~~~
 
 ~~~xml
@@ -603,7 +599,7 @@ Properties类型 特殊的Map     key=String value=String
 
 - 配置文件中进行注入(赋值)
 
-- 实现类在配置文件搞
+- 实现类在配置文件中搞
 
   ~~~xml
   <bean id="userService" class="xxxx.UserServiceImpl">
@@ -638,19 +634,19 @@ Properties类型 特殊的Map     key=String value=String
   </bean>  
   
   #Spring4.x 废除了 <ref local=""/> 基本等效 <ref bean=""/>
-~~~
-  
-##### 3. Set注入的简化写法
-  
+  ~~~
+##### 3.Set注入的简化写法
+
 ###### 3.1 基于属性简化
-  
-  ~~~xml
+
+~~~xml
+
   JDK类型注入 
   <property name="name">
-     <value>suns</value>
+     <value>lihai</value>
   </property>
   
-  <property name="name" value="suns"/> 
+  简化写法 ：<property name="name" value="lihai"/> 
   注意：value属性 只能简化 8种基本类型+String 注入标签
   
   用户自定义类型
@@ -658,20 +654,20 @@ Properties类型 特殊的Map     key=String value=String
      <ref bean="userDAO"/>
   </property>
   
-  <property name="userDAO" ref="userDAO"/>
+  简化写法 ：<property name="userDAO" ref="userDAO"/>
 ~~~
-  
+
 ###### 3.2 基于p命名空间简化
-  
+
   ~~~xml
   JDK类型注入 
   <bean id="person" class="xxxx.Person">
     <property name="name">
-       <value>suns</value>
+       <value>lihai</value>
     </property>
   </bean>
   
-  <bean id="person" class="xxx.Person" p:name="suns"/> 
+  <bean id="person" class="xxx.Person" p:name="lihai"/> 
   注意：value属性 只能简化 8种基本类型+String 注入标签
   
   用户自定义类型
@@ -688,8 +684,8 @@ Properties类型 特殊的Map     key=String value=String
 
 ~~~markdown
 注入：通过Spring的配置文件，为成员变量赋值
-Set注入：Spring调用Set方法 通过配置文件 为成员变量赋值
-构造注入：Spring调用构造方法 通过配置文件 为成员变量赋值
+Set注入： Spring调用Set方法 通过配置文件 为成员变量赋值
+构造注入： Spring调用构造方法 通过配置文件 为成员变量赋值
 ~~~
 
 ##### 1. 开发步骤
@@ -777,7 +773,7 @@ private String name;
 
 #### 第七章、反转控制 与 依赖注入
 
-##### 1. 反转(转移)控制(IOC Inverse of Control)
+##### 1. 反转(转移)控制 (IOC Inverse of Control)
 
 ~~~markdown
 控制：对于成员变量赋值的控制权
@@ -819,23 +815,28 @@ private String name;
 
 - 开发步骤
   - 实现FactoryBean接口
+    
+    **在FactoryBean实现类的getObject方法中实现复杂对象的代码**
+    
+    
+    
     ![image-20200416204458451](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223804.png)
     
   - Spring配置文件的配置
     
     ~~~xml
-    # 如果class中指定的类型 是FactoryBean接口的实现类，那么通过id值获得的是这个类所创建的复杂对象  Connection
+    如果class中指定的类型 是FactoryBean接口的实现类，那么通过id值获得的是这个类所创建的复杂对象  Connection
     <bean id="conn" class="com.lihai.factorybean.ConnectionFactoryBean"/>
     ~~~
   
 - 细节
 
   - 如果就想获得**FactoryBean**类型的对象   **ctx.getBean("&conn")**
-    获得就是ConnectionFactoryBean对象
+    获得的就是ConnectionFactoryBean对象
 
   ![image-20201204214730589](https://gitee.com/studylihai/pic-repository/raw/master/\img/20201204214737.png)
 
-  - isSingleton方法
+  - **isSingleton方法**
     **1. 返回  true 只会创建一个复杂对象**
 
     **2. 返回 false 每一次都会创建新的对象**
@@ -863,6 +864,8 @@ private String name;
       <property name="password" value="lihai520"/>
     </bean>
     ~~~
+    
+    ![image-20201211233917797](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201211233917.png)
 
 - FactoryBean的实现原理[简易版]
 
@@ -915,6 +918,28 @@ private String name;
   ~~~xml
   <bean id="conn" class="com.lihai.factorybean.StaticConnectionFactory" factory-method="getConnection"/>
   ~~~
+  
+  ```java
+   <!--创建复杂对象的第一种方式 implements FactoryBean -->
+       
+      <bean id="conn" class="com.lihai.factorybean.ConnectionFactoryBean">
+          <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+          <property name="url" value="jdbc:mysql://localhost:3306/spring?useSSL=false"/>
+          <property name="username" value="root"/>
+          <property name="password" value="lihai520"/>
+      </bean>
+  
+      创建复杂对象的第二种方式  实例工厂的配置
+  	要先创建实例工厂的对象
+      <bean id="connFactory" class="com.lihai.factorybean.ConnectionFactory"></bean>
+      <bean id="conn" factory-bean="connFactory" factory-method="getConnection"/>
+  
+      <!--创建复杂对象的第三种方式  静态工厂的配置-->
+      <bean id="conn" class="com.lihai.factorybean.StaticConnectionFactory" factory-method="getConnection"/>
+  
+  ```
+  
+  
 
 ##### 3. Spring工厂创建对象的总结 
 

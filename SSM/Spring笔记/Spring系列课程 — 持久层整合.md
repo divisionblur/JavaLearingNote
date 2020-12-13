@@ -51,7 +51,7 @@
 7. MybatisAPI调用  代码冗余 
 ~~~
 
-##### 3. Spring与Mybatis整合思路分析
+##### 3. Spring与Mybatis整合思路分析4
 
 ![image-20200504141407141](https://gitee.com/studylihai/pic-repository/raw/master/\img/20201208144104.png)
 
@@ -74,7 +74,7 @@
       </property>
       <property name="mapperLocations">
             指定 配置文件(sql映射文件)的路径 还有通用配置 
-            com.baizhiedu.mapper/*Mapper.xml 
+            com/lihai/dao/*Mapper.xml 
       </property>
   </bean>
   
@@ -152,19 +152,19 @@
   <!--创建SqlSessionFactory SqlSessionFactoryBean-->
   <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
     <property name="dataSource" ref="dataSource"></property>
-    <property name="typeAliasesPackage" value="com.baizhiedu.entity"></property>
+    <property name="typeAliasesPackage" value="com.lihai.entity"></property>
     <property name="mapperLocations">
       <list>
-        <value>classpath:com.baizhiedu.mapper/*Mapper.xml</value>
+        <value>classpath*:com/lihai/dao/*Mapper.xml</value>
       </list>
     </property>
   </bean>
   
-  <!--创建DAO对象 MapperScannerConfigure-->
-  
+  <!--创建DAO对象 MapperScannerConfigurer-->
+  <!--MapperScannerCon所创建的Dao对象它的ID值是接口 首单词首字母小写-->
   <bean id="scanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
     <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"></property>
-    <property name="basePackage" value="com.baizhiedu.dao"></property>
+    <property name="basePackage" value="com.lihai.dao"></property>
   </bean>
   ~~~
 
@@ -268,8 +268,8 @@ public class XXXUserServiceImpl{
       }
         return ret;
    }
-   上面这段代码Spring已经为我们封装好了，然而涉及到事务肯定需要连接，而连接又是数据库连接池创建的所有的话
-   我们就把连接池注入到DataSourceTransactionManager中
+   上面这段代码Spring已经为我们封装好了，然而涉及到事务肯定需要连接，而连接又是数据库连接池创建的.所以
+   我们就把连接池对象注入到DataSourceTransactionManager中
 2. @Aspect
    @Around 
 ~~~
@@ -346,7 +346,7 @@ public class XXXUserServiceImpl{
 
   ~~~markdown
   <tx:annotation-driven transaction-manager="dataSourceTransactionManager" proxy-target-class="true"/>
-  进行动态代理底层实现的切换   proxy-target-class
+  # 进行动态代理底层实现的切换   proxy-target-class
       默认 false JDK
           true  Cglib 
   ~~~
@@ -397,7 +397,7 @@ public class XXXUserServiceImpl{
   - 脏读
 
     ~~~markdown
-    一个事务，读取了另一个事务中没有提交的数据。会在本事务中产生数据不一致的问题
+    一个事务中，读取了另一个事务中没有提交的数据。会在本事务中产生数据不一致的问题
     解决方案  @Transactional(isolation=Isolation.READ_COMMITTED)
     ~~~
 
@@ -602,7 +602,7 @@ Spring事务处理过程中
 
 ~~~xml
 基于注解 @Transaction的事务配置回顾
-<bean id="userService" class="com.baizhiedu.service.UserServiceImpl">
+<bean id="userService" class="com.lihai.service.UserServiceImpl">
   <property name="userDAO" ref="userDAO"/>
 </bean>
 
@@ -624,17 +624,18 @@ public class UserServiceImpl implements UserService {
 
 
 基于标签的事务配置
-<bean id="userService" class="com.baizhiedu.service.UserServiceImpl">
+<bean id="userService" class="com.lihai.service.UserServiceImpl">
   <property name="userDAO" ref="userDAO"/>
 </bean>
 
+<!--额外功能-->
 <!--DataSourceTransactionManager-->
 <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
   <property name="dataSource" ref="dataSource"/>
 </bean>
 
 
-事务属性 
+<!--设置切入点的事务属性--> 
 <tx:advice id="txAdvice" transacation-manager="dataSourceTransactionManager">
     <tx:attributes>
           <tx:method name="register" isoloation="",propagation=""></tx:method>
@@ -642,7 +643,6 @@ public class UserServiceImpl implements UserService {
           等效于 
           @Transactional(isolation=,propagation=,)
           public void register(){
-        
           }
     </tx:attributes>
 </tx:advice>
@@ -656,7 +656,7 @@ public class UserServiceImpl implements UserService {
 - 基于标签的事务配置在实战中的应用方式
 
   ~~~xml
-  <bean id="userService" class="com.baizhiedu.service.UserServiceImpl">
+  <bean id="userService" class="com.lihai.service.UserServiceImpl">
     <property name="userDAO" ref="userDAO"/>
   </bean>
   
@@ -666,7 +666,7 @@ public class UserServiceImpl implements UserService {
   </bean>
   
   编程时候 service中负责进行增删改操作的方法 都以modify开头
-                         查询操作 命名无所谓 
+  				查询操作 命名无所谓 
   <tx:advice id="txAdvice" transacation-manager="dataSourceTransactionManager">
       <tx:attributes>
             <tx:method name="register"></tx:method>

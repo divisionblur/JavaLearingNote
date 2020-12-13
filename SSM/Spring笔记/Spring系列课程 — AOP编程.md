@@ -56,7 +56,7 @@
 
 ~~~markdown
 1. 目标类 原始类 
-   指的是 业务类 (核心功能 --> 业务运算 DAO调用)
+   指的是 业务类 (核心功能 --> 业务运算 + DAO调用)
 2. 目标方法，原始方法
    目标类(原始类)中的方法 就是目标方法(原始方法)
 3. 额外功能 (附加功能)
@@ -140,6 +140,7 @@
 
    ~~~java
    public class UserServiceImpl implements UserService {
+       
        @Override
        public void register(User user) {
            System.out.println("UserServiceImpl.register 业务运算 + DAO ");
@@ -233,7 +234,7 @@
    ~~~markdown
    Spring框架在运行时，通过动态字节码技术，在JVM创建的，运行在JVM内部，等程序结束后，会和JVM一起消失
    
-   什么叫动态字节码技术:通过第三个动态字节码框架，在JVM中创建对应类的字节码，进而创建对象，当虚拟机结束，动态字节码跟着消失。
+   什么叫动态字节码技术:通过第三方动态字节码框架，在JVM中创建对应类的字节码，进而创建对象，当虚拟机结束，动态字节码跟着消失。
    
    结论：动态代理不需要定义类文件，都是JVM运行过程中动态创建的，所以不会造成静态代理，类文件数量过多，影响项目管理的问题。
    ~~~
@@ -375,7 +376,6 @@
     try {
       ret = invocation.proceed();
     } catch (Throwable throwable) {
-  
       System.out.println("-----原始方法抛出异常 执行的额外功能 ---- ");
       throwable.printStackTrace();
     }
@@ -384,14 +384,14 @@
     return ret;
   }
   ~~~
-
-  MethodInterceptor影响原始方法的返回值
-
-  ~~~markdown
-原始方法的返回值，直接作为invoke方法的返回值返回，MethodInterceptor不会影响原始方法的返回值
   
+MethodInterceptor影响原始方法的返回值
+  
+~~~markdown
+  原始方法的返回值，直接作为invoke方法的返回值返回，MethodInterceptor不会影响原始方法的返回值
+
   	MethodInterceptor  影响原始方法的返回值
-  	Invoke方法的返回值，不要直接返回原始方法的运行结果即可。
+  	如何影响Invoke方法的返回值，不要直接返回原始方法的运行结果即可。
   
   @Override
   public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -436,7 +436,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      ~~~
      
 - 定义login方法且login方法有两个字符串类型的参数 作为切入点
-   
+  
   ~~~markdown
      * login(String,String)
      形参不关注形参名只关注类型
@@ -445,17 +445,17 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      
      # ..可以和具体的参数类型连用
      * login(String,..)  --> login(String),login(String,String),login(String,com.lihai.proxy.User)
-     ~~~
-   
+  ~~~
+  
 - **精准方法切入点限定**
-   
+  
   ~~~markdown
      修饰符 返回值         包.类.方法(参数)
      
          *               com.lihai.proxy.UserServiceImpl.login(..)
          *               com.lihai.proxy.UserServiceImpl.login(String,String)
-     ~~~
-   
+  ~~~
+  
 2. 类切入点
 
    ~~~markdown
@@ -481,7 +481,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      * *..UserServiceImpl.*(..)
      ~~~
 
-3. 包切入点表达式 **实战**
+3. 包切入点表达式 **实战中常用**
 
    ~~~markdown
    指定包作为额外功能加入的位置，自然包中的所有类及其方法都会加入额外的功能  
@@ -504,7 +504,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
 ###### 2.2 切入点函数
 
 ~~~markdown
-切入点函数：用于执行切入点表达式
+切入点函数：用于执行切入点表达式  
 ~~~
 
 1. **execution**
@@ -514,7 +514,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
    执行 方法切入点表达式 类切入点表达式 包切入点表达式 
    
    弊端：execution执行切入点表达式 ，书写麻烦
-        execution(* com.baizhiedu.proxy..*.*(..))
+        execution(* com.lihai.proxy..*.*(..))
         
    注意：其他的切入点函数 简化是execution书写复杂度，功能上完全一致
    ~~~
@@ -539,7 +539,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
    
    execution(* *..UserServiceImpl.*(..))
    为类切入点
-   within( *..UserServiceImpl )
+   within(*..UserServiceImpl)
    
    
    execution(* com.lihai.proxy..*.*(..))
@@ -548,10 +548,10 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
    
    ~~~
 
-4.@annotation
+4 .@annotation
 
 ~~~xml
-作用：为具有特殊注解的方法加入额外功能
+作用:为具有特殊注解的方法加入额外功能
 # 在里面指定注解的全限定名
 <aop:pointcut id="" expression="@annotation(com.lihai.Log)"/>
 ~~~
@@ -573,7 +573,7 @@ exection(* *(..)) ---> 匹配了所有方法    a  b  c
      
      注意： 与操作不同用于同种类型的切入点函数 
      execution(* login(..)) and  execution(* register(..))
-     这种写法是不允许的
+     这种写法是不允许的  两个相同的execution
      
      案例：register方法 和 login方法作为切入点 
      execution(* login(..)) or  execution(* register(..))
@@ -608,7 +608,7 @@ POP (Producer Oriented Programing) 面向过程(方法、函数)编程   C
 ~~~markdown
 AOP的概念：
      本质就是Spring的动态代理开发，通过代理类为原始类增加额外功能。
-     好处：利于原始类的维护
+     好处：利于原始类的维护。
 
 注意：AOP编程不可能取代OOP，OOP编程有意补充。
 ~~~
@@ -641,15 +641,15 @@ AOP的概念：
 
 ~~~markdown
 1. AOP如何创建动态代理类(动态字节码技术)
-2. Spring工厂如何加工创建代理对象
+2. Spring工厂如何加工创建代理对象。
    通过原始对象的id值，获得的是代理对象(如何实现？)
 ~~~
 
-##### 2. 动态代理类的创建
+##### 2. 动态代理类的创建  
 
-###### 2.1 JDK的动态代理
+###### 2.1 JDK的动态代理 
 
-- Proxy.newProxyInstance方法参数详解
+- Proxy.newProxyInstance方法参数详解 
   ![image-20200428175248912](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223009.png)
 
 ![image-20200428175316276](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207223003.png)
@@ -684,7 +684,10 @@ AOP的概念：
                   return ret;
               }
           };
-  
+  		 /**
+           * 应该是生成代理类对象，然后和invocationhandler"绑定"当代理类对象调用和被代理类对象同名的方法时
+           * 会去调用invoke方法进而可以实现额外功能和核心功能！
+           */
           UserService userServiceProxy = (UserService)Proxy.newProxyInstance(UserServiceImpl.class.getClassLoader(),userService.getClass().getInterfaces(),handler);
   
           userServiceProxy.login("lihai", "123456");
@@ -699,7 +702,7 @@ AOP的概念：
 ###### 2.2 CGlib的动态代理
 
 ~~~markdown
-CGlib创建动态代理的原理：父子继承关系创建代理对象，原始类作为父类，代理类作为子类，这样既可以保证2者方法一致，同时在代理类中提供新的实现(额外功能+原始方法)
+CGlib创建动态代理的原理：父子继承关系创建代理对象，原始类作为父类，代理类作为子类，这样既可以保证2者方法一致，同时在代理类中提供新的实现 (额外功能 + 原始方法)
 ~~~
 
 
@@ -710,12 +713,10 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
 
   ~~~java
   package com.lihai.cglib;
-  
   import com.lihai.proxy.User;
   import org.springframework.cglib.proxy.Enhancer;
   import org.springframework.cglib.proxy.MethodInterceptor;
   import org.springframework.cglib.proxy.MethodProxy;
-  
   import java.lang.reflect.Method;
   
   public class TestCglib {
@@ -725,8 +726,6 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
   
           /*
             2 通过cglib方式创建动态代理对象
-              Proxy.newProxyInstance(classloader,interface,invocationhandler)
-  
               Enhancer.setClassLoader()
               Enhancer.setSuperClass()
               Enhancer.setCallback();  ---> MethodInterceptor(cglib)
@@ -738,29 +737,25 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
           enhancer.setClassLoader(TestCglib.class.getClassLoader());
    
           enhancer.setSuperclass(userService.getClass());
-  
-  
+  		//此时MethodInterceptor是cglib中的
           MethodInterceptor interceptor = new MethodInterceptor() {
               //等同于 InvocationHandler --- invoke
               @Override
               public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-                  System.out.println("---cglib log----");
+                  System.out.println("----cglib log----");
                   Object ret = method.invoke(userService, args);
                   return ret;
               }
           };
-  
           enhancer.setCallback(interceptor);
-  
           UserService userServiceProxy = (UserService) enhancer.create();
-  
-          userServiceProxy.login("suns", "123345");
+          userServiceProxy.login("lihai", "1233456");
           userServiceProxy.register(new User());
       } 
   }
   
   ~~~
-
+  
 - 总结
 
   ~~~markdown
@@ -807,11 +802,9 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
   ~~~xml
   <bean id="userService" class="com.lihai.factory.UserServiceImpl"/>
   
-  
-  <!--1. 实现BeanPostProcessor 进行加工
-          2. 配置文件中对BeanPostProcessor进行配置
-      -->
-  
+  <!--当Spring工厂创建完原始对象之后发现有后置处理器于是将对象交给后置处理器-->
+  <!--又在后置处理器中生成原始对象的代理类对象-->
+  <!--模拟Spring工厂创建代理类对象的源码-->
   <bean id="proxyBeanPostProcessor" class="com.lihai.factory.ProxyBeanPostProcessor"/>
   
   ~~~
@@ -834,7 +827,6 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
               @Aspect 切面类 
               
    package com.lihai.aspect;
-   
    import org.aspectj.lang.ProceedingJoinPoint;
    import org.aspectj.lang.annotation.Around;
    import org.aspectj.lang.annotation.Aspect;
@@ -868,24 +860,21 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
    
            Object ret = joinPoint.proceed();
    
-   
            return ret;
        }
    }
       
    ~~~
-
-   ~~~xml
-    <bean id="userService" class="com.lihai.aspect.UserServiceImpl"/>
    
-       <!--
+   ~~~xml
+ <bean id="userService" class="com.lihai.aspect.UserServiceImpl"/>
+   
+   <!--
           切面
             1. 额外功能
             2. 切入点
             3. 组装切面
-   
-   
-       -->
+   -->
    <bean id="arround" class="com.lihai.aspect.MyAspect"/>
    
    <!--告知Spring基于注解进行AOP编程-->
@@ -953,10 +942,9 @@ AOP底层实现  2种代理创建方式
 #### 第七章、AOP开发中的一个坑 
 
 ~~~java
-坑：在同一个业务类中，进行业务方法间的相互调用，只有最外层的方法,才是加入了额外功能(内部的方法，通过普通的方式调用，都调用的是原始方法)。如果想让内层的方法也调用代理对象的方法，就要AppicationContextAware获得工厂，进而获得代理对象。  实现setApplicationContext这个方法
+坑：在同一个业务类中，进行业务方法间的相互调用，只有最外层的方法,才是加入了额外功能(内部的方法，通过普通的方式调用，都调用的是原始方法)。如果想让内层的方法也调用代理对象的方法，就要AppicationContextAware获得工厂，进而获得代理对象。  实现 setApplicationContextAware
 public class UserServiceImpl implements UserService, ApplicationContextAware {
     private ApplicationContext ctx;
-
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -968,14 +956,12 @@ public class UserServiceImpl implements UserService, ApplicationContextAware {
     public void register(User user) {
         System.out.println("UserServiceImpl.register 业务运算 + DAO ");
         //throw new RuntimeException("测试异常");
-
         //调用的是原始对象的login方法 ---> 核心功能
         /*
             设计目的：代理对象的login方法 --->  额外功能+核心功能
             ApplicationContext ctx = new ClassPathXmlApplicationContext("/applicationContext2.xml");
             UserService userService = (UserService) ctx.getBean("userService");
             userService.login();
-
             Spring工厂重量级资源 一个应用中 应该只创建一个工厂
          */
 

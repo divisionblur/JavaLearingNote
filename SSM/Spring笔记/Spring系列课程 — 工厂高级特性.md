@@ -29,7 +29,7 @@
   - scope="singleton"
 
     ~~~markdown
-    Spring工厂创建的同时，对象的创建 饿汉？
+    Spring在工厂创建的同时对象也会被创建    饿汉？
     
     注意：设置scope=singleton 这种情况下 也需要在获取对象的同时，创建对象 饿汉变懒汉
     <bean lazy-init="true"/>
@@ -160,14 +160,12 @@
 
 ~~~markdown
 把Spring配置文件中需要经常修改的字符串信息，转移到一个更小的配置文件中
-
 1. Spring的配置文件中存在需要经常修改的字符串？
-   存在 以数据库连接相关的参数 代表
+   当然存在 以数据库连接相关的参数 代表
 2. 经常变化字符串，在Spring的配置文件中，直接修改
    不利于项目维护(修改)
 3. 转移到一个小的配置文件(.properties)
    利于维护(修改)
-   
 配置文件参数化：利于Spring配置文件的维护(修改)
 ~~~
 
@@ -220,10 +218,10 @@
      /*
          convert方法作用：String --- >  Date
                         SimpleDateFormat sdf = new SimpleDateFormat();
-                        sdf.parset(String) ---> Date
+                        sdf.parse(String) ---> Date
          param:source 代表的是配置文件中 日期字符串 <value>2020-10-11</value>
   
-         return : 当把转换好的Date作为convert方法的返回值后，Spring自动的为birthday属性进行注入（赋值）
+         return : 当把转换好的Date作为convert方法的返回值后，Spring自动为birthday属性进行注入（赋值）
   
        */
   
@@ -393,26 +391,22 @@ Object postProcessAfterInitiallization(Object bean String beanName)
      }
      ~~~
      
-     
-
   2. Spring的配置文件中进行配置
 
      Spring发现了有BeanPostProcessor的实现类的话就知道需要进行后置处理bean
 
      ~~~xml
-     <bean id="myBeanPostProcessor" class="xxx.MyBeanPostProcessor"/>
+   <bean id="myBeanPostProcessor" class="xxx.MyBeanPostProcessor"/>
      ~~~
-
-  3. BeanPostProcessor细节
+  
+  3. BeanPostProcessor细节  
 
      ~~~markdown
-     BeanPostProcessor会对Spring工厂中 所有 创建的对象进行加工。
+   BeanPostProcessor会对Spring工厂中 所有 创建的对象进行加工。
      ~~~
-
+  
      ![image-20201205151156745](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201205151156.png)
-  
-     
-  
+
      
   
      ![image-20201205151114122](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201205151114.png)

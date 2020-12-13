@@ -212,15 +212,17 @@
 
 ​	`git add remote origin 远端仓库的地址`
 
+如果要将同一个本地库推送到不同的远端仓库时  可以指定 不同的远端仓库的别名   列如再推送到码云上
+
+就可以 git add remote gitee(相当于别名)   仓库地址
+
 2.本地库的内容第一次push到远端仓库时用如下的命令
 
 ​	`git push origin -u master` (-u 的意思是将本地库的mater分支和远端仓库的分支对应起来,远程仓库origin)
 
 
 
-​	以后再推送就可以直接使用命令`git push origin master`
-
-
+​	以后再推送就可以直接使用命令`git push origin master`     
 
 当协同开发的时候我首先把远端仓库的代码拷贝到自己的电脑上
 

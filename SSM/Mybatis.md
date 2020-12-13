@@ -1357,7 +1357,7 @@ public interface EmployeeDao {
 public interface EmployeeDao {
 	...
     //返回一条记录的map；key就是列名，值就是对应的值
-	public Map<String, Object> getEmpByReturnMap(Integer id);
+	public Map<String, Object>  getEmpByReturnMap(Integer id);
     
     
     
@@ -1369,7 +1369,7 @@ public interface EmployeeDao {
      */
     @MapKey("id")
     Map<Integer,Employee> getEmpByLastNameLikeReturnMap(String lastName);
-    ...
+    ......
 }
 ```
 
