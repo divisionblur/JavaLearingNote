@@ -2286,7 +2286,7 @@ public interface EmployeeDaoPlus {
 public interface EmployeeMapperDynamicSQL {
 	 
 	public List<Employee> getEmpsByConditionIf(Employee employee);
-	
+	 
 }
 
 ```
@@ -2295,8 +2295,8 @@ public interface EmployeeMapperDynamicSQL {
 
 ```xml
 <mapper namespace="com.lihai.dao.EmployeeMapperDynamicSQL">
-<!--    携带了哪个字段查询条件就带上这个字段的值-->
-<!--    public List<Employee> getEmpsByConditionIf(Employee employee);-->
+	<!--携带了哪个字段查询条件就带上这个字段的值-->
+	<!--public List<Employee> getEmpsByConditionIf(Employee employee);-->
     <select id="getEmpsByConditionIf" resultType="com.lihai.bean.Employee">
         select * from tlb_employee where
         <!-- test：判断表达式（OGNL）
@@ -2383,7 +2383,7 @@ OGNL（ Object Graph Navigation Language ）对象图导航语言， 这是一�
 - 访问对象属性： person.name
 - 调用方法： person.getName()
 - 调用静态属性/方法： @java.lang.Math@[PI、@java.util.UUID](mailto:PI、@java.util.UUID)@randomUUID()
-- 调用构造方法： new com.lun.Person('admin').name
+- 调用构造方法： new com.lihai.Person('admin').name
 - 运算符： +, -*, /, %
 - 逻辑运算符： in, not in, >, >=, <, <=, ==, !=
 
@@ -2412,8 +2412,8 @@ OGNL（ Object Graph Navigation Language ）对象图导航语言， 这是一�
 
 <mapper namespace="com.lihai.dao.EmployeeMapperDynamicSQL">
 
-<!--    携带了哪个字段查询条件就带上这个字段的值-->
-<!--    public List<Employee> getEmpsByConditionIf(Employee employee);-->
+	<!--携带了哪个字段查询条件就带上这个字段的值-->
+	<!--public List<Employee> getEmpsByConditionIf(Employee employee);-->
     <select id="getEmpsByConditionIf" resultType="com.lihai.bean.Employee">
         select * from tlb_employee
         <!--where标签-->
@@ -2433,14 +2433,14 @@ OGNL（ Object Graph Navigation Language ）对象图导航语言， 这是一�
             id = #{id}
         </if>
 
-        <if test="lastName!=null &amp;&amp; lastName!=&quot;&quot;">
+        <if test="lastName!=null && lastName!='' ">
             and lastName like #{lastName}
         </if>
 
-        <if test="email!=null and email.trim()!=&quot;&quot;">
+        <if test="email!=null and email.trim()!='' ">
             and email=#{email}
         </if>
-        <!-- ognl会进行字符串与数字的转换判断  "0"==0 -->
+        <!-- OGNL会进行字符串与数字的转换判断  "0"==0 -->
         <!--不是1和0其他情况都不认-->
         <if test="gender==0 or gender==1">
             and gender=#{gender}
@@ -2516,7 +2516,7 @@ where只会去掉第一个多出来的 and 或者or，**但最后一个多出来
 
 ## 41.动态sql-trim-自定义字符串截取
 
-后面多出的and或者or where标签不能解决
+后面多出的and或者or 用where标签不能解决
 
 - prefix="":前缀：**trim标签体中是整个字符串拼串后的结果。**
   - **prefix给拼串后的整个字符串加一个前缀**
@@ -2563,7 +2563,7 @@ public interface EmployeeMapperDynamicSQL {
                 email=#{email} and
             </if>
 
-            <!-- ognl会进行字符串与数字的转换判断  "0"==0 -->
+            <!-- OGNL会进行字符串与数字的转换判断  "0"==0 -->
             <!--不是1和0其他情况都不认-->
             <if test="gender==0 or gender==1">
                 gender=#{gender}
@@ -2642,11 +2642,9 @@ public interface EmployeeMapperDynamicSQL {
                 <when test="id != null">
                     id = #{id}
                 </when>
-
                 <when test="lastName != null">
                     lastName like #{lastName}
                 </when>
-
                 <when test="email != null">
                     email = #{email}
                 </when>
@@ -2656,6 +2654,7 @@ public interface EmployeeMapperDynamicSQL {
                 </otherwise>
             </choose>
         </where>
+        
     </select>
     
     ......
@@ -2769,24 +2768,26 @@ public interface EmployeeMapperDynamicSQL {
 
 	    <update id="updateEmp">
          update tlb_employee
-<!--         <set>-->
-<!--             <if test="lastName != null">-->
-<!--                 lastName=#{lastName},-->
-<!--             </if>-->
-<!--             <if test="email != null">-->
-<!--                 email=#{email},-->
-<!--             </if>-->
+<!--         <set>                                          -->
+<!--             <if test="lastName != null">               -->
+<!--                 lastName=#{lastName},   				-->
+<!--             </if>										-->
+<!--             <if test="email != null">					-->
+<!--                 email=#{email},						-->
+<!--             </if>										-->
 
-<!--             <if test="gender != null">-->
-<!--                 gender=#{gender}-->
-<!--             </if>-->
-<!--         </set>-->
+<!--             <if test="gender != null">					-->
+<!--                 gender=#{gender}						-->
+<!--             </if>										-->
+<!--         </set>												-->
 
 
         <trim prefix="set" suffixOverrides=",">
+            
             <if test="lastName != null">
                 lastName=#{lastName},
             </if>
+            
             <if test="email != null">
                 email=#{email},
             </if>
@@ -2794,6 +2795,7 @@ public interface EmployeeMapperDynamicSQL {
             <if test="gender != null">
                 gender=#{gender}
             </if>
+            
         </trim>
          where id=#{id}
     </update>
@@ -2868,8 +2870,7 @@ public interface EmployeeMapperDynamicSQL {
     ......
     <select id="getEmpsByConditionForeach" resultType="com.lihai.bean.Employee">
         select * from tlb_employee
-        <foreach collection="list" item="item_id" separator=","
-                 open="where id in(" close=")">
+        <foreach collection="list" item="item_id" separator="," open="where id in(" close=")">
                 #{item_id}
         </foreach>
     </select>
@@ -2937,14 +2938,9 @@ public interface EmployeeMapperDynamicSQL {
     ......
     ......
      <!-- 批量保存 -->
-	 <!--public void addEmps(@Param("emps")List<Employee> emps);  -->
+	 <!--public void addEmps(@Param("emps")List<Employee> emps);-->
 	 <!--MySQL下批量保存：可以foreach遍历   mysql支持values(),(),()语法-->
-	<insert id="addEmps">
-	 	insert into employee(last_name,email,gender,department_id) 
-		values
-		<foreach collection="emps" item="emp" separator=",">
-			(#{emp.lastName},#{emp.email},#{emp.gender},#{emp.department.id})
-		</foreach>
+    
 	 <!--第一种方式-->
     <insert id="addEmps">
         insert into tlb_employee(lastName,email,gender,d_id)
@@ -2956,7 +2952,7 @@ public interface EmployeeMapperDynamicSQL {
 
     <!--第二种方式(会发多条SQL语句)-->
     <insert id="addEmps1">
-        <foreach collection="emps" separator=";" item="emp">
+        <foreach collection="emps" item="emp" separator=";">
             insert into tlb_employee(lastName,email,gender,d_id)
             values  (#{emp.lastName},#{emp.email},#{emp.gender},#{emp.dept.id})
         </foreach>
@@ -2965,6 +2961,14 @@ public interface EmployeeMapperDynamicSQL {
     ......
 </mapper>
 ```
+
+测试第一种方式：
+
+![image-20201217224700496](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201217224707.png)
+
+测试第二种方式：
+
+![image-20201217224848440](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201217224848.png)
 
 **注意**，==MySQL数据库连接属性allowMultiQueries=true，才能批量删除，修改数据。==（在连接MySQL的URL后添加参数）。
 
@@ -3029,8 +3033,6 @@ public class testDynamicSQL {
 
 ```
 
-![image-20201130195356359](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201130195356.png)
-
 
 
 ## 46.动态sql-foreach-oracle下批量插入的两种方式
@@ -3090,7 +3092,7 @@ insert into employees(employee_id,last_name,email)
 
 ## 48.动态sql-内置参数 _parameter & _databaseId
 
-不只是方法传递过来的参数可以被用来判断，
+**不只是方法传递过来的参数可以被用来判断**，
 
 mybatis默认还有**两个内置参数**：
 
@@ -3142,29 +3144,44 @@ mybatis默认还有**两个内置参数**：
 ## 49.动态sql-bind-绑定
 
 ```xml
-<!--public List<Employee> getEmpsTestInnerParameter(Employee employee);  -->
-<select id="getEmpsTestInnerParameter" resultType="com.lihai.bean.Employee">
+<!--List<Employee> getEmpsByBindTest(Employee employee); -->
+<select id="getEmpsByBindTest" resultType="com.lihai.bean.Employee">
 
-		<!-- bind：可以将OGNL表达式的值绑定到一个变量中，方便后来引用这个变量的值 -->
-		<bind name="lastName" value="'%'+lastName+'%'"/>
+        <bind name="lastName" value="'%' + lastName + '%'"/>
 
-		<if test="_databaseId=='mysql'">
-			select * from tbl_employee
-			<if test="_parameter!=null">
-				where lastName like #{lastName}<!-- 这里使用到lastName -->
-			</if>
-		</if>
-    
-    
-		<if test="_databaseId=='oracle'">
-			select * from employees
-			<if test="_parameter!=null">
-				where lastName like #{_parameter.lastName}
-			</if>
-		</if>
+        select * from tlb_employee where lastName like #{lastName}
 </select>
 
 ```
+
+```java
+@Test
+    public void testBind() {
+        SqlSession sqlSession = null;
+        try {
+            String resource = "mybatis-config.xml";
+            InputStream in = Resources.getResourceAsStream(resource);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(in);
+            sqlSession = factory.openSession();
+            EmployeeMapperDynamicSQL mapper = sqlSession.getMapper(EmployeeMapperDynamicSQL.class);
+            List<Employee> employees = mapper.getEmpsByBindTest(new Employee(null,"o",null,null));
+            for (Employee employee : employees) {
+                System.out.println(employee);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
+```
+
+![image-20201217232302585](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201217232302.png)
+
+
 
 ## 50.动态sql-sql-抽取可重用的sql片段
 
@@ -3174,7 +3191,7 @@ mybatis默认还有**两个内置参数**：
 2. ==include来引用==已经抽取的sql：
 3. include还可以自定义一些property，sql标签内部就能使用自定义的属性
    - include-property：取值的正确方式${prop},
-   - 不能使用`#{}` #{ }时取传参的参数的，而使用`${}`
+   - 不能使用`#{}` #{ }是取传参的参数的，而使用`${}`
 
 ```xml
 <sql id="userColumns"> ${alias}.id,${alias}.username,${alias}.password </sql>
@@ -3275,7 +3292,7 @@ public class testCache {
 
 ==同一次会话期间只要查询过的数据都会保存在当前SqlSession的一个Map中==
 
-- key = hashCode + 查询的SqlId + 编写的sql查询语句 + 参数
+- key = hashCode + 查询的Sql Id + 编写的sql查询语句 + 参数
 
 一级缓存失效的四种情况：
 
@@ -3283,15 +3300,17 @@ public class testCache {
 
 ![image-20201202091342173](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202091342.png)
 
-1. 同一个SqlSession但是查询条件不同
+2. 同一个SqlSession但是查询条件不同
 
 ![image-20201202091724548](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202091724.png)
 
-1. 同一个SqlSession两次查询期间执行了任何一次**增删改**操作
+3. 同一个SqlSession两次查询期间执行了任何一次**增删改**操作
+
+   **因为增删改操作默认开启了flushCache=true每次执行完sql都会清除一级缓存和二级缓存**
 
 ![image-20201202092937271](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202092937.png)
 
-1. 同一个SqlSession两次查询期间手动清空了缓存
+4. 同一个SqlSession两次查询期间手动清空了缓存
 
 ![image-20201202093437735](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202093437.png)
 
@@ -3319,16 +3338,29 @@ public class testCache {
 - 二级缓存在 SqlSession 关闭或提交之后才会生效
 - 使用步骤
   1. 全局配置文件中开启二级缓存
-     - `<setting name="cacheEnabled" value="true"/>`
+     
+     - ```java
+       <setting name="cacheEnabled" value="true"/> <settings>
+               <setting name="mapUnderscoreToCamelCase" value="true"/>
+       
+               <!--开启全局二级缓存-->
+               <setting name="cacheEnabled" value="true"/>
+           </settings>
+       ```
+     
+     - 
   2. 需要使用二级缓存的映射文件处使用cache配置缓存
-     - `<cache></cache>`
+     
+     - ```java
+       <cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024" ></cache>
+       ```
   3. **注意**： ==POJO需要实现Serializable接口==
 
 cache标签的属性：
 
 - ==eviction:缓存的回收策略：==
   - LRU – 最近最少使用的：==移除最长时间不被使用的对象。==
-  - FIFO – 先进先出：按对象进入缓存的顺序来移除它们。
+  - FIFO – 先进先出：==按对象进入缓存的顺序来移除它们。==
   - SOFT – 软引用：移除基于垃圾回收器状态和软引用规则的对象。
   - WEAK – 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。
   - 默认的是 LRU。
@@ -3453,7 +3485,7 @@ Employee{id=1, lastName='贾宝玉', gender='1', email='1@qq.com'}
 ## 56.缓存-缓存有关的设置以及属性
 
 1. 全局setting的cacheEnable： ==– 配置二级缓存的开关。一级缓存一直是打开的。==
-2. select标签的useCache属性： – ==配置这个select是否使用二级缓存。一级缓存一直是使用的==
+2. select标签的useCache属性： – ==配置这个select是否使用二级缓存。一级缓存一直是使用的==(如果开启了二级缓存那么select是默认使用二级缓存的)
 
 ![image-20201202110447763](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202110447.png)
 
@@ -3461,7 +3493,7 @@ Employee{id=1, lastName='贾宝玉', gender='1', email='1@qq.com'}
 
 ![image-20201202110537154](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202110537.png)
 
-会发现发送了两次SQL语句说明将二级缓存给关闭了。
+会发现发送了两次SQL语句说明此时select没有使用二级缓存。
 
 ![image-20201202110850049](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202110850.png)
 
@@ -3481,9 +3513,9 @@ Employee{id=1, lastName='贾宝玉', gender='1', email='1@qq.com'}
 
 ![img](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202120041.png)
 
-## 58.缓存-第三方缓存整合原理&ehcache适配包下载
+## 58.缓存-第三方缓存整合原理&eh cache适配包下载
 
-- EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。
+- **EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。**
 - MyBatis定义了Cache接口方便我们进行自定义扩展。
 
 ```java
@@ -3518,14 +3550,14 @@ public interface Cache {
 - 加入mybatis-ehcache依赖
 
 ```xml
- <!-- 缓存框架 ehcache   -->
+ <!-- 缓存框架ehcache   -->
 <dependency>
       <groupId>org.mybatis.caches</groupId>
       <artifactId>mybatis-ehcache</artifactId>
       <version>1.2.1</version>
 </dependency>
             
-
+<!--日志-->
 <dependency>
      <groupId>org.slf4j</groupId>
      <artifactId>slf4j-log4j12</artifactId>
@@ -3629,6 +3661,7 @@ l memoryStoreEvictionPolicy - 当内存缓存达到最大，有新的element加�
 ```xml
 <mapper namespace="com.lihai.dao.DepartmentDao">
 	<!-- 引用缓存：namespace：指定和哪个名称空间下的缓存一样 -->
+    <!--这里就是DepartmentDao和EmployeeDao的缓存设置一样-->
 	<cache-ref namespace="com.lihai.dao.EmployeeDao"/>
 
 ```
@@ -3646,8 +3679,6 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 [官方整合示例](https://github.com/mybatis/jpetstore-6)
 
 ## 61.整合Spring-所有需要的jar包导入
-
-[pom.xml](https://my.oschina.net/jallenkwong/blog/pom.xml)
 
 ```xml
 <!-- DB连接池 -->
@@ -3732,8 +3763,6 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 
 ## 62.整合Spring-引入MyBatis之前的配置
 
-[mybatis-config.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c06/mybatis-config.xml)
-
 ```xml
 <configuration>
 	<settings>
@@ -3747,9 +3776,7 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 
 ```
 
-------
 
-[EmployeeMapper.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c06/EmployeeMapper.xml)
 
 ```xml
 <mapper namespace="com.lun.c06.spring.EmployeeMapper">
@@ -3765,9 +3792,7 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 
 ```
 
-------
 
-[EmployeeMapper](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c06/spring/EmployeeMapper.java)
 
 ```java
 public interface EmployeeMapper {

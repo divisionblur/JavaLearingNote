@@ -1,6 +1,6 @@
    
 
-### 百知教育 — Spring系列课程 --- 注解编程
+###  Spring系列课程 --- 注解编程
 
 -----
 
@@ -155,7 +155,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
   <bean id="" class="" scope="singleton|prototype"/>
   ```
 
-  确保能够被扫描到，然后再类上加上@Scope注解  singleton只会创建一个对象，而prototype每次都会创建新的对象。如果不加@Scope注解的话默认是singleton
+  确保能够被扫描到，然后在类上加上@Scope注解  singleton只会创建一个对象，而prototype每次都会创建新的对象。如果不加@Scope注解的话默认是singleton。
 
 - @Lazy注解
 
@@ -170,15 +170,23 @@ Spring基于注解进行配置后，还能否解耦合呢？
   ~~~markdown
   1. 初始化相关方法	
      1.实现InitializingBean接口
-     2.<bean init-method=""/>
-     使用注解 @PostConstruct来实现
+     2.自定义一个方法然后在配置文件中配置<bean init-method=""/>
+     在方法上使用注解 @PostConstruct来实现
   2. 销毁方法 (工厂关闭的时候才会被调用)	 
      1.实现DisposableBean接口
-     2.<bean destory-method=""/>
+     2.自定义一个方法然后在配置文件中配置<bean destory-method=""/>
      使用注解 @PreDestroy来实现
   注意：1. 上述的2个注解并不是Spring提供的，JSR(JavaEE规范)520
        2. 再一次的验证，通过注解实现了接口的契约性
   ~~~
+  
+  ![image-20201213213823811](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213213823.png)
+  
+  ![image-20201213213800262](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213213800.png)
+  
+  输出如下:
+  
+  ​	![image-20201213213842610](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201213213842.png)
   
   ```java
   @Component
@@ -207,15 +215,15 @@ Spring基于注解进行配置后，还能否解耦合呢？
   ```markdown
   @Autowired 细节
   1. Autowired 注解基于类型进行注入 [推荐]
-     基于类型的注入：注入对象的类型，必须与目标成员变量类型相同或者是其子类（实现类）
+     基于类型的注入：注入对象的类型，必须与目标成员变量类型(UserDAO)相同或者是其子类(UserDAOImpl)（实现类）
   
   2. Autowired Qualifier 基于名字进行注入 [了解]
      基于名字的注入：注入对象的id值，必须与Qualifier注解中设置的名字相同
      @Autowired
-     @Qualifier("userDAOImpl")
+     @Qualifier("userDAOImpl")  默认的id值是首单词首字母小写
   
   3. Autowired注解放置位置 
-      a) 放置在对应成员变量的set方法上 
+      a) 放置在对应成员变量的 set 方法上 
       b) 直接把这个注解放置在成员变量之上，Spring通过反射直接对成员变量进行注入（赋值）[推荐]
   
   4. JavaEE规范中类似功能的注解
@@ -238,11 +246,11 @@ Spring基于注解进行配置后，还能否解耦合呢？
 
   ~~~markdown
   @Value注解完成
-  1. 设置xxx.properties 
+  1. 设置xxx.properties (init.properties)
      id = 10
      name = lihai
-  2. Spring的工厂读取这个配置文件 	
-     <context:property-placeholder location=""/>
+  2. Spring的工厂读取这个配置文件 schema的形式	
+     <context:property-placeholder location=""/>   可以用@PropertySource注解来替换
   3. 代码 
      属性 @Value("${key}")
   ~~~
@@ -288,7 +296,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
       Spring提供新的配置形式 YAML YML (SpringBoot)
       ~~~
 
-##### 3. 注解扫描详解
+##### 3. 注解扫描详解 (包扫描设置)
 
 ~~~markdown
 <context:component-scan base-package="com.lihai"/>
@@ -301,8 +309,9 @@ Spring基于注解进行配置后，还能否解耦合呢？
 <context:component-scan base-package="com.lihai">
    <context:exclude-filter type="" expression=""/>
    # expression 后面填切入点表达式不用切入点函数了
-   type:assignable:排除特定的类型 不进行扫描
-        annotation:排除特定的注解 不进行扫描  谁具有特点的注解就排除谁
+   type:
+   		assignable:排除特定的类型 不进行扫描
+        annotation:排除特定的注解 不进行扫描  谁具有特定的注解就排除谁
         aspectj(实战):切入点表达式  支持下面两种切入点 
                 包切入点： com.lihai.bean..*
                 类切入点： *..User
@@ -313,7 +322,6 @@ Spring基于注解进行配置后，还能否解耦合呢？
   # 排除策略可以叠加使用 
 <context:component-scan base-package="com.lihai">
   <context:exclude-filter type="assignable" expression="com.lihai.bean.User"/>
-
   <context:exclude-filter type="aspectj" expression="com.lihai.injection..*"/>
 </context:component-scan>
 ~~~
@@ -338,10 +346,11 @@ Spring基于注解进行配置后，还能否解耦合呢？
 </context:component-scan>
 
 1. use-default-filters="false"
-   作用：让Spring默认的注解扫描方式 失效。
+   作用：让Spring默认的注解扫描方式失效。
 2. <context:include-filter type="" expression=""/>
-   作用：指定扫描那些注解 
-   type:assignable:包含特定的类型 进行扫描
+   作用：指定扫描哪些注解 
+   type:
+	    assignable:包含特定的类型 进行扫描
         annotation:包含特定的注解 进行扫描
         aspectj:切入点表达式
                 包切入点： com.lihai.bean..*
@@ -366,7 +375,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
 
 ##### 4. 对于注解开发的思考
 
-- **配置互通**
+- **配置互通**  **(重要)**
 
   ~~~markdown
   Spring注解的配置和 配置文件的配置 互通
@@ -385,21 +394,20 @@ Spring基于注解进行配置后，还能否解耦合呢？
   <bean id="userService" class="com.lihai.UserServiceImpl">
      <property name="userDAO" ref="userDAOImpl"/>
   </bean>
-  
-  可以看到UserDAOImpl对象是由注解方式创建的，而UserServiceImpl是由配置文件设置的
+  可以看到UserDAOImpl对象是由注解方式创建的，而UserServiceImpl是由配置文件设置的,就可以在UserServiceImpl
+  在配置文件中用<property>标签对userDao进行注入时直接用由注解方式创建的UserDAOImpl对象的默认id值
   ~~~
   
 - **什么情况下使用注解 什么情况下使用配置文件**
 
   ~~~markdown
-  @Component 替换 <bean>标签 
-  
-  基础注解（@Component @Autowired @Value) 程序员开发类型的配置
+  @Component 替换 <bean> 标签 
+  基础注解 (@Component @Autowired @Value) 程序员开发类型的配置
   
   1. 在程序员开发的类型上 可以加入对应注解 进行对象的创建 
      User  UserService  UserDAO  UserAction 
   
-  2. 应用其他非程序员开发的类型时，还是需要使用<bean>标签 进行配置的
+  2. 应用其他非程序员开发的类型时，还是需要使用<bean>标签 进行配置的后面会讲一个高级注解                     基于配置类的@Bean注解
      SqlSessionFactoryBean  MapperScannerConfigure 
   ~~~
 
@@ -469,7 +477,7 @@ Spring基于注解进行配置后，还能否解耦合呢？
 
 #### 第三章、Spring的高级注解（Spring3.x 及以上)
 
-##### 1. 配置Bean
+##### 1. 配置Bean @Configuration）
 
 ~~~java
 Spring在3.x提供的新的注解，用于替换ApplicationContext.XML配置文件。
@@ -493,7 +501,7 @@ public class AppConfig{
       1. 指定配置bean的Class
           ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
       2. 指定配置bean所在的路径 
-          ApplicationContext ctx = new AnnotationConfigApplicationContext("com.baizhiedu");
+          ApplicationContext ctx = new AnnotationConfigApplicationContext("com.lihai");
    ~~~
 
 - 配置Bean开发的细节分析
@@ -501,7 +509,7 @@ public class AppConfig{
   - **基于注解开发使用日志**
 
     ~~~markdown
-    # 不能集成 Log4j
+    # 不能集成Log4j
     # 集成 logback 
     ~~~
 
@@ -573,7 +581,7 @@ public class AppConfig{
 @Bean注解在配置bean中进行使用，等同于XML配置文件中的<bean>标签
 ~~~
 
-###### 1. @Bean注解的基本使用
+###### 1. @Bean注解的基本使用  
 
 - 对象的创建
 
@@ -585,7 +593,7 @@ public class AppConfig{
      User  UserService   UserDAO 
   2. 复杂对象
      不能通过new的方式直接创建的对象
-     Connection SqlSessionFactory
+     例如 Connection SqlSessionFactory
   ~~~
 
   - @Bean注解创建复杂对象的注意事项
@@ -664,25 +672,26 @@ public class AppConfig{
     Customer customer = new Customer();
     customer.setId(1);
     customer.setName("xiaohei");
-  
     return customer;
   }
   ~~~
-
-  - JDK类型注入的细节分析
-
-    ~~~java
+  
+- JDK类型注入的细节分析
+  
+  ~~~java
     如果直接在代码中进行set方法的调用，会存在耦合的问题 
     
     @Configuration
     @PropertySource("classpath:/init.properties")
     public class AppConfig1 {
-    
+    	  //作为配置类的成员变量
         @Value("${id}")
         private Integer id;
         @Value("${name}")
         private String name;
      
+        
+        
         @Bean
         public Customer customer() {
             Customer customer = new Customer();
@@ -692,7 +701,7 @@ public class AppConfig{
             return customer;
         }
     }
-    ~~~
+  ~~~
 
 ##### 3. @ComponentScan注解
 
@@ -708,9 +717,7 @@ public class AppConfig{
 @Configuration
 @ComponentScan(basePackages = "com.lihai.scan")
 public class AppConfig2 {
-
 }
-
 <context:component-scan base-package=""/>
 ~~~
 
@@ -765,7 +772,7 @@ public class AppConfig2 {
 优先级高的配置 覆盖优先级低配置 
 
 @Component
-public class User{
+public class User {
 
 }
 
