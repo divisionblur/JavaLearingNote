@@ -599,11 +599,12 @@ public class AppConfig{
   - @Bean注解创建复杂对象的注意事项
 
     ~~~java
-    遗留系统整合 
+    //遗留系统整合 
     @Bean
     public Connection conn1() {
       Connection conn = null;
       try {
+        //ConnectionFactory实现了Factory，在重写的getObject方法中实现了Connection的创建。
         ConnectionFactoryBean factoryBean = new ConnectionFactoryBean();
         conn = factoryBean.getObject();
       } catch (Exception e) {
@@ -623,7 +624,7 @@ public class AppConfig{
 
   ~~~java
   @Bean
-  @Scope("singleton|prototype") 默认值 singleton
+  @Scope("singleton|prototype") 默认值 singleton只创建一个对象
   ~~~
   
   ![image-20201212151322552](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212151322.png)
@@ -647,7 +648,7 @@ public class AppConfig{
   public UserDAO userDAO() {
     return new UserDAOImpl();
   }
-  1.通过形参来完成
+  1.通过形参来完成，将要注入的自定义类型当作形参
   @Bean
   public UserService userService(UserDAO userDAO) {
     UserServiceImpl userService = new UserServiceImpl();
@@ -768,7 +769,7 @@ public class AppConfig2 {
 ###### 2. 配置优先级
 
 ~~~markdown
-@Component及其衍生注解 < @Bean < 配置文件bean标签
+@Component及其衍生注解 < @Bean < 配置文件.xml中的bean标签
 优先级高的配置 覆盖优先级低配置 
 
 @Component
@@ -783,30 +784,90 @@ public User user(){
 
 <bean id="user" class="xxx.User"/>
 
-配置覆盖：id值 保持一致
+配置覆盖：id值 必须保持一致
 ~~~
+
+**演示配置文件xml中的配置覆盖@Bean注解**
+
+配置类:
+
+```java
+@Configuration
+@ComponentScan(basePackages = "com.lihai.bean")
+@ImportResource("applicationContext.xml")//把配置文件导入
+public class AppConfig3 {
+
+    @Bean
+    public Customer customer(){
+        Customer customer = new Customer();
+        customer.setId(1);
+        customer.setName("lihai");
+        return customer;
+    }
+}
+```
+
+![image-20201221215930575](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201221215937.png)
+
+测试如下：
+
+```java
+ /**
+     *用于测试配置文件的覆盖
+     */
+    @Test
+    public void test7() {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig3.class);
+        Customer customer = (Customer) ctx.getBean("customer");
+        System.out.println(customer.getId()+"===="+customer.getName());
+    }
+```
+
+输出结果如下:   
+
+![image-20201221220109374](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201221220109.png)
 
 - 解决基于注解进行配置的耦合问题
 
   ~~~java
   @Configuration
-  //@ImportResource("applicationContext.xml")
   public class AppConfig4 {
   
       @Bean
       public UserDAO userDAO() {
           return new UserDAOImpl();
       }
+     
+      @Bean
+      public UserService userService() {
+          UserServiceImpl userService = new UserServiceImpl();
+          userService.setUserDAO(userDAO);
+          return userService;
+      }
   }
-  
+  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   @Configuration
   @ImportResource("applicationContext.xml")
-  public class AppConfig5{
+  public class AppConfig5 {
     
+      //这里相当于配置互通，当Service需要配置文件中的Dao时首先用@ImportResource注解将配置文件导入
+      //在applicationContext.xml中配置的UserDAOImplNew 用@AutoWired注解注入到配置类当中然后供
+      //Service使用
+      @Autowired
+      private UserDAO userDAO;
+      
+      @Bean
+      public UserService userService() {
+          UserServiceImpl userService = new UserServiceImpl();
+          userService.setUserDAO(userDAO);
+          return userService;
+      }
+      
   }
   
+  
   applicationContext.xml
-  <bean id="userDAO" class="com.baizhiedu.injection.UserDAOImplNew"/>
+  <bean id="userDAO" class="com.lihai.injection.UserDAOImplNew"/>
   ~~~
 
 ##### 5. 整合多个配置信息
@@ -829,7 +890,7 @@ public User user(){
 
 - 多配置的信息汇总
 
-  - **base-package进行多个配置Bean的整合**
+  - **base-package进行多个配置Bean的整合**  **(将配置类放在相同的包下即可)**
 
     ![image-20200707170421669](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212172150.png)
 
@@ -885,6 +946,9 @@ public User user(){
           return new UserDAOImpl();
       }
   }
+  
+  //UserDao是在AppConfig2中生成的  在AppConfig1中用@Import注解将AppConfig2整合起来再用@AutoWired注解将UserDao注入   此处也可以用basePackge包扫描也可以在另一个配置类当中注入在另一个配置类当中生成的对象。
+  //也就实现了跨配置的注入
   ~~~
   
   ![image-20201212181028684](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201212181028.png)
@@ -894,15 +958,19 @@ public User user(){
 ###### 2. 配置Bean与@Component相关注解的整合
 
 ~~~java
-@Component  或衍生注解 (@Repository)
-public class UserDAOImpl implements UserDAO{
+@Component  或衍生注解 (@Repository,@Service)
+public class UserDAOImpl implements UserDAO {
   
 } 
 
 @Configuration
-@ComponentScan("")
+@ComponentScan("com.lihai.injection")
+
+
+
 public class AppConfig3 {
    
+    //UserDao对象用注解生成，然后用@AutoWired注解将其注入到配置类当中
     @Autowired
     private UserDAO userDAO;
 
@@ -917,15 +985,38 @@ public class AppConfig3 {
 ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig3.class);
 ~~~
 
+```java
+/**
+     * 用于测试 @Component注解(以及其衍生注解) 与 配置Bean 的整合
+     */
+    @Test
+    public void test11() {
+
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(com.lihai.config.AppConfig3.class);
+
+        //配置类中生成对象的id就是方法名字
+        UserService userService = (UserService) ctx.getBean("userService");
+        //UserDAO userDAOImpl = (UserDAO) ctx.getBean("userDAOImpl");
+        //System.out.println(userService);
+        //System.out.println(userDAOImpl);
+        userService.register();
+    }
+
+```
+
+测试输出：
+
+![image-20201221225120037](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201221225120.png)
+
 ###### 3. 配置Bean与配置文件整合
 
 ~~~java
 1. 遗留系统的整合 2. 配置覆盖
   
-public class UserDAOImpl implements UserDAO{
+public class UserDAOImpl implements UserDAO {
   
 }
-<bean id="userDAO" class="com.baizhiedu.injection.UserDAOImpl"/>
+<bean id="userDAO" class="com.lihai.injection.UserDAOImpl"/>
 
 @Configuration
 @ImportResource("applicationContext.xml")
@@ -1062,17 +1153,14 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
    }
 2. 创建切面类 （额外功能 切入点 组装切面）
     @Aspect 
-    @Component 这个注解相当于在配置文件中配置bean标签
+    @Component //这个注解相当于在配置文件中配置bean标签
     public class MyAspect {
 
         @Around("execution(* login(..))")
         public Object arround(ProceedingJoinPoint joinPoint) throws Throwable {
 
             System.out.println("----aspect log ------");
-
             Object ret = joinPoint.proceed();
-
-
             return ret;
         }
     }
@@ -1198,7 +1286,7 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
     </bean>
     
     @MapperScan(basePackages={"com.lihai.dao"}) ---> 配置bean完成
-  	@MapperScan这个注解会扫描SqlsessionFactoryBean
+    @MapperScan这个注解会扫描SqlsessionFactoryBean
     
   ~~~
 
@@ -1216,10 +1304,11 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
   ```java
   @Configuration
   @ComponentScan(basePackages = "com.lihai.mybatis")
+  //指定DAO接口所在的包
   @MapperScan(basePackages = "com.lihai.mybatis")
   public class MybatisAutoConfiguration {
   
-  
+  	//存在耦合
       @Bean
       public DataSource dataSource() {
           DruidDataSource dataSource = new DruidDataSource();
@@ -1227,7 +1316,6 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
           dataSource.setUrl("jdbc:mysql://localhost:3306/spring?useSSL=false");
           dataSource.setUsername("root");
           dataSource.setPassword("lihai520");
-  
           return dataSource;
       }
   
@@ -1317,7 +1405,8 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
   
   <property name="mapperLocations">
      <list>
-       <value>classpath:com.baizhiedu.mapper/*Mapper.xml</value>
+       <value>classpath:com.baizhiedu.mapper/*Mapper.xml
+       </value>
      </list>
   </property>
   
@@ -1393,7 +1482,7 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
 
 ##### 10. 纯注解版事务编程
 
-~~~xml
+~~~java
 1. 原始对象 XXXService
    <bean id="userService" class="com.baizhiedu.service.UserServiceImpl">
      <property name="userDAO" ref="userDAO"/>
@@ -1425,8 +1514,10 @@ Spring开发一个功能的4种形式，虽然开发方式不同，但是最终�
         @Autowired
         private UserDAO userDAO;
 
-4. 基于Schema的事务配置 
+4. 基于Schema的事务配置 组装切面
+   //transaction-manager获取额外功能 ，切入点的确定的话直接去扫描@Transactional 注解来获取切入点的相关信息
    <tx:annotation-driven transaction-manager="dataSourceTransactionManager"/>
+   // 基于注解的话直接写下面这个注解就行了
    @EnableTransactionManager ---> 配置Bean
 ~~~
 

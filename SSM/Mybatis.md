@@ -3251,7 +3251,7 @@ MyBatis系统中默认定义了两级缓存，一级缓存和二级缓存。
 ### 一级缓存
 
 - 一级缓存(local cache)，即本地缓存，作用域默认为sqlSession。当 Session flush 或 close 后, 该Session 中的所有 Cache 将被清空。
-- 本地缓存不能被关闭, 但可以调用 clearCache() 来清空本地缓存, 或者改变缓存的作用域.
+- 本地缓存不能被关闭, 但可以调用 clearCache() 来清空本地缓存, 或者改变缓存的作用域
 - 在mybatis3.1之后, 可以配置本地缓存的作用域. 在 mybatis.xml 中配置
 
 | -               | -                                                            | -                 | -       |
@@ -3274,8 +3274,10 @@ public class testCache {
         SqlSessionFactory factory = builder.build(in);
         SqlSession sqlSession = factory.openSession();
         EmployeeDao mapper = sqlSession.getMapper(EmployeeDao.class);
+        
         Employee e1 = mapper.getEmployeeById(1);
         System.out.println(e1);
+        
         Employee e2 = mapper.getEmployeeById(1);
         System.out.println(e2);
     }
@@ -3306,7 +3308,7 @@ public class testCache {
 
 3. 同一个SqlSession两次查询期间执行了任何一次**增删改**操作
 
-   **因为增删改操作默认开启了flushCache=true每次执行完sql都会清除一级缓存和二级缓存**
+   **因为增删改操作默认开启了flushCache = true每次执行完sql都会清除一级缓存和二级缓存**
 
 ![image-20201202092937271](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201202092937.png)
 
@@ -3345,7 +3347,7 @@ public class testCache {
        
                <!--开启全局二级缓存-->
                <setting name="cacheEnabled" value="true"/>
-           </settings>
+       </settings>
        ```
      
      - 
@@ -3365,9 +3367,9 @@ cache标签的属性：
   - WEAK – 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。
   - 默认的是 LRU。
 - ==flushInterval：缓存刷新间隔==
-  - 缓存多长时间清空一次，默认不清空，设置一个毫秒值 
+  - 缓存多长时间清空一次，默认不清空，设置一个毫秒值 。
 - ==readOnly:是否只读：==
-  - true：只读；mybatis认为所有从缓存中获取数据的操作都是只读操作，不会修改数据。mybatis为了加快获取速度，直接就会将数据在缓存中的引用交给用户。不安全，速度快
+  - true：只读；mybatis认为所有从缓存中获取数据的操作都是只读操作，不会修改数据。mybatis为了加快获取速度，直接就会将数据在缓存中的引用交给用户。不安全，速度快。
   - false：非只读：mybatis觉得获取的数据可能会被修改。mybatis会利用序列化&反序列的技术克隆一份新的数据给你。安全，速度慢
 - ==size：缓存存放多少元素；==
 - ==type=""：指定自定义缓存的全类名；==
@@ -3681,84 +3683,147 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 ## 61.整合Spring-所有需要的jar包导入
 
 ```xml
-<!-- DB连接池 -->
-<dependency>
-    <groupId>com.mchange</groupId>
-    <artifactId>c3p0</artifactId>
-    <version>0.9.5.5</version>
-</dependency>
+<!--统一管理版本-->
+<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <spring.version>5.1.14.RELEASE</spring.version>
+        <mysql.version>5.1.6</mysql.version>
+        <mybatis.version>3.4.5</mybatis.version>
+</properties>
 
-<!-- JSP -->
-<dependency>
-	<groupId>javax.servlet</groupId>
-	<artifactId>jstl</artifactId>
-	<version>1.2</version>
-</dependency>
 
-<dependency>
-	<groupId>javax.servlet</groupId>
-	<artifactId>javax.servlet-api</artifactId>
-	<version>3.1.0</version>
-	<scope>provided</scope>
-</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.8.8</version>
+        </dependency>
 
-<dependency>
-	<groupId>javax.servlet.jsp</groupId>
-	<artifactId>jsp-api</artifactId>
-	<version>2.1</version>
-	<scope>provided</scope>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<!-- 用于整合Spring -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-jdbc</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-webmvc</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-tx</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-orm</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aop</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-aspects</artifactId>
-    <version>${springframework.version}</version>
-</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>compile</scope>
+        </dependency>
 
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-test</artifactId>
-    <version>${springframework.version}</version>
-    <scope>test</scope>
-</dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JSTL -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- JSTL实现包 -->
+        <dependency>
+            <groupId>org.apache.taglibs</groupId>
+            <artifactId>taglibs-standard-impl</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>${mybatis.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.1.23</version>
+        </dependency>
+
+    </dependencies>
 ```
 
 ## 62.整合Spring-引入MyBatis之前的配置
@@ -3776,18 +3841,13 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 
 ```
 
-
+EmployeeDao.xml中的配置
 
 ```xml
-<mapper namespace="com.lun.c06.spring.EmployeeMapper">
-
- 	<select id="getEmpById" resultType="com.lun.c01.helloworld.bean.Employee">
-		select * from employee where id = #{id}
-	</select>
-	
- 	<select id="getEmps" resultType="com.lun.c01.helloworld.bean.Employee">
-		select * from employee
-	</select>
+<mapper namespace="com.lihai.dao.EmployeeDao">
+    <select id="getEmps" resultType="com.lihai.bean.Employee">
+        select * from tlb_employee
+    </select>
 </mapper>
 
 ```
@@ -3795,19 +3855,15 @@ MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。它
 
 
 ```java
-public interface EmployeeMapper {
-
-	public Employee getEmpById(Integer id);
-
+public interface EmployeeDao {
 	public List<Employee> getEmps();
-	
 }
 
 ```
 
 ## 63.整合Spring-SpringMVC配置文件编写
 
-[web.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/webapp/WEB-INF/web.xml)
+web.xml的配置如下
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -3817,7 +3873,7 @@ public interface EmployeeMapper {
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:applicationContext.xml</param-value>
 	</context-param>
-
+	<!--配置监听器web启动时启动spring-->
 	<!-- Bootstraps the root web application context before servlet initialization -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -3828,6 +3884,10 @@ public interface EmployeeMapper {
 	<servlet>
 		<servlet-name>spring</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+         <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath*:spring-servlet.xml</param-value>
+         </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
@@ -3836,58 +3896,102 @@ public interface EmployeeMapper {
 		<servlet-name>spring</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+    
+    
+    <!--防止项目的乱码-->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>forceRequestEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>forceResponseEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
   
 </web-app>
 
 ```
 
-------
-
-[spring-servlet.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/webapp/WEB-INF/spring-servlet.xml)
+spring-servlet.xml配置如下
 
 ```xml
 <beans ...">
 
 	<!--SpringMVC只是控制网站跳转逻辑  -->
 	<!-- 只扫描控制器 -->
-	<context:component-scan base-package="com.lun.c06" use-default-filters="false">
-		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-	</context:component-scan>
-	
-	<!-- 视图解析器 -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/pages/"></property>
-		<property name="suffix" value=".jsp"></property>
-	</bean>
-	
-	<mvc:annotation-driven></mvc:annotation-driven>
-	<mvc:default-servlet-handler/>
+	<context:component-scan base-package="com.lihai">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+
+    <!--配置的视图解析器对象 /WEB-INF/pages/success.jsp -->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 </beans>
 
 ```
 
 ## 64.整合Spring-Spring配置文件编写
 
-[applicationContext.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c06/applicationContext.xml)
+applicationContext.xml配置如下:
 
 ```xml
 <beans ...>
 
 	<!-- Spring希望管理所有的业务逻辑组件，等。。。 -->
-	<context:component-scan base-package="com.lun.c06">
-		<context:exclude-filter type="annotation"
-			expression="org.springframework.stereotype.Controller" />
-	</context:component-scan>
+	<!--配置properties文件的位置-->
+    <context:property-placeholder location="classpath:dbconfig.properties"></context:property-placeholder>
 
-	<!-- 引入数据库的配置文件 -->
-	<context:property-placeholder location="classpath:c04/dbconfig.properties" />
-	<!-- Spring用来控制业务逻辑。数据源、事务控制、aop -->
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="jdbcUrl" value="${jdbc.url}"></property>
-		<property name="driverClass" value="${jdbc.driver}"></property>
-		<property name="user" value="${jdbc.username}"></property>
-		<property name="password" value="${jdbc.password}"></property>
-	</bean>
+    <!--配置spring创建IOC容器时要扫描的包-->
+    <context:component-scan base-package="com.lihai">
+        <!--配置扫描注解时，排除表现层注解，要求表现层对象必须都用Controller注解-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:exclude-filter>
+    </context:component-scan>
+
+
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--配置spring整合mybatis的工厂类对象-->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="typeAliasesPackage" value="com.lihai.bean"/>
+        <!--sql映射文件所在路径-->
+        <property name="mapperLocations" value="classpath*:com/lihai/dao/*.xml"/>
+    </bean>
+
+
+    <bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"></property>
+        <!--Dao接口所在包-->
+        <property name="basePackage" value="com.lihai.dao"></property>
+    </bean>
 	<!-- spring事务管理 -->
 	<bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource"></property>
@@ -3901,131 +4005,134 @@ public interface EmployeeMapper {
 
 ## 65.整合Spring-Spring整合MyBatis关键配置
 
-[applicationContext.xml](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/resources/c06/applicationContext.xml)
-
-```xml
-	...
-	<!-- 
-	整合mybatis 
-		目的：1、spring管理所有组件。mapper的实现类。
-				service==>Dao   @Autowired:自动注入mapper；
-			2、spring用来管理事务，spring声明式事务
-	-->
-	<!--创建出SqlSessionFactory对象  -->
-	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"></property>
-		<!-- configLocation指定全局配置文件的位置 -->
-		<property name="configLocation" value="classpath:c06/mybatis-config.xml"></property>
-		<!--mapperLocations: 指定mapper文件的位置-->
-		<property name="mapperLocations" value="classpath:c06/*Mapper.xml"></property>
-	</bean>
-	
-	<!--配置一个可以进行批量执行的sqlSession  -->
-	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean"></constructor-arg>
-		<constructor-arg name="executorType" value="BATCH"></constructor-arg>
-	</bean>
-	
-	<!-- 扫描所有的mapper接口的实现，让这些mapper能够自动注入；
-	base-package：指定mapper接口的包名
-	 -->
-	<mybatis-spring:scan base-package="com.lun.c06"/>
-	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.lun.dao"></property>
-	</bean> -->
-	
-</beans>
-
-```
-
 ## 66.整合Spring-整合测试
 
-[EmployeeController.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c06/spring/EmployeeController.java)
+**EmployeeController**
 
 ```java
 @Controller
-public class EmployeeController implements Serializable{
+public class EmployeeController {
+    //注入Service
+    @Autowired
+    private EmployeeServiceImpl employeeService;
 
-	private static final long serialVersionUID = -5415910268862124882L;
-	
-	@Autowired
-	EmployeeService employeeService;
-	
-	@RequestMapping("/getemps")
-	public String emps(Map<String,Object> map){
-		List<Employee> emps = employeeService.getEmps();
-		map.put("allEmps", emps);
-		return "list";
-	}
+    @RequestMapping("/getEmps")
+    public String getEmps(Map<String,Object> map) {
+        List<Employee> emps = employeeService.getEmps();
+        map.put("allEmps",emps);
+        return "list";
+    }
 }
 
 ```
 
 ------
 
-[EmployeeService.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c06/spring/EmployeeService.java)
+EmployeeService.java
+
+```java
+public interface EmployeeService {
+
+    List<Employee> getEmps();
+}
+
+```
+
+EmployeeServiceImpl.java
 
 ```java
 @Service
-public class EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService {
 
-	@Autowired
-	private EmployeeMapper employeeMapper;
-	
-	@Autowired
-	private SqlSession sqlSession;
-	
-	public List<Employee> getEmps(){
-		//
-		//EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
-		return employeeMapper.getEmps();
-	}
+    @Autowired
+    private EmployeeDao employeeDao;
+
+    @Override
+    public List<Employee> getEmps() {
+        List<Employee> emps = employeeDao.getEmps();
+        return emps;
+    }
+}
+```
+
+EmployeeDao.java
+
+```java
+@Repository
+public interface EmployeeDao {
+
+    List<Employee> getEmps();
 
 }
-
 ```
 
-------
+EmployeeDao.xml
 
-[list.jsp](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/webapp/WEB-INF/pages/list.jsp)
+```java
+<mapper namespace="com.lihai.dao.EmployeeDao">
+    <select id="getEmps" resultType="com.lihai.bean.Employee">
+        select * from tlb_employee
+    </select>
+</mapper>
+```
+
+index.jsp
 
 ```html
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>员工列表</title>
-</head>
-<body>
-	<table>
-			<tr>
-				<td>id</td>
-				<td>lastName</td>
-				<td>email</td>
-				<td>gender</td>
-			</tr>
-		<c:forEach items="${allEmps}" var="emp">
-			<tr>
-				<td>${emp.id}</td>
-				<td>${emp.lastName}</td>
-				<td>${emp.email}</td>
-				<td>${emp.gender}</td>
-			</tr>
-		</c:forEach>
-	
-	</table>
+  <head>
+    <title>$Title$</title>
+  </head>
 
-</body>
+  <body>
+    <a href="getEmps">查询所有员工</a>
+  </body>
+
 </html>
+<!--点击index.jsp中的超链接由EmployeeController中的getEmps方法来处理请求，Controller调用Service,然后Service调用Dao进行处理将查询到的全部员工保存在map中 然后转发到list.jsp当中进行处理-->
 
 ```
 
-------
 
-最后，在浏览器输入`http://localhost:8080/LearnMybatis/getemps`进行测试
+
+```java
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page isELIgnored="false" %>
+
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+
+<table>
+        <tr>
+            <td>id</td>
+            <td>lastName</td>
+            <td>email</td>
+            <td>gender</td>
+        </tr>
+    
+	<!--用jstl的标签遍历保存在map中的数据-->
+    <c:forEach items="${allEmps}" var="emp">
+        <tr>
+            <td>${emp.id}</td>
+            <td>${emp.lastName}</td>
+            <td>${emp.email}</td>
+            <td>${emp.gender}</td>
+        </tr>
+    </c:forEach>
+
+</table>
+</body>
+</html
+```
+
+
+
+
 
 # 其他
 
