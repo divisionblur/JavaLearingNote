@@ -1,4 +1,4 @@
-### 百知教育 — Spring系列课程 — AOP编程
+### Spring系列 — AOP编程
 
 ---
 
@@ -68,7 +68,7 @@
 ~~~markdown
 代理类 = 目标类(原始类) + 额外功能 + 原始类(目标类)实现相同的接口
 
-房东 ---> public interface UserService{
+房东 ---> public interface UserService {
                m1
                m2
           }
@@ -385,8 +385,9 @@
   }
   ~~~
   
+
 MethodInterceptor影响原始方法的返回值
-  
+
 ~~~markdown
   原始方法的返回值，直接作为invoke方法的返回值返回，MethodInterceptor不会影响原始方法的返回值
 
@@ -399,7 +400,7 @@ MethodInterceptor影响原始方法的返回值
      Object ret = invocation.proceed();
      return false;
   }
-  ~~~
+~~~
 
 ##### 2. 切入点详解
 

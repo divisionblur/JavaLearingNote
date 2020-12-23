@@ -4175,7 +4175,7 @@ MyBatis Generator：
     - targetRuntime=“MyBatis3Simple“可以生成基本的增删改查
   - 如果再次生成，建议将之前生成的数据删除，避免xml向后追加内容出现的问题。
 
-### 配置文件
+### 配置文件 generatorConfig.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -4239,15 +4239,13 @@ MyBatis Generator：
 
 ### 生成器代码
 
-[GenerateCode.java](https://gitee.com/jallenkwong/LearnMyBatis/blob/master/src/main/java/com/lun/c07/generator/GenerateCode.java)
-
 ```java
 public class GenerateCode {
 	public static void main(String[] args) {
 		try {
 			List<String> warnings = new ArrayList<String>();
 			boolean overwrite = true;
-			File configFile = new File(GenerateCode.class.getClassLoader().getResource("c07/mbg.xml").getFile());
+			File configFile = new File(GenerateCode.class.getClassLoader().getResource("generatorConfig.xml").getFile());
 			ConfigurationParser cp = new ConfigurationParser(warnings);
 			Configuration config = cp.parseConfiguration(configFile);
 			DefaultShellCallback callback = new DefaultShellCallback(overwrite);
@@ -4265,32 +4263,45 @@ public class GenerateCode {
 
 生成器会QBC风格代码
 
-> QBC(Query By Criteria) API提供了检索对象的另一种方式，它主要由Criteria接口、Criterion接口和Expresson类组成，它支持在运行时动态生成查询语句。
+> QBC(Query By Criteria) API提供了检索对象的另一种方式，它主要由Criteria接口、Criterion接口和Expresson类组成，它支持在运行时动态生成查询语句。 
 >
 > From https://baike.baidu.com/item/QBC/1529451
 
 QBC风格代码使用实例：
 
 ```java
-@Test
-public void test01(){
-	SqlSession openSession = build.openSession();
-	DeptMapper mapper = openSession.getMapper(DeptMapper.class);
-	DeptExample example = new DeptExample();
-	//所有的条件都在example中封装
-	Criteria criteria = example.createCriteria();
-	//select id, deptName, locAdd from tbl_dept WHERE
-	//( deptName like ? and id > ? )
-	criteria.andDeptnameLike("%部%");
-	criteria.andIdGreaterThan(2);
-	List<Dept> list = mapper.selectByExample(example);
-	
-	for (Dept dept : list) {
-		System.out.println(dept);
-	}
+	@Test
+    public void test1() throws IOException {
+        String resource = "mybatis-config.xml";
+        InputStream in = Resources.getResourceAsStream(resource);
+        SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory factory = builder.build(in);
+        SqlSession sqlSession = factory.openSession();
+        EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+        EmployeeExample example = new EmployeeExample();
+
+        EmployeeExample.Criteria criteria = example.createCriteria();
+        criteria.andLastnameLike("%e%");
+        criteria.andGenderEqualTo("0");
+
+        EmployeeExample.Criteria criteria1 = example.createCriteria();
+        criteria1.andEmailLike("%e%");
+        example.or(criteria1);
+        List<Employee> employees = mapper.selectByExample(example);
+
+        for (Employee employee : employees) {
+            System.out.println(employee.getId());
+        }
+    }
 }
 
 ```
+
+测试如下：
+
+![image-20201223233127036](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201223233134.png)
+
+
 
 ## MyBatis-工作原理
 
