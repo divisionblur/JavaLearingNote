@@ -1470,7 +1470,6 @@ public interface EmployeeDaoPlus {
 	  -->
     <!--为什么可以写employee因为在全局配置文件中我已经设置了com.lihai.bean所有包中的类取了别名-->
 	 <resultMap  type="employee" id="myEmp">
-         
         <!--自定义某个javaBean的封装规则type：自定义规则的Java类型id:唯一id方便引用-->
         <!--主键列 -->
         <id column="id" property="id"/>
@@ -1480,8 +1479,7 @@ public interface EmployeeDaoPlus {
         <result column="gender" property="gender"/>
     </resultMap>
 
-    <!--还可以在这个Employee实体类的上方加一个@Alias("xxx")注解就算在全局配置文件中批量指定了某一个包下的实体类
-        的别名为默认小写类名  但是加了这个注解的话我们就可以用这个注解指定的别名xxx-->
+    <!--还可以在这个Employee实体类的上方加一个@Alias("xxx")注解就算在全局配置文件中批量指定了某一个包下的实体类的别名为默认小写类名  但是加了这个注解的话我们就可以用这个注解指定的别名xxx-->
     <select id="getEmpByIdWithResultMap" resultMap="myEmp">
         select * from tlb_employee where id = #{id}
     </select>
@@ -1545,7 +1543,11 @@ public class Department {
 public class Employee {
 	
 	...
-	private Department department;
+	private Integer id;
+    private String lastName;
+    private String gender;
+    private String email;
+    private Department dept;
 	...
 
 	public Employee() {}
@@ -1601,7 +1603,6 @@ public interface EmployeeDaoPlus {
 		property：指定对应的javaBean属性
 		  -->
         <id column="id" property="id"/>
-
         <result column="lastname" property="lastName"/>
         <result column="gender" property="gender"/>
         <result column="email" property="email"/>
@@ -1611,7 +1612,7 @@ public interface EmployeeDaoPlus {
     </resultMap>
 
     <select id="getEmpAndDept" resultMap="myDifEmp">
-         select e.id  id,e.lastName lastName,e.email email,e.gender gender,e.d_id d_id,d.id did, d.dept_name dept_name
+         select e.id id,e.lastName lastName,e.email email,e.gender gender,e.d_id d_id,d.id did, d.dept_name dept_name
         from tlb_employee e,tlb_dept d where e.d_id = d.id and e.id = #{id}
         <!--92语法e.d_id = e.id 是连接条件 -->
     </select>
@@ -1732,7 +1733,7 @@ public interface EmployeeDaoPlus {
 
 
     <select id="getEmpAndDept1" resultMap="myDifEmp1">
-        select e.id  id,e.lastName lastName,e.email email,e.gender gender,e.d_id d_id,d.id did, d.dept_name dept_name
+        select e.id id,e.lastName lastName,e.email email,e.gender gender,e.d_id d_id,d.id did, d.dept_name dept_name
         from tlb_employee e,tlb_dept d where e.d_id = d.id and e.id = #{id}
     </select>
     ......
@@ -1986,9 +1987,7 @@ public interface DepartmentDao {
 ```xml
 <mapper namespace="com.lihai.dao.DepartmentDao">
     <!--嵌套结果集的方式，使用collection标签定义关联的集合类型的属性封装规则-->
-<!--    /**-->
-<!--    * 关联查询-collection定义关联集合封装规则-->
-<!--    */-->
+	<!--关联查询-collection定义关联集合封装规则-->
     <resultMap type="department" id="MyDept">
         <id column="did" property="id"/>
         <result column="departmentName" property="departmentName"/>
@@ -1997,13 +1996,12 @@ public interface DepartmentDao {
             ofType:指定集合里面元素的类型   emps是一个集合
         -->
         <collection property="emps" ofType="employee">
-            <!-- 定义这个集合中元素的封装规则 -->
+            <!--定义这个集合中元素的封装规则-->
             <id column="eid" property="id"/>
             <result column="lastName" property="lastName"/>
             <result column="email" property="email"/>
             <result column="gender" property="gender"/>
         </collection>
-
     </resultMap>
 
     <select id="getDepByIdPlus" resultMap="MyDept">
@@ -4305,13 +4303,11 @@ QBC风格代码使用实例：
 
 ## MyBatis-工作原理
 
-![img](Mybatis.assets/05.png)
 
-![img](Mybatis.assets/07.png)
 
 ------
 
-![根据配置文件创建SQLSessionFactory](Mybatis.assets/08.png)
+
 
 - Configuration封装了所有配置文件的详细信息
 - 总结：把配置文件的信息解析并保存在Configuration对象中，返回包含了Configuration的DefaultSqlSession对象。
