@@ -768,7 +768,7 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
 
 ##### 3. Spring工厂如何加工原始对象 
 
-- 思路分析
+- 思路分析  （生成的是代理类对象）
   ![image-20200430113353205](https://gitee.com/studylihai/pic-repository/raw/master/%5Cimg/20201207222949.png)
 
 - 编码
@@ -785,13 +785,12 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
            Proxy.newProxyInstance();
        */
       public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-  
           InvocationHandler handler = new InvocationHandler() {
               @Override
               public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                   System.out.println("----- new Log-----");
                   Object ret = method.invoke(bean, args);
-  
+                  //原始方法的返回值
                   return ret;
               }
           };
@@ -799,8 +798,8 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
       }
   }
   ~~~
-
-  ~~~xml
+  
+~~~xml
   <bean id="userService" class="com.lihai.factory.UserServiceImpl"/>
   
   <!--当Spring工厂创建完原始对象之后发现有后置处理器于是将对象交给后置处理器-->
@@ -856,11 +855,10 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
    
        @Around("execution(* login(..))")
        public Object arround(ProceedingJoinPoint joinPoint) throws Throwable {
-   
+   		//额外功能添加
            System.out.println("----aspect log ------");
-   
            Object ret = joinPoint.proceed();
-   
+   		//返回原始方法的返回值
            return ret;
        }
    }
@@ -868,14 +866,14 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
    ~~~
    
    ~~~xml
- <bean id="userService" class="com.lihai.aspect.UserServiceImpl"/>
-   
-   <!--
-          切面
+    <bean id="userService" class="com.lihai.aspect.UserServiceImpl"/>
+
+   <!--切面
             1. 额外功能
             2. 切入点
             3. 组装切面
    -->
+   <!--生成切面类对象-->
    <bean id="arround" class="com.lihai.aspect.MyAspect"/>
    
    <!--告知Spring基于注解进行AOP编程-->
@@ -887,39 +885,32 @@ CGlib创建动态代理的原理：父子继承关系创建代理对象，原始
 1. 切入点复用
 
    ~~~java
-   切入点复用：在切面类中定义一个函数 上面@Pointcut注解 通过这种方式，定义切入点表达式，后续更加有利于切入点复用。
+   切入点复用：在切面类中定义一个函数 上面@Pointcut注解 通过这种方式，定义切入点表达式，后续更加有利于切入点复用。@Around加在额外功能所在方法上  @Pointcut指定切入点
    
    @Aspect
    public class MyAspect {
        @Pointcut("execution(* login(..))")
-       public void myPointcut(){}
+       public void myPointcut(){
+           
+       }
    
        @Around(value="myPointcut()")
        public Object arround(ProceedingJoinPoint joinPoint) throws Throwable {
-   
            System.out.println("----aspect log ------");
-   
            Object ret = joinPoint.proceed();
-   
-   
            return ret;
        }
    
    
        @Around(value="myPointcut()")
        public Object arround1(ProceedingJoinPoint joinPoint) throws Throwable {
-   
            System.out.println("----aspect tx ------");
-   
            Object ret = joinPoint.proceed();
-   
-   
            return ret;
        }
-   
    }
    ~~~
-
+   
 2. 动态代理的创建方式 
 
   ~~~markdown
